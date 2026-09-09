@@ -10,8 +10,8 @@ export type CampaignInput = {
 
 type TestedDirection = {
   title: string;
-  single: string;
-  collection: string;
+  single?: string;
+  collection?: string;
 };
 
 const itemLabel = (index: number) => String(index + 1).padStart(2, '0');
@@ -200,7 +200,7 @@ function compileDirections(campaign: CampaignInput, selected: Reference[]) {
     .map((reference, index) => {
       const tested = testedDirections[reference.id];
       const title = tested?.title ?? reference.name.toUpperCase();
-      const recipe = tested?.[campaign.mode] ?? `- ${reference.recipe}`;
+      const recipe = tested?.[campaign.mode] ?? `- ${reference.recipe}${reference.limits ? `\n- Limite operacional: ${reference.limits}` : ''}`;
       return `CRIATIVO ${itemLabel(index)} — ${title}\n${recipe}`;
     })
     .join('\n\n');
@@ -209,7 +209,7 @@ function compileDirections(campaign: CampaignInput, selected: Reference[]) {
 export function compileReferencePrompt(campaign: CampaignInput, reference: Reference) {
   const tested = testedDirections[reference.id];
   const title = tested?.title ?? reference.name.toUpperCase();
-  const recipe = tested?.[campaign.mode] ?? `- ${reference.recipe}`;
+  const recipe = tested?.[campaign.mode] ?? `- ${reference.recipe}${reference.limits ? `\n- Limite operacional: ${reference.limits}` : ''}`;
   const contentRule = campaign.mode === 'collection'
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
 - Mostre simultaneamente quatro produtos ou looks distintos e elegíveis do CONTEXTO CAPTURADO — V004.

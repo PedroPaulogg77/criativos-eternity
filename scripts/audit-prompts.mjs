@@ -16,6 +16,7 @@ async function importTypescriptModule(path) {
 
 const compiler = await importTypescriptModule('../lib/prompt-compiler.ts');
 const flow = await importTypescriptModule('../lib/flow-prompts.ts');
+const data = await importTypescriptModule('../lib/mvp-data.ts');
 
 const references = [
   ['REF-0001', 'Split premium escuro'],
@@ -47,6 +48,20 @@ const collectionBatch = compiler.compileMasterPrompt(collection, references);
 const singleReference = compiler.compileReferencePrompt(single, references[0]);
 const collectionReference = compiler.compileReferencePrompt(collection, references[0]);
 const recovery = compiler.compileRecoveryPrompt(references, [1, 2, 3, 4]);
+const pilotReference = data.references.find(({ id }) => id === 'REF-0017');
+const pilotPrompt = compiler.compileReferencePrompt(single, pilotReference);
+const singlePilotBatch = compiler.compileMasterPrompt(
+  single,
+  ['REF-0010', 'REF-0013', 'REF-0016', 'REF-0019', 'REF-0026'].map((id) =>
+    data.references.find((reference) => reference.id === id),
+  ),
+);
+const collectionPilotBatch = compiler.compileMasterPrompt(
+  collection,
+  ['REF-0009', 'REF-0011', 'REF-0012', 'REF-0015', 'REF-0025'].map((id) =>
+    data.references.find((reference) => reference.id === id),
+  ),
+);
 
 assert.ok(singleContext.startsWith('Vamos criar um criativo de PRODUTO ÚNICO.'));
 assert.ok(singleContext.includes('LINK DO PRODUTO: https://loja.test/produto'));
@@ -77,6 +92,19 @@ assert.ok(collectionReference.includes('quatro produtos ou looks distintos e ele
 assert.ok(recovery.startsWith('Você gerou corretamente o CRIATIVO 01. Não o gere novamente.'));
 assert.ok(recovery.includes('Agora gere somente os criativos pendentes: 02, 03, 04, 05.'));
 assert.ok(recovery.includes('Não responda com descrições em texto.'));
+
+assert.equal(data.references.length, 28);
+assert.equal(data.references.filter(({ validated }) => !validated).length, 22);
+assert.ok(data.references.every(({ modes }) => modes.length > 0));
+assert.ok(pilotPrompt.includes('ANTES E DEPOIS DIRETO'));
+assert.ok(pilotPrompt.includes('Só pode ser usado com resultado visual e comparação comprovados.'));
+assert.equal((singlePilotBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
+assert.equal((collectionPilotBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
+assert.ok(singlePilotBatch.includes('PRODUTO ZENITAL COM BENEFÍCIOS'));
+assert.ok(singlePilotBatch.includes('MODELO EDITORIAL COM OFERTA GIGANTE'));
+assert.ok(collectionPilotBatch.includes('VITRINE TÁTIL DE COLEÇÃO'));
+assert.ok(collectionPilotBatch.includes('FLAT LAY RADIAL DE COLEÇÃO'));
+assert.ok(collectionPilotBatch.includes('Limite operacional:'));
 
 const carousel = flow.compileCarouselPrompt();
 assert.ok(carousel.includes('EXATAMENTE CINCO produtos ou looks distintos'));

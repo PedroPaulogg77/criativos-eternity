@@ -486,11 +486,14 @@ export default function Home() {
   const flyerPrompt = useMemo(() => compileFlyerPrompt({ prize, coupon, discount }), [prize, coupon, discount]);
 
   const filteredReferences = references.filter((item) => {
+    const matchesMode = item.modes.includes(campaignMode);
     const matchesFamily = familyFilter === 'Todas as famílias' || item.family === familyFilter;
     const matchesCategory = categoryFilter === 'Todas as categorias' || item.category === categoryFilter;
     const haystack = `${item.name} ${item.family} ${item.category} ${item.tags.join(' ')}`.toLowerCase();
-    return matchesFamily && matchesCategory && haystack.includes(searchTerm.trim().toLowerCase());
+    return matchesMode && matchesFamily && matchesCategory && haystack.includes(searchTerm.trim().toLowerCase());
   });
+  const compatibleReferences = references.filter((item) => item.modes.includes(campaignMode));
+  const hiddenByModeCount = references.length - compatibleReferences.length;
   const pendingIndexes = selectedReferences
     .map((item, index) => executionErrorStatuses.includes(reviewState[item.id] ?? 'correct') ? index : -1)
     .filter((index) => index >= 0);
@@ -554,6 +557,7 @@ export default function Home() {
           throw new Error('Informe alvo, link, acesso e oferta.');
         }
         setCampaignMode(value.mode);
+        setSelectedIds([]);
         setExactTarget(value.exactTarget.trim());
         setSourceUrl(value.sourceUrl.trim());
         setLinkAccess(value.linkAccess);
@@ -860,7 +864,7 @@ export default function Home() {
       return (
         <PhaseShell {...shellProps} phase={1} detail="Pergunta 1 de 5">
           <QuestionScreen eyebrow="Vamos começar pelo essencial" title="O que você vai anunciar?" description="Essa escolha define o caminho da campanha. Coleções recebem automaticamente um carrossel com cinco produtos." next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
-            <RadioGroup value={campaignMode} onValueChange={(value) => setCampaignMode(value as CampaignInput['mode'])} className="grid gap-3 sm:grid-cols-2">
+            <RadioGroup value={campaignMode} onValueChange={(value) => { setCampaignMode(value as CampaignInput['mode']); setSelectedIds([]); }} className="grid gap-3 sm:grid-cols-2">
               <ChoiceCard value="single" active={campaignMode === 'single'} icon={<Package className="size-5" />} title="Produto único" description="Um produto e uma variante factual." />
               <ChoiceCard value="collection" active={campaignMode === 'collection'} icon={<Layers3 className="size-5" />} title="Coleção" description="Vários produtos e carrossel obrigatório." />
             </RadioGroup>
@@ -965,20 +969,28 @@ export default function Home() {
   }
 
   if (phase === 3 && creativeView === 'library') {
+    const modeLabel = campaignMode === 'collection' ? 'colecao' : 'produto unico';
+    const filterCount = Number(Boolean(searchTerm.trim())) + Number(familyFilter !== 'Todas as famílias') + Number(categoryFilter !== 'Todas as categorias');
     return (
       <PhaseShell {...shellProps} phase={3} detail={`${selectedIds.length} de 5 escolhidas`} wide>
-        <PageHeading eyebrow="Direções visuais" title="Escolha cinco referências" description="As imagens aparecem completas. A referência define apenas a gramática visual; produto, marca e oferta vêm do contexto." />
-        <div className="relative z-20 mb-6 rounded-2xl border border-border bg-background/92 p-4 shadow-[0_18px_55px_rgba(0,0,0,.28)] backdrop-blur-xl">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="relative min-w-0 flex-1"><Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className="h-11 rounded-xl bg-card pr-4 pl-10 text-base" placeholder="Buscar estilo, categoria ou característica" /></div>
-            <Select value={familyFilter} onValueChange={(value) => setFamilyFilter(value ?? 'Todas as famílias')}><SelectTrigger className="h-11 w-full rounded-xl bg-card lg:w-52"><Filter className="size-4 text-muted-foreground" /><SelectValue /></SelectTrigger><SelectContent>{families.map((family) => <SelectItem key={family} value={family}>{family}</SelectItem>)}</SelectContent></Select>
+        <div className="mb-5 flex flex-col justify-between gap-4 border-b border-border pb-5 lg:flex-row lg:items-end">
+          <div className="min-w-0">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">Direções visuais</p>
+            <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Escolha pela imagem</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{compatibleReferences.length} compativeis de {references.length} no banco para {modeLabel}. {hiddenByModeCount} ocultas por formato.</p>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3" aria-label="Filtrar por categoria">
-            {categories.map((category) => <button key={category} type="button" aria-pressed={categoryFilter === category} onClick={() => setCategoryFilter(category)} className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors ${categoryFilter === category ? 'border-primary bg-primary text-white' : 'border-border bg-card text-muted-foreground hover:border-white/25 hover:text-foreground'}`}>{category === 'Todas as categorias' ? 'Todas' : category}</button>)}
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="rounded-full border border-border bg-card/65 px-3 py-2 text-sm text-muted-foreground"><strong className="text-foreground">{selectedIds.length}</strong> de 5</div>
+            <Button type="button" variant="ghost" size="sm" className="h-10 rounded-xl text-accent-foreground" onClick={() => setSelectedIds(recommendedReferenceIds)}><Sparkles data-icon="inline-start" /> Lote validado</Button>
+            <Button type="button" size="sm" className="h-10 rounded-xl" disabled={selectedIds.length !== 5} onClick={() => { setCreativeView('prompt'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Criar prompt <ArrowRight data-icon="inline-end" /></Button>
           </div>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-            <p className="text-sm text-muted-foreground"><strong className="text-foreground">{selectedIds.length} de 5</strong> referências escolhidas</p>
-            <div className="flex flex-wrap gap-2"><Button type="button" variant="ghost" size="sm" className="text-accent-foreground" onClick={() => setSelectedIds(recommendedReferenceIds)}><Sparkles data-icon="inline-start" /> Usar lote validado</Button><Button type="button" size="sm" disabled={selectedIds.length !== 5} onClick={() => { setCreativeView('prompt'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Criar prompt <ArrowRight data-icon="inline-end" /></Button></div>
+        </div>
+        <div className="relative z-20 mb-5 rounded-xl border border-border bg-background/80 p-2.5 shadow-[0_14px_45px_rgba(0,0,0,.2)] backdrop-blur-xl">
+          <div className="grid gap-2 lg:grid-cols-[1fr_13rem_13rem_auto] lg:items-center">
+            <div className="relative min-w-0"><Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className="h-10 rounded-lg bg-card pr-4 pl-9 text-sm" placeholder="Buscar referência" /></div>
+            <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value ?? 'Todas as categorias')}><SelectTrigger className="h-10 rounded-lg bg-card text-sm"><SelectValue /></SelectTrigger><SelectContent>{categories.map((category) => <SelectItem key={category} value={category}>{category === 'Todas as categorias' ? 'Todas' : category}</SelectItem>)}</SelectContent></Select>
+            <Select value={familyFilter} onValueChange={(value) => setFamilyFilter(value ?? 'Todas as famílias')}><SelectTrigger className="h-10 rounded-lg bg-card text-sm"><Filter className="size-4 text-muted-foreground" /><SelectValue /></SelectTrigger><SelectContent>{families.map((family) => <SelectItem key={family} value={family}>{family}</SelectItem>)}</SelectContent></Select>
+            {filterCount ? <Button type="button" variant="ghost" size="sm" className="h-10 rounded-lg text-muted-foreground" onClick={() => { setSearchTerm(''); setCategoryFilter('Todas as categorias'); setFamilyFilter('Todas as famílias'); }}>Limpar</Button> : <span className="hidden text-right text-xs text-muted-foreground lg:block">{filteredReferences.length} visiveis</span>}
           </div>
         </div>
 
@@ -988,11 +1000,21 @@ export default function Home() {
           const blocked = selectedIds.length >= 5 && !selected;
           return (
             <article key={item.id} className={`reference-pin group w-full text-left ${selected ? 'reference-pin-active' : ''}`}>
-              <button type="button" disabled={blocked} onClick={() => toggleReference(item.id)} className={`w-full text-left ${blocked ? 'opacity-40' : ''}`} aria-pressed={selected} aria-label={`${selected ? 'Remover' : 'Adicionar'} ${item.name} ${selected ? 'do' : 'ao'} lote`}>
-                <span className="relative block overflow-hidden rounded-[1.05rem] bg-muted"><img src={item.image} alt={`Referência completa: ${item.name}`} loading="lazy" className="h-auto w-full" /><span className="absolute inset-x-0 top-0 flex items-start justify-between bg-gradient-to-b from-black/60 to-transparent p-3 pb-12"><span className="rounded-full bg-black/55 px-2.5 py-1 text-[11px] text-white backdrop-blur">{item.id}</span>{selected ? <span className="grid size-9 place-items-center rounded-full bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}</span></span>
-                <span className="block px-1 pt-3"><span className="flex items-start justify-between gap-2"><span className="font-medium tracking-[-0.02em]">{item.name}</span>{item.validated ? <span className="shrink-0 rounded-full bg-emerald-400/10 px-2 py-1 text-[11px] font-medium text-emerald-300">Validada</span> : null}</span><span className="mt-1 block text-sm text-muted-foreground">{item.family} · {item.category}</span></span>
+              <button type="button" disabled={blocked} onClick={() => toggleReference(item.id)} className={`reference-image-button ${blocked ? 'opacity-35' : ''}`} aria-pressed={selected} aria-label={`${selected ? 'Remover' : 'Adicionar'} ${item.name} ${selected ? 'do' : 'ao'} lote`}>
+                <img src={item.image} alt={`Referência completa: ${item.name}`} loading="lazy" className="h-auto w-full" />
+                {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
+                <span className="reference-hover-panel">
+                  <span className="flex items-start justify-between gap-3">
+                    <span>
+                      <span className="block font-medium tracking-[-0.02em] text-white">{item.name}</span>
+                      <span className="mt-1 block text-xs text-white/72">{item.family} · {item.category}</span>
+                    </span>
+                    <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${item.validated ? 'bg-emerald-400/20 text-emerald-100' : 'bg-amber-400/20 text-amber-100'}`}>{item.validated ? 'Validada' : 'Piloto'}</span>
+                  </span>
+                  <span className="mt-2 block text-xs leading-5 text-white/66">{item.modes.length === 2 ? 'Produto ou coleção' : item.modes[0] === 'collection' ? 'Coleção' : 'Produto único'}{item.limits ? ` · ${item.limits}` : ''}</span>
+                </span>
               </button>
-              <div className="mt-3 border-t border-border px-1 pt-3 pb-2"><Button type="button" variant="ghost" size="sm" className="w-full rounded-xl text-violet-200" onClick={() => copyText(compileReferencePrompt(campaign, item), `library-single-${item.id}`)}>{copiedKey === `library-single-${item.id}` ? <><Check data-icon="inline-start" /> Prompt copiado</> : <><Copy data-icon="inline-start" /> Copiar só esta direção</>}</Button></div>
+              <Button type="button" variant="ghost" size="icon" title="Copiar so esta direcao" aria-label={`Copiar prompt da referencia ${item.name}`} className="reference-copy-button" onClick={() => copyText(compileReferencePrompt(campaign, item), `library-single-${item.id}`)}>{copiedKey === `library-single-${item.id}` ? <Check className="size-4" /> : <Copy className="size-4" />}</Button>
             </article>
           );
         })}</div> : <div className="rounded-2xl border border-dashed border-border py-16 text-center"><Search className="mx-auto size-6 text-muted-foreground" /><p className="mt-3 font-medium">Nenhuma referência encontrada</p><p className="mt-1 text-sm text-muted-foreground">Remova um filtro ou busque outro termo.</p></div>}
@@ -1004,7 +1026,7 @@ export default function Home() {
   if (phase === 3 && creativeView === 'prompt') {
     return (
       <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
-        <PageHeading eyebrow="Cinco direções aprovadas" title="Gere os cinco criativos mestres" description="O prompt preserva as estruturas validadas dos testes e exige cinco arquivos separados em 4:5." />
+        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="O prompt combina as receitas escolhidas com as travas factuais da metodologia e exige cinco arquivos separados em 4:5." />
         <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden rounded-xl border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center rounded-tl bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
         <PromptPanel label="Mensagem · gerar lote mestre" text={masterPrompt} copyKey="master" copiedKey={copiedKey} onCopy={copyText} />
         <ChatInstruction>Cole o prompt depois de conferir o contexto e, em coleções, depois de gerar o carrossel.</ChatInstruction>

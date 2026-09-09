@@ -1,8 +1,8 @@
-# Eternity Criativos — MVP local
+# Eternity Creative Assistant
 
-Interface conversacional para organizar o contexto mínimo de uma campanha, escolher cinco referências aprovadas e compilar prompts determinísticos para uso no ChatGPT do aluno.
+Ferramenta web para guiar o processo de criativos da Eternity: contexto da campanha, referências visuais, prompts de imagem, formatos, redes sociais, narração, vídeo e panfleto.
 
-O MVP não chama APIs de IA e não gera imagens. Toda correção preserva os cartões já aprovados.
+O app não chama APIs de IA e não gera imagens por conta própria. Ele organiza o fluxo e compila prompts prontos para serem usados no mesmo chat do aluno.
 
 ## Rodar localmente
 
@@ -12,6 +12,24 @@ npm run dev
 ```
 
 Abra `http://localhost:3000`.
+
+## Build de produção
+
+```bash
+npm run build
+npm run start
+```
+
+## Deploy no Vercel
+
+1. Suba esta pasta como raiz do repositório `criativos-eternity`.
+2. No Vercel, importe o repositório do GitHub.
+3. Framework: `Next.js`.
+4. Build command: `npm run build`.
+5. Install command: `npm install`.
+6. Output directory: deixe vazio, o Vercel detecta automaticamente.
+
+Não é necessário configurar variáveis de ambiente para o MVP atual.
 
 ## Fluxo implementado
 
