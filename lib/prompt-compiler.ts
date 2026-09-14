@@ -359,7 +359,7 @@ Extraia do site, da página e das imagens:
 - logo, cores e identidade visual da loja;
 - estilo tipográfico da loja: se as letras da marca e do site são com ou sem serifa, o peso, a caixa e o espaçamento que ela usa;
 - público-alvo do produto: gênero, faixa etária e contexto de uso indicados pela página, pela categoria, pelas fotos e pela tabela de tamanhos;
-- argumento de venda: o que faz o cliente comprar este produto — a aparência, uma funcionalidade, a marca ou a oferta. Escolha o argumento dominante e diga em uma linha por quê.
+- argumento de venda: este produto se vende por uma funcionalidade que a foto não mostra, ou pela própria estética? Responda uma das duas e diga em uma linha por quê.
 
 Crie internamente um título publicitário curto. Eu não fornecerei o título exato.
 
@@ -418,7 +418,7 @@ Antes de gerar qualquer imagem, construa o contexto factual obedecendo a estas r
 8. Se não existirem quatro itens confirmáveis, peça somente a menor fonte adicional necessária. Não gere a imagem ainda.
 9. Registre o estilo tipográfico da loja: se as letras da marca e do site são com ou sem serifa, o peso, a caixa e o espaçamento que ela usa.
 10. Registre o público-alvo da coleção: gênero, faixa etária e contexto de uso indicados pela página, pela categoria, pelas fotos e pela tabela de tamanhos.
-11. Registre o argumento de venda da coleção: o que faz o cliente comprar — a aparência, uma funcionalidade, a marca ou a oferta. Escolha o dominante.
+11. Registre o argumento de venda da coleção: os produtos se vendem por uma funcionalidade que a foto não mostra, ou pela própria estética? Responda uma das duas.
 
 Responda somente neste formato:
 

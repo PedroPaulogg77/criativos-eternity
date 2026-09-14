@@ -929,7 +929,7 @@ export default function Home() {
     if (contextStep === 5) {
       return (
         <PhaseShell {...shellProps} phase={1} detail="Pergunta 6 de 6">
-          <QuestionScreen eyebrow="Argumento de venda" title="O que faz o cliente comprar isso?" description="Categoria não responde: dois tênis na mesma prateleira podem vender por motivos opostos. Isso define quais direções visuais fazem sentido." back={backContext} next={advanceContext} nextLabel="Preparar contexto" nextDisabled={!contextAnswerReady()} error={formError}>
+          <QuestionScreen eyebrow="Argumento de venda" title="O que faz o cliente comprar isso?" description="A oferta agressiva vale nos dois casos. O que muda a peça é ter um diferencial para explicar ou não. Dois tênis na mesma prateleira podem cair em lados opostos." back={backContext} next={advanceContext} nextLabel="Preparar contexto" nextDisabled={!contextAnswerReady()} error={formError}>
             <RadioGroup value={salesDriver ?? ''} onValueChange={(value) => setSalesDriver(value as SalesDriver)} className="grid gap-3 sm:grid-cols-2">
               {salesDrivers.map((item) => <ChoiceCard key={item.value} value={item.value} active={salesDriver === item.value} icon={<Sparkles className="size-5" />} title={item.label} description={item.description} />)}
             </RadioGroup>

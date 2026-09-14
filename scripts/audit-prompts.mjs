@@ -276,14 +276,14 @@ for (const [nome, prompt] of [['produto único', singleContext], ['coleção', c
  * Argumento de venda. Categoria não direciona referência: o que direciona é o que
  * faz o cliente comprar. A biblioteca ordena por isso, sem esconder opção.
  */
-assert.deepEqual(data.salesDrivers.map(({ value }) => value), ['aparencia', 'funcao', 'marca', 'oferta']);
+assert.deepEqual(data.salesDrivers.map(({ value }) => value), ['funcao', 'estetica']);
 assert.ok(data.references.every(({ drivers }) => drivers?.length), 'toda referência precisa declarar seu argumento de venda');
 assert.ok(
-  data.references.every(({ drivers }) => drivers.every((item) => ['aparencia', 'funcao', 'marca', 'oferta'].includes(item))),
+  data.references.every(({ drivers }) => drivers.every((item) => ['funcao', 'estetica'].includes(item))),
   'argumento de venda fora da lista',
 );
 
-for (const driver of ['aparencia', 'funcao', 'marca', 'oferta']) {
+for (const driver of ['funcao', 'estetica']) {
   const ordenadas = data.sortByDriver(data.references, driver);
   const posicoes = ordenadas.map((item) => data.driverFit(item, driver));
   assert.deepEqual(posicoes, [...posicoes].sort((a, b) => a - b), `ordenação por ${driver} saiu fora de ordem`);
@@ -292,10 +292,10 @@ for (const driver of ['aparencia', 'funcao', 'marca', 'oferta']) {
 }
 
 // Produto que vende pela foto não pode abrir a lista com peça cheia de tópicos.
-const porAparencia = data.sortByDriver(data.references, 'aparencia');
-const densaNaFrente = porAparencia.findIndex((item) => item.drivers.includes('funcao') && !item.drivers.includes('aparencia'));
-const ultimaCompativel = porAparencia.map((item) => item.drivers.includes('aparencia')).lastIndexOf(true);
-assert.ok(densaNaFrente > ultimaCompativel, 'referência densa apareceu antes das compatíveis com aparência');
+const porEstetica = data.sortByDriver(data.references, 'estetica');
+const densaNaFrente = porEstetica.findIndex((item) => item.drivers.includes('funcao'));
+const ultimaCompativel = porEstetica.map((item) => item.drivers.includes('estetica')).lastIndexOf(true);
+assert.ok(densaNaFrente > ultimaCompativel, 'referência cheia de tópicos apareceu antes das diretas');
 
 // Sem resposta do aluno, a ordem original é preservada.
 assert.deepEqual(
@@ -309,7 +309,7 @@ assert.deepEqual(
  */
 for (const mode of ['single', 'collection']) {
   const doModo = data.references.filter(({ modes }) => modes.includes(mode));
-  for (const driver of ['aparencia', 'funcao', 'marca', 'oferta']) {
+  for (const driver of ['funcao', 'estetica']) {
     const servem = doModo.filter(({ drivers }) => drivers.includes(driver));
     assert.ok(servem.length, `nenhuma referência de ${mode} serve ao argumento ${driver}`);
     assert.ok(
@@ -319,7 +319,7 @@ for (const mode of ['single', 'collection']) {
   }
 }
 
-console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os quatro em produto único e em coleção.');
+console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');
 
 console.log(
   'Prompts aprovados: contexto, lote 4:5, recuperação, carrossel, formatos, redes sociais, áudio, Kling e panfleto.',
