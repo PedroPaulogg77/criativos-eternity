@@ -72,16 +72,22 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0003': {
     title: 'CENÁRIO TÁTIL E QUENTE',
-    single: `- Fundo e superfície tátil em tom quente, natural e suave, com iluminação difusa.
-- Mostre o mesmo SKU em duas vistas factualmente coerentes: uma vista principal aberta em três quartos e uma segunda vista lateral, traseira ou dobrada somente se ela puder ser confirmada pelas fontes.
-- As duas aparições devem representar exatamente o mesmo produto e a mesma variante, sem diferenças de mecanismo, cor ou componentes.
-- Headline curta na parte superior e oferta dentro de selo circular de alto contraste no canto inferior.
-- Se uma segunda vista não for confirmável, use um close real de um detalhe confirmado em vez de inventar outro ângulo.`,
-    collection: `- Fundo e superfície tátil em tom quente, natural e sofisticado, com iluminação difusa.
-- Distribua os quatro produtos em diagonais suaves sobre a superfície, cada um em sua própria área visual e com ângulo coerente.
-- Headline curta no topo e a oferta completa dentro de um selo circular de alto contraste no canto inferior.
-- Não use duas vistas do mesmo produto: neste modo coleção, cada aparição deve ser um produto distinto e elegível.
-- Preserve a identidade de cada produto ou marca sem misturar logos, componentes ou características.`,
+    single: `- O que define esta direção: o produto aparece DUAS VEZES sobre uma superfície granulada em que ele AFUNDA de leve — areia, terra fina, tecido de trama grossa —, e uma das duas aparições mostra a face que o cliente nunca vê na vitrine.
+- A superfície é o fundo inteiro: sem horizonte, sem parede, sem mesa. Ela tem textura visível, ondulações suaves e marcas de relevo, e o produto deixa uma depressão rasa onde se apoia.
+- As duas unidades formam uma diagonal ascendente: uma mais à frente e mais baixa, vista de perfil ou três quartos; a outra mais atrás e mais alta, virada para mostrar a base, o verso ou o interior. Elas se tocam de leve no meio.
+- A segunda vista existe para provar o argumento do produto — o solado, a costura interna, o mecanismo. Se essa face não puder ser confirmada pelas fontes, mostre um close real de um detalhe confirmado em vez de inventar um ângulo.
+- As duas aparições são exatamente o mesmo produto e a mesma variante, sem diferença de cor, componente ou acabamento.
+- Todo o texto fica alinhado à esquerda no topo, em três níveis: o título em caixa alta pesada e duas linhas, na cor da marca; uma linha de apoio em caixa mista e peso forte, na mesma cor; e uma terceira linha em caixa mista, peso leve e tom neutro.
+- A oferta fica dentro de um selo circular chapado na cor da marca, encostado no canto inferior do quadro, com o texto em branco, caixa alta e duas linhas curtas. Uma pequena dobra de fita fecha um dos lados do círculo.
+- Esta peça não tem logo da loja, não tem ícone, não tem benefício em lista e não tem pessoa.
+- Só existem duas cores gráficas: a da marca, no texto e no selo, e o tom neutro da terceira linha. Todo o resto é a areia e as cores do produto.`,
+    collection: `- O que define esta direção: os produtos aparecem espalhados sobre uma superfície granulada em que AFUNDAM de leve — areia, terra fina, tecido de trama grossa —, cada um em uma área do quadro e em um ângulo próprio.
+- A superfície é o fundo inteiro: sem horizonte, sem parede, sem mesa. Textura visível, ondulações suaves e uma depressão rasa sob cada produto.
+- Os quatro produtos se distribuem em diagonais suaves, sem alinhamento rígido, cada um com folga em volta. Um deles pode aparecer virado mostrando a base ou o verso, quando essa face estiver confirmada.
+- Cada produto é distinto e elegível, com a sua própria cor e acabamento. Nenhum pode ser recolorido nem repetido para completar o conjunto.
+- Todo o texto fica alinhado à esquerda no topo, em três níveis: o título em caixa alta pesada e duas linhas, na cor da marca; uma linha de apoio em caixa mista e peso forte; e uma terceira linha em caixa mista, peso leve e tom neutro.
+- A oferta fica dentro de um selo circular chapado na cor da marca, encostado no canto inferior do quadro, com o texto em branco, caixa alta e duas linhas curtas. Uma pequena dobra de fita fecha um dos lados do círculo.
+- Esta peça não tem logo da loja, não tem ícone, não tem benefício em lista e não tem pessoa.`,
   },
   'REF-0005': {
     title: 'PRODUTO E CARTÃO FÍSICO DE OFERTA',
