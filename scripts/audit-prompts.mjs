@@ -94,12 +94,12 @@ assert.ok(
 );
 assert.ok(collectionContext.includes('CONTEXTO CAPTURADO — V004'));
 assert.ok(collectionContext.includes('Não peça senha.'));
-assert.ok(collectionContext.includes('Regra de seleção visual: escolher livremente quatro'));
+assert.ok(collectionContext.includes('na quantidade que cada peça pedir'));
 
 assert.equal((singleBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
 assert.equal((collectionBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
 assert.ok(singleBatch.includes('CENÁRIO TÁTIL E QUENTE'));
-assert.ok(collectionBatch.includes('mostrar simultaneamente quatro produtos ou looks distintos'));
+assert.ok(collectionBatch.includes('A quantidade muda de uma direção para outra'));
 /*
  * Trava de colagem. O cliente do ChatGPT decide o formato de entrega, então o prompt
  * precisa declarar a contagem de arquivos e recusar todo formato agregado.
@@ -122,7 +122,7 @@ assert.ok(singleReference.includes('SOMENTE UM criativo publicitário mestre'));
 assert.ok(singleReference.includes('uma única imagem final e independente em 4:5'));
 assert.ok(singleReference.includes('Anuncie somente o produto “Suporte Pocket preto”'));
 assert.ok(collectionReference.includes('Anuncie somente a coleção “Automarken-Kollektion”'));
-assert.ok(collectionReference.includes('quatro produtos ou looks distintos e elegíveis'));
+assert.ok(collectionReference.includes('produtos ou looks distintos e elegíveis'));
 
 assert.ok(recovery.startsWith('Você gerou corretamente o CRIATIVO 01. Não o gere novamente.'));
 assert.ok(recovery.includes('Agora gere somente os criativos pendentes: 02, 03, 04, 05.'));
@@ -346,6 +346,32 @@ for (const [id, marca] of Object.entries(grades)) {
   const prompt = compiler.compileReferencePrompt(collection, data.references.find((item) => item.id === id));
   assert.ok(prompt.includes('O que define esta direção'), `${id} não declara o que a separa das outras grades`);
   assert.ok(prompt.includes(marca), `${id} perdeu o traço que a distingue`);
+}
+
+/*
+ * Quantidade de produtos por grade. Quatro itens em volta de um cartao so
+ * produzem uma grade 2x2: era isso que fazia as grades sairem identicas.
+ */
+const comSlots = data.references.filter(({ modes, slots }) => modes.includes('collection') && slots);
+assert.ok(comSlots.length >= 10, 'poucas referências de coleção declaram quantidade');
+assert.ok(new Set(comSlots.map(({ slots }) => slots)).size >= 4, 'as grades de coleção não variam de quantidade');
+
+for (const reference of comSlots) {
+  const prompt = compiler.compileReferencePrompt(collection, reference);
+  const palavra = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][reference.slots];
+  assert.ok(
+    prompt.includes(`Mostre simultaneamente ${palavra} produtos`),
+    `${reference.id} não pede a própria quantidade (${reference.slots})`,
+  );
+}
+
+// No lote, cada direção carrega a sua quantidade em vez de todas herdarem quatro.
+const loteGrades = compiler.compileMasterPrompt(
+  collection,
+  ['REF-0007', 'REF-0021', 'REF-0023', 'REF-0038', 'REF-0039'].map((id) => data.references.find((item) => item.id === id)),
+);
+for (const [id, n] of [['REF-0007', 6], ['REF-0021', 3], ['REF-0023', 6], ['REF-0038', 8], ['REF-0039', 8]]) {
+  assert.ok(loteGrades.includes(`Quantidade desta direção: ${n} produtos`), `${id} sem a quantidade no lote`);
 }
 
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');

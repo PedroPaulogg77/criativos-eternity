@@ -104,7 +104,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'MOSAICO EDITORIAL',
     collection: `- O que define esta direção: todos os produtos estão DEITADOS e fotografados DE CIMA, sobre uma única superfície contínua, como se fossem uma só fotografia recortada em módulos.
 - Nada de manequim, nada de pessoa, nada de plinto, nada de produto em pé e nada de cenário: só a peça deitada sobre a superfície, com a mesma luz e a mesma sombra em todos os módulos.
-- Os quatro produtos ocupam módulos retangulares de tamanhos diferentes, separados por respiros brancos largos e retos que vão de borda a borda.
+- Os seis produtos ocupam módulos retangulares de tamanhos claramente diferentes, alguns altos e outros largos, separados por respiros brancos largos e retos que vão de borda a borda.
 - Cada produto ocupa sozinho o seu módulo, grande o bastante para reconhecer silhueta, cor, material, acabamento e logos. Quando um item for conjunto, as peças dele ficam juntas no mesmo módulo.
 - Um módulo do meio não é foto: é um cartão chapado, no mesmo tom da superfície, com a logo da loja, uma expressão curta e a oferta com o valor dominante.
 - A superfície é sempre a mesma cor e textura em todos os módulos, sem variar de fundo entre um e outro.
@@ -145,7 +145,7 @@ const testedDirections: Record<string, TestedDirection> = {
   'REF-0011': {
     title: 'TRIO DE COLEÇÃO CROMÁTICA',
     collection: `- Fundo de cor sólida derivada da identidade da loja, com vinheta suave escurecendo as bordas e clareando o centro.
-- Os quatro produtos aparecem em fileira escalonada e levemente diagonal, todos no mesmo ângulo de três quartos, cada um em uma cor distinta e confirmada. Nenhum produto pode ser recolorido para completar a fileira.
+- Os três produtos aparecem em fileira escalonada e levemente diagonal, todos no mesmo ângulo de três quartos, cada um em uma cor distinta e confirmada. Nenhum produto pode ser recolorido para completar a fileira.
 - Os produtos ficam grandes e centralizados na faixa média do quadro, com sombra projetada suave e igual entre eles.
 - Headline curta em caixa alta pesada no topo, em duas linhas, com uma linha fina de nome da coleção logo abaixo.
 - Abaixo dos produtos, um título secundário curto em caixa alta e até duas linhas de apoio factual.
@@ -156,7 +156,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'CATÁLOGO AMPLO DE COLEÇÃO',
     collection: `- Fundo branco frio e contínuo de catálogo, sem cenário e sem textura.
 - A oferta é a headline do topo, partida em dois blocos de cores diferentes separados por um traço vertical, com uma palavra pequena e espaçada logo abaixo. É o maior texto da peça.
-- Os quatro produtos ocupam a faixa central, todos no mesmo ângulo, no mesmo tamanho e com o mesmo espaçamento entre si. Use uma fileira única quando couber, ou duas fileiras de dois quando a proporção exigir.
+- Os oito produtos ocupam a faixa central em duas fileiras cheias de quatro, todos no mesmo ângulo, no mesmo tamanho e com o mesmo espaçamento entre si. A grade precisa parecer um mostruário completo de cores, não uma seleção.
 - Cada produto é uma variante ou modelo distinto e confirmado, com cor, material e detalhes próprios. Não invente cores para completar a grade.
 - Abaixo dos produtos, uma faixa escura curta em caixa alta com uma informação factual, seguida de até duas linhas de apoio.
 - Uma última linha fina com ícone pode trazer uma condição de entrega ou serviço, apenas quando confirmada no contexto.
@@ -224,7 +224,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'COLEÇÃO EM PEDESTAL DE LUXO',
     collection: `- Cenário escuro e profundo de estúdio, com luz dirigida no centro e detalhes metálicos discretos derivados da identidade da loja.
 - Headline elegante em duas linhas no topo, em tipografia serifada e cor metálica, com uma linha fina de apoio logo abaixo, entre dois filetes curtos.
-- Os quatro produtos aparecem alinhados e em pé sobre um pedestal central, todos na mesma altura de apoio, frontais, grandes e sem sobreposição.
+- Os três produtos aparecem alinhados e em pé sobre um pedestal central, todos na mesma altura de apoio, frontais, grandes e sem sobreposição.
 - Cada produto mantém o seu próprio material, mostrador, cor e acabamento. Nada de recolorir ou repetir o mesmo produto para completar a fileira.
 - A oferta aparece em uma placa retangular com borda metálica fina, integrada à frente do pedestal, logo abaixo dos produtos.
 - Um detalhe geométrico metálico pode fechar o rodapé, sem texto e sem função comercial.
@@ -233,7 +233,7 @@ const testedDirections: Record<string, TestedDirection> = {
   'REF-0022': {
     title: 'VITRINE FÍSICA COM OFERTA',
     collection: `- Cena fotorrealista dentro de uma loja física premium, vista sobre o balcão, com luz quente e fundo de expositores suavemente desfocado.
-- Sobre o balcão, quatro produtos elegíveis aparecem distribuídos em bandejas e expositores reais, todos visíveis e separados entre si.
+- Sobre o balcão, cinco produtos elegíveis aparecem distribuídos em bandejas e expositores reais, todos visíveis e separados entre si. As bandejas podem sugerir mais peças ao fundo, desfocadas.
 - Um dos produtos aparece em destaque dentro do seu estojo aberto, em primeiro plano, como protagonista da cena.
 - Um cartão físico vertical apoiado no balcão concentra a comunicação: um título curto no topo, a oferta e, quando existirem degraus, uma linha por degrau. O cartão parece impresso de verdade, com a letra da identidade da loja.
 - Sublinhados ou marcações no cartão podem destacar a oferta, desde que pareçam parte do material impresso.
@@ -243,7 +243,7 @@ const testedDirections: Record<string, TestedDirection> = {
   'REF-0023': {
     title: 'MOSAICO DE PRODUTO EM USO',
     collection: `- O que define esta direção: o mesmo produto aparece em VÁRIOS CONTEXTOS DIFERENTES, e cada painel tem o seu próprio cenário, sua própria superfície e sua própria luz. É o oposto de uma grade uniforme.
-- Um painel grande mostra o produto em still sobre um suporte curvo neutro, com adereço natural discreto. Os painéis menores mostram o produto sendo usado no corpo, em close, e cada um sobre um material diferente: tecido liso, tricô, superfície escura, papel, o que o contexto confirmar.
+- São seis painéis ao todo. Um painel grande mostra o produto em still sobre um suporte curvo neutro, com adereço natural discreto. Os painéis menores mostram o produto sendo usado no corpo, em close, e cada um sobre um material diferente: tecido liso, tricô, superfície escura, papel, o que o contexto confirmar.
 - Nenhum painel repete o cenário, o enquadramento nem a distância do vizinho. Se dois painéis parecerem a mesma foto, a peça está errada.
 - Os painéis têm tamanhos claramente desiguais e são separados por respiros brancos finos.
 - Nas fotos de uso aparece só a parte do corpo onde o produto é usado, em close. Sem rosto, sem corpo inteiro, sem cena de vida.
@@ -317,7 +317,7 @@ const testedDirections: Record<string, TestedDirection> = {
   'REF-0038': {
     title: 'MOSAICO DE LOOKS COM CARD CENTRAL',
     collection: `- O que define esta direção: todos os blocos são FOTOS DE MODELO usando as peças, e eles SANGRAM até a borda do quadro, encostando uns nos outros sem nenhum respiro branco entre eles.
-- Cada bloco traz uma pessoa diferente usando um produto ou look distinto, em pose de catálogo de moda, sobre fundo de estúdio claro e quente. Um único bloco pode ser still de acessório, para dar respiro.
+- São oito blocos ao todo. Cada um traz uma pessoa diferente usando um produto ou look distinto, em pose de catálogo de moda, sobre fundo de estúdio claro e quente. Um único bloco pode ser still de acessório, para dar respiro.
 - Os blocos têm alturas diferentes e se encaixam como um quebra-cabeça que preenche o quadro inteiro. Nenhuma borda branca, nenhuma moldura, nenhuma margem externa.
 - No centro, sobre o encontro dos blocos, um cartão VERTICAL de cantos arredondados e borda fina, em tom claro: ornamento gráfico simples no topo, wordmark da loja em serifada, a headline da mecânica em duas linhas e uma linha por degrau da oferta, separadas por filetes horizontais curtos.
 - O cartão é alto e estreito, nunca quadrado, e não cobre parte reconhecível de nenhuma peça.
@@ -327,7 +327,7 @@ const testedDirections: Record<string, TestedDirection> = {
   'REF-0039': {
     title: 'VITRINE MODULAR COM CARD DE DESCONTO',
     collection: `- O que define esta direção: os produtos aparecem EM PÉ SOBRE PLINTOS geométricos brancos, como uma vitrine de loja, sobre fundo branco frio.
-- Cada módulo tem um plinto e um produto só. Os plintos têm alturas diferentes e projetam sombras curtas e nítidas. Os plintos são apoios neutros, sem marca e sem texto.
+- São oito módulos ao todo. Cada um tem um plinto e um produto só. Os plintos têm alturas diferentes e projetam sombras curtas e nítidas. Os plintos são apoios neutros, sem marca e sem texto.
 - Um único módulo foge da regra e traz uma pessoa usando o produto, funcionando como âncora humana da grade. Todos os outros são still sobre plinto.
 - Acessórios pequenos e confirmados podem ocupar módulos próprios, também sobre plinto.
 - Os módulos são separados por respiros brancos e se distinguem do fundo apenas pela sombra, não por moldura.
@@ -415,8 +415,8 @@ Antes de gerar qualquer imagem, construa o contexto factual obedecendo a estas r
 4. Preserve exatamente a oferta recebida, apenas localizando a redação para o idioma da loja quando necessário.
 5. Não invente produtos, variantes, cores, materiais, logos, benefícios, preços, cupons, urgência, avaliações, garantias ou condições comerciais.
 6. Identifique todos os produtos ou looks visualmente confirmáveis que pertençam à coleção. Atribua IDs P01, P02, P03 e assim por diante; cada ID deve descrever apenas um produto ou look real.
-7. A seleção e a ordem dos produtos são LIVRES dentro dos itens elegíveis. A imagem futura deverá escolher quatro produtos ou looks distintos que melhor representem a coleção. Só trate IDs específicos como obrigatórios se esta mensagem os declarar explicitamente.
-8. Se não existirem quatro itens confirmáveis, peça somente a menor fonte adicional necessária. Não gere a imagem ainda.
+7. A seleção e a ordem dos produtos são LIVRES dentro dos itens elegíveis. Cada peça futura vai pedir a sua própria quantidade — pode ser três, quatro, seis ou mais — e escolherá entre os elegíveis. Liste TODOS os que conseguir confirmar, não apenas quatro. Só trate IDs específicos como obrigatórios se esta mensagem os declarar explicitamente.
+8. Se não existirem pelo menos quatro itens confirmáveis, peça somente a menor fonte adicional necessária. Não gere a imagem ainda.
 9. Registre o estilo tipográfico da loja: se as letras da marca e do site são com ou sem serifa, o peso, a caixa e o espaçamento que ela usa.
 10. Registre o público-alvo da coleção: gênero, faixa etária e contexto de uso indicados pela página, pela categoria, pelas fotos e pela tabela de tamanhos.
 11. Registre o argumento de venda da coleção: os produtos se vendem por uma funcionalidade que a foto não mostra, ou pela própria estética? Responda uma das duas.
@@ -442,7 +442,7 @@ Produtos/looks elegíveis:
 - P02:
 - P03:
 [continue se necessário]
-Regra de seleção visual: escolher livremente quatro produtos ou looks distintos entre os elegíveis.
+Regra de seleção visual: escolher livremente entre os elegíveis, na quantidade que cada peça pedir.
 Título publicitário proposto:
 Fonte principal usada: link / prints / ambos
 Fatos que não puderam ser confirmados:
@@ -464,8 +464,11 @@ function compileDirections(campaign: CampaignInput, selected: Reference[], round
       const limite = reference.limits ? `\n- Limite operacional: ${reference.limits}` : '';
       const people = peopleRule(reference);
       const peopleLines = people ? people.split('\n').slice(1).join('\n') : '';
+      const slotLine = campaign.mode === 'collection' && reference.slots
+        ? `\n- Quantidade desta direção: ${reference.slots} produtos ou looks distintos. É parte da diagramação; não mostre mais nem menos.`
+        : '';
       const silentLines = reference.silent ? `\n${SILENT_RULE.split('\n').slice(1).join('\n')}` : '';
-      return `CRIATIVO ${itemLabel(index, round)} — ${title}\n${recipe}${limite}${silentLines}${peopleLines ? `\n${peopleLines}` : ''}`;
+      return `CRIATIVO ${itemLabel(index, round)} — ${title}\n${recipe}${limite}${slotLine}${silentLines}${peopleLines ? `\n${peopleLines}` : ''}`;
     })
     .join('\n\n');
 }
@@ -484,10 +487,13 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
     : `- Preserve exatamente a oferta recebida: “${campaign.offer}”.`;
   const peopleText = peopleRule(reference);
   const peopleBlock = peopleText ? `${peopleText}\n\n` : '';
+  const slots = reference.slots ?? 4;
+  const slotsWord = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][slots] ?? String(slots);
   const contentRule = campaign.mode === 'collection'
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
-- Mostre simultaneamente quatro produtos ou looks distintos e elegíveis do CONTEXTO CAPTURADO — V004.
-- Preserve a separação visual entre os quatro itens; não sugira um kit obrigatório e não misture marcas, logos, cores ou componentes.`
+- Mostre simultaneamente ${slotsWord} produtos ou looks distintos e elegíveis do CONTEXTO CAPTURADO — V004. Esta quantidade é parte da diagramação desta direção: não mostre mais nem menos.
+- Se o contexto não tiver ${slotsWord} itens confirmados, repita a quantidade máxima confirmada e reequilibre a composição, mas nunca invente produto para preencher módulo.
+- Preserve a separação visual entre os itens; não sugira um kit obrigatório e não misture marcas, logos, cores ou componentes.`
     : `- Anuncie somente o produto “${campaign.exactTarget}” e a variante factual registrada no CONTEXTO CAPTURADO.
 - Mostre o mesmo produto sem redesenhar, recolorir, misturar variantes ou inventar componentes.`;
 
@@ -594,8 +600,8 @@ CONTEÚDO COMUM E OBRIGATÓRIO
 - Coleção anunciada: “${campaign.exactTarget}”.
 - Oferta exata: “${campaign.offer}”. A única exceção é a direção que se declarar uma peça sem texto: nela a oferta não aparece.
 - Idioma: use exatamente o idioma registrado no CONTEXTO CAPTURADO — V004.
-- Cada criativo deve comunicar variedade e mostrar simultaneamente quatro produtos ou looks distintos e elegíveis do contexto factual.
-- Os quatro produtos ou looks devem permanecer visualmente separados e reconhecíveis; a peça não pode sugerir que formam um kit obrigatório.
+- Cada criativo comunica variedade mostrando simultaneamente vários produtos ou looks distintos e elegíveis do contexto factual. A quantidade muda de uma direção para outra e está declarada dentro de cada uma: respeite a de cada criativo em vez de padronizar.
+- Os produtos ou looks devem permanecer visualmente separados e reconhecíveis; a peça não pode sugerir que formam um kit obrigatório.
 - Preserve formato, cores, materiais, componentes, estampas, rótulos, logos e detalhes de cada produto conforme as fontes factuais.
 - Não duplique, funda, redesenhe, recolora ou misture características entre produtos ou marcas.
 - Não invente preço, benefício, avaliação, garantia, cupom, urgência, embalagem, numeração, selo ou condição comercial.
@@ -611,7 +617,7 @@ CHECAGEM FINAL DO LOTE
 Antes de gerar, confirme internamente:
 1. A resposta terá cinco arquivos de imagem anexados, e cada arquivo tem uma peça só. Nenhum arquivo é colagem, grade ou montagem.
 2. Todos estarão em 4:5.
-3. Cada criativo mostrará quatro produtos ou looks distintos e elegíveis, comunicando coleção.
+3. Cada criativo mostrará a quantidade de produtos que a sua própria direção pede, e todos serão distintos e elegíveis.
 4. Loja/anunciante, coleção “${campaign.exactTarget}”, oferta “${campaign.offer}” e idioma estarão corretos.
 5. Produtos, logos e características não serão misturados entre os itens elegíveis.
 6. Cada arquivo corresponderá somente à sua direção visual numerada.
