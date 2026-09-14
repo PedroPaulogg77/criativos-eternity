@@ -250,13 +250,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0022': {
     title: 'VITRINE FÍSICA COM OFERTA',
-    collection: `- Cena fotorrealista dentro de uma loja física premium, vista sobre o balcão, com luz quente e fundo de expositores suavemente desfocado.
-- Sobre o balcão, cinco produtos elegíveis aparecem distribuídos em bandejas e expositores reais, todos visíveis e separados entre si. As bandejas podem sugerir mais peças ao fundo, desfocadas.
-- Um dos produtos aparece em destaque dentro do seu estojo aberto, em primeiro plano, como protagonista da cena.
-- Um cartão físico vertical apoiado no balcão concentra a comunicação: um título curto no topo, a oferta e, quando existirem degraus, uma linha por degrau. O cartão parece impresso de verdade, com a letra da identidade da loja.
-- Sublinhados ou marcações no cartão podem destacar a oferta, desde que pareçam parte do material impresso.
-- Não invente motivo promocional, endereço, data, encerramento de loja ou urgência que não estejam no contexto.
-- A loja é ambientação: ela nunca pode ocupar mais atenção que os produtos e o cartão.`,
+    collection: `- O que define esta direção: é UMA FOTOGRAFIA DE DENTRO DA LOJA FÍSICA, com um produto em destaque e o estoque em volta. Não é uma seleção de itens separados: é a vitrine cheia, com bandejas carregadas de peças que nem precisam ser contadas.
+- Câmera na altura do balcão de vidro, olhando ligeiramente para baixo, em três quartos, com profundidade real: bandejas no primeiro plano, a placa no meio, e o interior da loja desfocado ao fundo.
+- Um único produto é o protagonista: ele aparece dentro do seu estojo aberto, apoiado sobre uma base de madeira escura e polida, ocupando um dos lados do primeiro plano. É o mais nítido e o mais iluminado da cena.
+- Ao redor, bandejas forradas de tecido claro com várias peças cada uma, alinhadas em fileiras. Elas comunicam quantidade, não seleção: não precisam estar inteiras no quadro nem ser identificáveis uma a uma.
+- Ao fundo, desfocado, o mobiliário da loja: armário de madeira escura com peças iluminadas em expositores, parede clara com luz embutida, e um arranjo de flores ou um abajur de luz quente. Nada disso pode competir com o primeiro plano.
+- Luz quente vinda de várias fontes, como iluminação real de loja. Reflexos no vidro do balcão e brilho nos metais.
+- A comunicação vive numa placa de papel apoiada num cavalete de base metálica, em pé sobre o balcão, ao lado do produto em destaque.
+- O texto da placa é MANUSCRITO, em letra cursiva escura e legível, como se alguém da loja tivesse escrito à mão. As linhas principais vêm sublinhadas à mão em vermelho, uma por vez.
+- Abaixo das linhas principais, os degraus da oferta em corpo bem menor, sem sublinhado, e depois duas linhas ainda menores de condição.
+- Não invente motivo promocional, endereço, data, encerramento de loja nem urgência que não estejam no contexto. O que a placa diz vem inteiro das fontes.
+- Esta peça não tem logo da loja, não tem elemento gráfico digital, não tem moldura e não tem pessoa. O vermelho dos sublinhados é a única cor fora da paleta quente do ambiente.`,
   },
   'REF-0023': {
     title: 'MOSAICO DE PRODUTO EM USO',
