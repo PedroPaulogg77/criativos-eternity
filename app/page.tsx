@@ -445,7 +445,6 @@ export default function Home() {
   const [sourceUrl, setSourceUrl] = useState('');
   const [linkAccess, setLinkAccess] = useState<CampaignInput['linkAccess']>('public');
   const [salesDriver, setSalesDriver] = useState<SalesDriver | null>(null);
-  const [deliveryMode, setDeliveryMode] = useState<'lote' | 'individual'>('lote');
   const [offer, setOffer] = useState('');
   const [formError, setFormError] = useState('');
   const [contextChecks, setContextChecks] = useState<boolean[]>(() => contextCheckItems.map(() => false));
@@ -1046,33 +1045,39 @@ export default function Home() {
   if (phase === 3 && creativeView === 'prompt') {
     return (
       <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
-        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Escolha como pedir ao ChatGPT. As duas formas usam as mesmas receitas e as mesmas travas factuais: muda só quantas mensagens você cola." />
+        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Duas formas de pedir ao ChatGPT, com as mesmas receitas e as mesmas travas factuais. Muda só quantas mensagens você cola." />
         {lotSameness(selectedReferences).length >= 3 ? <div className="mb-5 rounded-2xl border border-amber-400/30 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-100/85"><p className="font-medium text-amber-100">As cinco direções escolhidas são parecidas demais entre si.</p><p className="mt-1">Elas repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. Um lote assim tende a devolver cinco peças que se parecem, e o teste de criativo perde o sentido. Troque pelo menos duas por direções de outra família ou com outra quantidade de produtos.</p></div> : null}
         <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden rounded-xl border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center rounded-tl bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
-        <RadioGroup value={deliveryMode} onValueChange={(value) => setDeliveryMode(value as 'lote' | 'individual')} className="mb-5 grid gap-3 sm:grid-cols-2">
-          <ChoiceCard value="lote" active={deliveryMode === 'lote'} icon={<Layers3 className="size-5" />} title="Cinco de uma vez" description="Uma mensagem só. Mais rápido, mas o ChatGPT às vezes falha na entrega." />
-          <ChoiceCard value="individual" active={deliveryMode === 'individual'} icon={<Copy className="size-5" />} title="Uma direção por vez" description="Cinco mensagens curtas, coladas em sequência. Sempre entrega." />
-        </RadioGroup>
-
-        {deliveryMode === 'lote' ? (
-          <>
-            <div className="mb-5 rounded-2xl border border-amber-400/30 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-100/85">
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          <section className="flex flex-col rounded-2xl border border-border bg-card/55 p-4 sm:p-5">
+            <header className="mb-4 flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/14 text-violet-200"><Layers3 className="size-5" /></span>
+              <div>
+                <h2 className="font-semibold">Cinco de uma vez</h2>
+                <p className="mt-0.5 text-sm leading-5 text-muted-foreground">Uma mensagem só. Mais rápido, mas o ChatGPT às vezes falha na entrega.</p>
+              </div>
+            </header>
+            <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/[0.07] p-3.5 text-sm leading-6 text-amber-100/85">
               <p className="font-medium text-amber-100">O ChatGPT não garante cinco imagens numa resposta.</p>
-              <p className="mt-1">O recurso de várias imagens dele foi feito para gerar variações de um mesmo pedido, não cinco pedidos diferentes. Quando falha, aparece uma colagem com as cinco peças juntas ou cinco versões da primeira direção. Se isso acontecer, marque na conferência e o comando de correção aparece — ou mude para uma direção por vez aqui em cima.</p>
+              <p className="mt-1">O recurso de várias imagens dele foi feito para gerar variações de um mesmo pedido, não cinco pedidos diferentes. Quando falha, volta uma colagem com as cinco peças juntas ou cinco versões da primeira direção. Se isso acontecer, marque na conferência e o comando de correção aparece — ou use os cinco comandos ao lado.</p>
             </div>
             <PromptPanel label="Mensagem · gerar lote mestre" text={masterPrompt} copyKey="master" copiedKey={copiedKey} onCopy={copyText} />
-            <ChatInstruction>Cole o prompt depois de conferir o contexto e, em coleções, depois de gerar o carrossel.</ChatInstruction>
-          </>
-        ) : (
-          <>
-            <div className="mb-5 rounded-2xl border border-border bg-card/55 p-4 text-sm leading-6 text-muted-foreground">
-              <p className="font-medium text-foreground">Cole os cinco em sequência, no mesmo chat.</p>
-              <p className="mt-1">Não precisa esperar sua conferência entre um e outro: cada mensagem carrega a receita inteira e não depende das anteriores. São cinco colagens em vez de uma, e nenhuma volta como colagem.</p>
-            </div>
-            <div className="space-y-2">{selectedReferences.map((item, index) => <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-border bg-card/55 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/14 text-xs font-semibold text-violet-200">0{index + 1}</span><div><p className="font-medium">{item.name}</p><p className="text-xs text-muted-foreground">Um criativo 4:5 · somente esta direção</p></div></div><Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => copyText(compileReferencePrompt(campaign, item), `selected-single-${item.id}`)}>{copiedKey === `selected-single-${item.id}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar mensagem {String(index + 1).padStart(2, '0')}</>}</Button></div>)}</div>
-            <ChatInstruction>Cole a mensagem 01, espere a imagem, e siga para a 02. Sem conferir entre elas.</ChatInstruction>
-          </>
-        )}
+          </section>
+
+          <section className="flex flex-col rounded-2xl border border-border bg-card/55 p-4 sm:p-5">
+            <header className="mb-4 flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/14 text-violet-200"><Copy className="size-5" /></span>
+              <div>
+                <h2 className="font-semibold">Uma direção por vez</h2>
+                <p className="mt-0.5 text-sm leading-5 text-muted-foreground">Cinco mensagens curtas, coladas em sequência. Sempre entrega.</p>
+              </div>
+            </header>
+            <p className="mb-4 rounded-xl border border-border bg-background/45 p-3.5 text-sm leading-6 text-muted-foreground">Cole uma, espere a imagem, cole a próxima. Não precisa conferir entre elas: cada mensagem carrega a receita inteira e não depende das anteriores.</p>
+            <div className="space-y-2">{selectedReferences.map((item, index) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/45 p-3"><div className="flex min-w-0 items-center gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/14 text-xs font-semibold text-violet-200">{String(index + 1).padStart(2, '0')}</span><p className="truncate text-sm font-medium">{item.name}</p></div><Button type="button" variant="outline" size="sm" className="h-9 shrink-0 rounded-xl" onClick={() => copyText(compileReferencePrompt(campaign, item), `selected-single-${item.id}`)}>{copiedKey === `selected-single-${item.id}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar</>}</Button></div>)}</div>
+          </section>
+        </div>
+
+        <ChatInstruction>Use um dos dois lados. Cole depois de conferir o contexto e, em coleções, depois de gerar o carrossel.</ChatInstruction>
         <BottomActions back={() => setCreativeView('library')} next={() => { setCreativeView('review'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} nextLabel="Já gerei. Conferir lote" />
       </PhaseShell>
     );
