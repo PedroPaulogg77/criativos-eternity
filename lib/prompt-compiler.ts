@@ -150,13 +150,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0011': {
     title: 'TRIO DE COLEÇÃO CROMÁTICA',
-    collection: `- Fundo de cor sólida derivada da identidade da loja, com vinheta suave escurecendo as bordas e clareando o centro.
-- Os três produtos aparecem em fileira escalonada e levemente diagonal, todos no mesmo ângulo de três quartos, cada um em uma cor distinta e confirmada. Nenhum produto pode ser recolorido para completar a fileira.
-- Os produtos ficam grandes e centralizados na faixa média do quadro, com sombra projetada suave e igual entre eles.
-- Headline curta em caixa alta pesada no topo, em duas linhas, com uma linha fina de nome da coleção logo abaixo.
-- Abaixo dos produtos, um título secundário curto em caixa alta e até duas linhas de apoio factual.
-- Oferta no rodapé dentro de uma cápsula de contorno fino, com um ícone simples à esquerda do texto.
-- Sensação de lançamento: cor viva, fundo limpo e nenhum elemento decorativo extra.`,
+    collection: `- O que define esta direção: os produtos FLUTUAM sobre um fundo de cor sólida, sem superfície nenhuma embaixo deles. Só uma sombra suave e curta os ancora. Não existe mesa, chão, plinto nem linha de horizonte.
+- O fundo é uma única cor fechada, derivada da identidade da loja, com os cantos escurecendo e um clareamento radial suave logo atrás do grupo, como um refletor apontado para ele.
+- Os três produtos aparecem em diagonal ascendente da esquerda para a direita: o da frente é o mais baixo e o maior, e cada um atrás sobe um pouco e diminui. Eles se sobrepõem parcialmente, sem esconder a silhueta de nenhum.
+- Os três estão exatamente no mesmo ângulo de três quartos, virados para o mesmo lado, como o mesmo modelo repetido em cores diferentes. Cada cor precisa estar confirmada nas fontes; nenhuma pode ser inventada para completar o trio.
+- Tudo na peça é centralizado num único eixo vertical, do topo à base.
+- No topo, a headline em caixa alta pesada e branca, em duas linhas, ocupando quase toda a largura. É a maior massa de texto da peça. Logo abaixo dela, uma linha fina em caixa mista com o nome da coleção.
+- Abaixo dos produtos, um título curto em caixa alta, visivelmente menor que a headline, e duas linhas de apoio em caixa mista e peso leve.
+- No rodapé, a oferta dentro de uma cápsula de contorno fino e cantos totalmente arredondados, com um ícone simples à esquerda do texto, em caixa alta espaçada. A cápsula é vazada: só o contorno, sem preenchimento.
+- Todo o texto e todo o contorno são brancos. Não existe cor de acento além do fundo e das cores próprias dos produtos.
+- Esta peça não tem logo da loja, não tem ícone de benefício, não tem selo, não tem faixa e não tem pessoa.`,
   },
   'REF-0012': {
     title: 'CATÁLOGO AMPLO DE COLEÇÃO',
