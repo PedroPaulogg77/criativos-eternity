@@ -91,16 +91,24 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0005': {
     title: 'PRODUTO E CARTÃO FÍSICO DE OFERTA',
-    single: `- Cena lifestyle de mesa escura, quente e premium, com profundidade de campo suave.
-- Uma mão segura o produto de forma anatomicamente natural e sem ocultar seus detalhes essenciais.
-- Outra mão segura um cartão promocional físico em perspectiva, contendo a marca anunciante e a oferta completa claramente legível.
-- Não invente embalagem. Não duplique o produto. Dedos, pega, escala, perspectiva e sombra devem ser naturais.
-- Produto e cartão compartilham o protagonismo; nenhum texto comercial adicional é permitido.`,
-    collection: `- Cena de mesa escura, quente e premium, com profundidade de campo suave.
-- Uma mão segura naturalmente um dos produtos como protagonista. Outra mão segura um cartão promocional físico com a marca da loja/anunciante e a oferta completa.
-- Os outros três produtos aparecem apoiados e separados sobre a mesa, suficientemente visíveis para comunicar coleção.
-- Não invente caixas ou acessórios. Não permita dedos deformados, objetos fundidos ou produtos ocultos.
-- Produto principal, variedade da coleção e cartão/oferta compartilham a hierarquia.`,
+    single: `- O que define esta direção: é um PONTO DE VISTA EM PRIMEIRA PESSOA. As duas mãos entram pela borda inferior do quadro, como se fossem do próprio espectador: uma segura o produto, a outra segura um cartão impresso com a oferta.
+- As mãos são adultas e realistas, com o punho e um pedaço da manga visíveis. Dedos, pega, escala e sombra naturais; nenhum dedo deformado, nenhuma mão flutuando.
+- A mão do produto o segura pelas laterais, com a face principal voltada para a câmera e nada de essencial coberto pelos dedos.
+- A outra mão segura o cartão pela borda externa, entre o polegar e o indicador, levemente inclinado em perspectiva.
+- Ao fundo, desfocado, um ambiente de mesa escura e quente: a superfície com veios, o estojo aberto do produto e um ou outro objeto de clima. Um SEGUNDO produto confirmado pode aparecer ali dentro do estojo, fora de foco — é o que sugere que existe uma coleção. Nada disso pode competir com o primeiro plano.
+- O cartão é escuro, quase quadrado, com uma moldura de filete fino e metálico recuada da borda.
+- Dentro do cartão, cinco níveis centralizados, nesta ordem: a marca da loja no topo; uma linha curta em caixa alta bem espaçada e cor de acento; um filete curto; a oferta em tipografia SERIFADA e cor metálica clara, em duas linhas, o maior texto do cartão; e uma linha de apoio menor, na mesma serifada.
+- Todo o texto da peça vive dentro do cartão. Fora dele não existe headline, selo, ícone nem CTA.
+- Luz quente e lateral, com brilho nos metais e na pele. Profundidade de campo curta: nítido na frente, dissolvido atrás.`,
+    collection: `- O que define esta direção: PONTO DE VISTA EM PRIMEIRA PESSOA, com as mãos entrando pela borda inferior — uma segura um dos produtos, a outra segura um cartão impresso com a oferta — e o restante da coleção espalhado na mesa ao fundo.
+- As mãos são adultas e realistas, com punho e manga visíveis. Dedos, pega, escala e sombra naturais.
+- O produto na mão é o protagonista: nítido, com a face principal para a câmera e nada de essencial coberto pelos dedos.
+- Os outros três produtos ficam sobre a mesa ao fundo, separados entre si, em foco parcial: suficientemente visíveis para se reconhecer que são itens diferentes, mas sem competir com o primeiro plano. Um deles pode estar dentro do estojo aberto.
+- Cada produto mantém o seu material, cor e acabamento. Nada de repetir o mesmo item nem inventar variante para completar o grupo.
+- O cartão é escuro, quase quadrado, com moldura de filete fino e metálico recuada da borda.
+- Dentro do cartão, centralizados: a marca da loja no topo, uma linha curta em caixa alta espaçada na cor de acento, um filete curto, a oferta em tipografia serifada e cor metálica clara em duas linhas, e uma linha de apoio menor.
+- Todo o texto da peça vive dentro do cartão. Fora dele não existe headline, selo, ícone nem CTA.
+- Mesa escura e quente com veios, luz lateral, brilho nos metais e na pele, profundidade de campo curta.`,
   },
   'REF-0006': {
     title: 'EDITORIAL LIFESTYLE COM PAINEL DE OFERTA',
