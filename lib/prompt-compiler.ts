@@ -59,16 +59,19 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0002': {
     title: 'LIFESTYLE ESPORTIVO EM MOVIMENTO',
-    single: `- Fotografia lifestyle urbana real ocupando todo o quadro: a foto é o fundo da peça inteira e o texto fica por cima dela. Não existe painel de cor nem metade reservada só para texto.
-- A pessoa aparece em plena ação no centro do quadro, com o cenário escurecido e desfocado atrás dela.
-- O enquadramento fecha na peça vendida: vai do peito até logo abaixo dos joelhos, sem incluir a cabeça e sem incluir os pés. A peça vendida ocupa a maior parte da altura da foto.
-- O corte privilegia a peça vendida: ela fica na faixa central da imagem, na área mais iluminada e mais nítida da foto. As demais peças do figurino são lisas, sem estampa e de cor claramente diferente da do produto, para que a borda do produto apareça.
+    single: `- O que define esta direção: uma FOTOGRAFIA URBANA REAL ocupando o quadro inteiro, com uma pessoa em plena corrida, e todo o texto aplicado por cima dela. Não existe painel de cor, não existe metade reservada e não existe recorte do produto.
+- A cena precisa ter um lado escuro e um lado claro: prédio ou muro em sombra de um lado, céu e construções claras do outro. O lado escuro é onde os benefícios ficam legíveis, e isso não é acaso — escolha o enquadramento pensando nisso.
+- A imagem é dessaturada, num registro de cinza, preto e branco, com o asfalto claro embaixo. Sensação real de movimento, sem pose.
+- O enquadramento vai do tronco até os pés e não inclui a cabeça, para que a peça vendida ocupe a maior área possível da foto.
+- O corte privilegia a peça vendida: ela fica na faixa central da imagem, na área mais iluminada e mais nítida. As demais peças do figurino são lisas, sem estampa e de cor claramente diferente da do produto, para que a borda do produto apareça.
 - O casting segue o público declarado do produto: gênero, faixa etária e biotipo compatíveis com quem a loja anuncia. Corpo e mãos anatomicamente corretos.
-- Logo da loja/anunciante pequena no topo. Logo abaixo, a headline curta em caixa alta pesada, atravessando quase toda a largura em duas ou três linhas: é o maior texto da peça. O nome comercial do produto vem em uma linha fina logo abaixo dela.
-- Coluna de benefícios em uma das laterais, na altura média do quadro, sobre a parte mais escura da foto: cada item é um ícone redondo de traço fino com uma etiqueta curta ao lado, todos alinhados no mesmo eixo. Use somente benefícios confirmados no contexto; se houver menos de três confirmados, mostre menos itens em vez de inventar.
-- Oferta na base em faixas horizontais largas e empilhadas, uma por degrau, quase da largura do quadro: a faixa do degrau principal em cor viva de alto contraste e as seguintes progressivamente mais escuras. O valor da vantagem é a palavra dominante de cada faixa. Se a oferta tiver um único degrau, use uma única faixa.
-- Rodapé opcional com uma única linha curta de prova social, somente quando ela estiver confirmada no contexto.
-- Alto contraste, sensação real de movimento e acabamento de campanha esportiva.`,
+- A logo da loja fica no topo, centralizada, pequena e clara sobre a área escura da foto.
+- Logo abaixo dela, a headline em caixa alta muito pesada, centralizada, em duas linhas que ocupam quase toda a largura. É o maior texto da peça.
+- No lado escuro da foto, na altura média, uma coluna de até três benefícios confirmados. Cada um é um DESENHO DE LINHA solto — sem círculo, sem moldura, sem fundo — com uma etiqueta curta em caixa alta ao lado, tudo alinhado à esquerda. Se houver menos de três benefícios confirmados, mostre menos itens em vez de inventar.
+- Na base, a oferta em faixas horizontais empilhadas, uma por degrau, com margem lateral e um canto chanfrado. Elas invertem o contraste entre si: a do degrau principal é de cor viva e forte com o texto em preto; a seguinte é escura com o texto em branco.
+- Dentro de cada faixa há dois pesos: a condição em caixa alta pesada e a palavra final em peso mais leve. Se a oferta tiver um único degrau, use uma única faixa.
+- Abaixo das faixas, uma linha curta de prova social em caixa alta bem espaçada, somente quando ela estiver confirmada no contexto.
+- A única cor da peça é a da faixa principal. Todo o resto é a foto dessaturada e o branco do texto.`,
   },
   'REF-0003': {
     title: 'CENÁRIO TÁTIL E QUENTE',
