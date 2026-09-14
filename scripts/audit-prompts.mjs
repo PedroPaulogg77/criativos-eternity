@@ -341,7 +341,7 @@ assert.ok(singleReference.includes('Preserve exatamente a oferta recebida'));
  * As quatro grades de colecao precisam abrir por tracos diferentes, senao o
  * modelo achata as quatro na mesma peca.
  */
-const grades = { 'REF-0007': 'DEITADOS', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'SANGRAM', 'REF-0039': 'EM PÉ SOBRE UM PLINTO' };
+const grades = { 'REF-0007': 'UMA ÚNICA FOTOGRAFIA', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'SANGRAM', 'REF-0039': 'EM PÉ SOBRE UM PLINTO' };
 for (const [id, marca] of Object.entries(grades)) {
   const prompt = compiler.compileReferencePrompt(collection, data.references.find((item) => item.id === id));
   assert.ok(prompt.includes('O que define esta direção'), `${id} não declara o que a separa das outras grades`);

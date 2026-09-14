@@ -102,16 +102,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0007': {
     title: 'MOSAICO EDITORIAL',
-    collection: `- O que define esta direção: todos os produtos estão DEITADOS e fotografados DE CIMA, sobre uma única superfície contínua, como se fossem uma só fotografia recortada em módulos.
-- Nada de manequim, nada de pessoa, nada de plinto, nada de produto em pé e nada de cenário: só a peça deitada sobre a superfície, com a mesma luz e a mesma sombra em todos os módulos.
-- São exatamente seis produtos, nem cinco nem sete, cada um no seu módulo, mais o cartão ocupando um sétimo módulo. Os módulos são retangulares de tamanhos claramente diferentes, alguns altos e outros largos, separados por respiros brancos largos e retos que vão de borda a borda.
-- Cada produto ocupa sozinho o seu módulo, grande o bastante para reconhecer silhueta, cor, material, acabamento e logos. Quando um item for conjunto, as peças dele ficam juntas no mesmo módulo.
-- Um módulo do meio não é foto: é um cartão chapado, no mesmo tom da superfície, com a logo da loja, uma expressão curta e a oferta.
-- Esse cartão é um módulo como os outros: mesmo tamanho, mesmo alinhamento, encaixado na grade. Ele nunca cresce, nunca ocupa duas células e nunca vira o maior elemento da peça.
+    collection: `- O que define esta direção: é UMA ÚNICA FOTOGRAFIA de cima, recortada em módulos por respiros brancos largos. Todos os produtos estão deitados sobre a MESMA superfície contínua, e o fundo atravessa os cortes — o degradê e o tom seguem de um módulo para o outro como se o branco tivesse sido desenhado por cima da foto.
+- A grade é IRREGULAR e essa irregularidade é o que dá o ritmo. Há módulos altos que descem por duas fileiras e módulos pequenos e quadrados ao lado deles. Nunca monte uma grade de retângulos iguais: seis células do mesmo tamanho matam esta direção.
+- São exatamente seis produtos, cada um no seu módulo, mais o cartão ocupando um sétimo. O cartão é um dos módulos PEQUENOS, nunca um dos grandes.
+- A escala dentro de cada módulo varia conforme a peça: um item pequeno como um boné aparece pequeno, com bastante superfície sobrando em volta; uma peça grande preenche quase todo o seu módulo. Não normalize os tamanhos para preencher tudo igual.
+- Cada peça é fotografada deitada, levemente em diagonal, com sombra projetada suave e na mesma direção em todos os módulos. Quando um item for conjunto, as peças dele ficam juntas no mesmo módulo, sobrepostas com naturalidade.
+- Nada de manequim, nada de pessoa, nada de plinto, nada de produto em pé, nada de cabide e nada de cenário.
+- Os respiros brancos são largos, retos e vão de borda a borda do quadro, cortando a foto em ângulos retos.
+- O cartão é chapado, no mesmo tom exato da superfície, e traz a logo da loja, uma expressão curta e a oferta. Ele não cresce, não ocupa duas células e não vira o maior elemento da peça.
 - Quando a oferta tiver vários degraus, só o valor principal fica grande dentro do cartão; os demais entram em uma linha fina abaixo dele, completos. O cartão não aumenta para acomodá-los.
-- O texto do cartão usa o preto ou o tom escuro da própria paleta da peça. Nada de vermelho de liquidação numa cena de tom neutro.
-- A superfície é sempre a mesma cor e textura em todos os módulos, sem variar de fundo entre um e outro.
-- Acabamento de catálogo de moda: nenhum adereço de cena, nenhuma sombra dura, nenhum elemento decorativo.`,
+- O texto do cartão é preto ou o tom mais escuro da própria superfície. Esta direção não usa cor de acento: nada de vermelho, nada de dourado, nada de cor de marca no cartão.`,
   },
   'REF-0008': {
     title: 'ANÚNCIO NATIVO RETRÔ',
