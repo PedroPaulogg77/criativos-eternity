@@ -128,13 +128,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0009': {
     title: 'VITRINE TÁTIL DE COLEÇÃO',
-    collection: `- Fundo e superfície de tecido texturizado em um único tom profundo, com luz de estúdio concentrada no centro e cantos escurecidos.
-- Os quatro produtos formam um grupo escultórico no meio do quadro: alguns em pé e escalonados em profundidade, um deitado à frente mostrando o lado que os outros escondem. Nenhum produto cobre a silhueta do vizinho.
-- Cada produto mantém a sua própria cor e o seu próprio acabamento; o fundo não recolore nenhum deles.
-- Headline curta em três linhas no topo, clara sobre o fundo escuro, ocupando a largura livre acima dos produtos.
-- Selo circular claro em uma das laterais, na altura do grupo, com a oferta em duas linhas separadas por um traço curto.
-- Faixa clara e estreita no rodapé com uma única garantia ou condição, somente quando confirmada no contexto, e uma linha fina de assinatura abaixo dela.
-- Acabamento de campanha de catálogo premium: pouca informação, muito contraste e textura visível.`,
+    collection: `- O que define esta direção: é UMA CENA FOTOGRÁFICA ÚNICA, sem grade e sem módulos, com a câmera quase no nível da superfície. Os produtos são vistos de frente, na altura dos olhos de quem está deitado no chão, nunca de cima.
+- O cenário tem dois materiais no mesmo tom profundo: uma parede de tecido texturizado ou estampado ao fundo, e uma superfície lisa e macia embaixo, onde os produtos afundam de leve. Os quatro cantos do quadro escurecem, e a luz se concentra no grupo.
+- Os quatro produtos formam um grupo compacto no terço inferior, tocando-se e se sobrepondo em profundidade, com alturas escalonadas que desenham uma pirâmide.
+- Um dos quatro aparece DEITADO de lado, mostrando a face que os outros escondem — o solado, o interior, o verso. Os outros três ficam em pé, ligeiramente virados. Se essa segunda face não estiver confirmada nas fontes, mantenha os quatro em pé em vez de inventar.
+- Cada produto mantém a sua própria cor e estampa. O tom do cenário não pode recolorir nenhum deles.
+- A metade superior do quadro é quase toda fundo, e é nela que vive a headline: três linhas centralizadas, em sans pesada de CAIXA MISTA — não caixa alta —, em tom claro sobre o fundo escuro. É o maior texto da peça.
+- A oferta fica dentro de um selo circular claro e pequeno, encostado na borda lateral, na altura do grupo de produtos: duas linhas curtas separadas por um filete horizontal, em caixa alta escura. O selo é pequeno; se a oferta não couber em duas linhas curtas, esta direção não é a indicada.
+- No rodapé, uma faixa retangular clara e estreita com uma única condição confirmada, em caixa alta espaçada, e abaixo dela uma linha fina de assinatura em duas frases curtas, a segunda em itálico.
+- Esta peça não tem logo da loja, não tem ícone, não tem lista de benefícios, não tem CTA e não tem pessoa.
+- Só existem duas famílias de cor: o tom profundo do cenário e o claro dos elementos gráficos. Nenhuma cor de acento entra.`,
   },
   'REF-0010': {
     title: 'PRODUTO ZENITAL COM BENEFÍCIOS',
