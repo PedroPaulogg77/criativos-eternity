@@ -341,7 +341,7 @@ assert.ok(singleReference.includes('Preserve exatamente a oferta recebida'));
  * As quatro grades de colecao precisam abrir por tracos diferentes, senao o
  * modelo achata as quatro na mesma peca.
  */
-const grades = { 'REF-0007': 'UMA ÚNICA FOTOGRAFIA', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'CENTRO DO QUADRO FICA VAZIO', 'REF-0039': 'TRÊS COLUNAS DE LARGURAS DESIGUAIS' };
+const grades = { 'REF-0007': 'UMA ÚNICA FOTOGRAFIA', 'REF-0023': 'SEIS CENÁRIOS COMPLETAMENTE DIFERENTES', 'REF-0038': 'CENTRO DO QUADRO FICA VAZIO', 'REF-0039': 'TRÊS COLUNAS DE LARGURAS DESIGUAIS' };
 for (const [id, marca] of Object.entries(grades)) {
   const prompt = compiler.compileReferencePrompt(collection, data.references.find((item) => item.id === id));
   assert.ok(prompt.includes('O que define esta direção'), `${id} não declara o que a separa das outras grades`);

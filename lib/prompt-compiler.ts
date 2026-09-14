@@ -264,13 +264,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0023': {
     title: 'MOSAICO DE PRODUTO EM USO',
-    collection: `- O que define esta direção: o mesmo produto aparece em VÁRIOS CONTEXTOS DIFERENTES, e cada painel tem o seu próprio cenário, sua própria superfície e sua própria luz. É o oposto de uma grade uniforme.
-- São seis painéis ao todo. Um painel grande mostra o produto em still sobre um suporte curvo neutro, com adereço natural discreto. Os painéis menores mostram o produto sendo usado no corpo, em close, e cada um sobre um material diferente: tecido liso, tricô, superfície escura, papel, o que o contexto confirmar.
-- Nenhum painel repete o cenário, o enquadramento nem a distância do vizinho. Se dois painéis parecerem a mesma foto, a peça está errada.
-- Os painéis têm tamanhos claramente desiguais e são separados por respiros brancos finos.
-- Nas fotos de uso aparece só a parte do corpo onde o produto é usado, em close. Sem rosto, sem corpo inteiro, sem cena de vida.
-- Nada de plinto, nada de fundo branco de estúdio, nada de modelo posando e nada de cartão de oferta: esta peça não tem texto.
-- Luz suave, materiais táteis e o mesmo tratamento de cor ligando painéis que são de cenários diferentes.`,
+    collection: `- O que define esta direção: o MESMO produto aparece em SEIS CENÁRIOS COMPLETAMENTE DIFERENTES, cada painel com sua própria superfície, sua própria paleta e sua própria luz. É o oposto de uma grade uniforme: se dois painéis parecerem a mesma sessão de fotos, a peça está errada.
+- O layout é desigual e fixo: um painel grande ocupa o canto superior de um dos lados, dois painéis menores se empilham na coluna oposta, e três painéis lado a lado fecham a faixa inferior. Respiros brancos finos separam todos.
+- O painel grande é still: o produto apoiado ou pendurado sobre um cilindro de papel de cor quente, com um adereço natural seco e um tecido claro ao fundo. É o único painel sem corpo.
+- Os cinco painéis menores mostram o produto sendo usado, em close, cada um sobre um material distinto: seda clara, tricô, superfície escura, fundo liso neutro, cetim com adereço. Nunca repita o material entre painéis.
+- Em pelo menos dois painéis aparecem DOIS pulsos de pessoas diferentes, lado a lado ou cruzados, mostrando o produto usado em par. É o argumento de presente e não pode sumir.
+- Um dos painéis mostra a variante de ACABAMENTO diferente do produto — o outro metal, o outro tom —, desde que essa variante esteja confirmada nas fontes. Se só houver um acabamento, use esse painel para outro enquadramento em vez de inventar.
+- Um dos painéis da faixa inferior mostra a embalagem real aberta, com o produto acomodado dentro e a marca impressa na tampa, quando essa embalagem estiver confirmada.
+- Nas fotos de uso aparece só a região do corpo onde o produto é usado: pulso, mão, antebraço. Sem rosto, sem corpo inteiro, sem cena de vida.
+- Esta peça não tem texto comercial nenhum: sem oferta, sem headline, sem selo e sem cartão. O único texto que pode existir é a marca impressa na própria embalagem.
+- Nada de plinto, nada de fundo branco de estúdio, nada de modelo posando e nada de grade uniforme.
+- Luz suave em todos os painéis e o mesmo tratamento de cor ligando cenários que são diferentes entre si.`,
   },
   'REF-0024': {
     title: 'PRODUTO EM CAIXA PRESENTEÁVEL',
