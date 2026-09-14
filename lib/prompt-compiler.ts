@@ -135,16 +135,24 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0008': {
     title: 'ANÚNCIO NATIVO RETRÔ',
-    single: `- Estética deliberadamente informal de anúncio nativo retrô, inspirada em uma janela genérica de editor gráfico antigo sobre fundo colorido de computador dos anos 2000.
-- Não copie nome, logo, ícones, botões ou interface proprietária de nenhum sistema operacional ou programa real.
-- Dentro da janela genérica, mostre uma única unidade do produto grande e reconhecível sobre fundo claro.
-- Use uma headline curta com aparência manuscrita vermelha e a oferta completa em destaque na parte inferior.
-- Mantenha a imperfeição controlada e divertida, mas preserve legibilidade, produto, marca e qualidade comercial.`,
-    collection: `- Estética informal de anúncio nativo retrô, dentro de uma janela genérica de editor gráfico antigo sobre fundo digital colorido dos anos 2000.
-- Não copie nome, logo, ícones, botões ou interface proprietária de nenhum sistema operacional ou programa real.
-- Dentro da janela, organize os quatro produtos distintos em composição dinâmica, sem duplicação e sem sobreposição que esconda detalhes.
-- Use uma headline manuscrita vermelha curta relacionada à coleção e destaque a oferta completa na parte inferior.
-- Mantenha a imperfeição divertida e controlada, com texto legível e identidade da loja/anunciante preservada.`,
+    single: `- O que define esta direção: uma FOTOGRAFIA REAL DO PRODUTO colada dentro de um editor de desenho antigo, com rabiscos feitos à mão por cima. O humor está nesse contraste: o produto é impecável, o resto parece feito às pressas por alguém.
+- Ao fundo, um papel de parede de computador antigo: céu azul com nuvens e uma colina verde ao longe. A janela fica centralizada sobre ele, deixando uma faixa do papel de parede visível em volta.
+- A janela tem a anatomia completa de um editor de imagem dos anos 2000: barra de título com um ícone pequeno e três botões de janela à direita, uma barra de menus com palavras curtas, uma coluna de ferramentas em duas colunas de ícones simples à esquerda, barras de rolagem nas bordas da área de desenho e uma paleta de quadradinhos coloridos na base.
+- Nada disso pode copiar nome, logo, ícone ou interface de nenhum sistema ou programa real. É uma janela genérica, inspirada na memória visual, não uma reprodução.
+- A área de desenho é branca e chapada. Sobre ela, o produto aparece em fotografia real, grande, recortado e com sombra própria, sem nenhum cenário.
+- O texto é escrito à mão, em vermelho, imitando a ferramenta de lápis: uma frase em cursiva de duas linhas no alto, e a oferta em caixa alta de uma linha só, atravessando a base.
+- Um desenho tosco feito à mão, na mesma cor e no mesmo traço, acompanha a frase do alto — um símbolo simples, nada elaborado.
+- A imperfeição é controlada: o rabisco é torto de propósito, mas o produto, a oferta e a marca continuam impecáveis e legíveis.
+- Esta peça não tem logo da loja, não tem CTA, não tem benefício e não tem pessoa.`,
+    collection: `- O que define esta direção: FOTOGRAFIAS REAIS dos produtos coladas dentro de um editor de desenho antigo, com rabiscos feitos à mão por cima. O humor está nesse contraste: os produtos são impecáveis, o resto parece feito às pressas.
+- Ao fundo, um papel de parede de computador antigo: céu azul com nuvens e uma colina verde ao longe. A janela fica centralizada sobre ele, deixando uma faixa visível em volta.
+- A janela tem a anatomia completa de um editor dos anos 2000: barra de título com ícone e três botões, barra de menus, coluna de ferramentas em duas colunas à esquerda, barras de rolagem e paleta de quadradinhos coloridos na base. Nada pode copiar nome, logo ou interface de programa real.
+- A área de desenho é branca e chapada. Sobre ela, os quatro produtos aparecem em fotografia real, agrupados em dois conjuntos sobrepostos em diagonal, um mais à frente e outro atrás, cada produto reconhecível e com sombra própria.
+- Nenhum produto pode ser recolorido, duplicado ou inventado para completar os grupos.
+- O texto é escrito à mão, em vermelho, imitando a ferramenta de lápis: uma frase em cursiva de duas linhas no alto, e a oferta em caixa alta de uma linha só atravessando a base.
+- Um desenho tosco feito à mão, no mesmo traço, acompanha a frase do alto.
+- A imperfeição é controlada: o rabisco é torto de propósito, mas produtos, oferta e marcas continuam impecáveis e legíveis.
+- Esta peça não tem logo da loja, não tem CTA, não tem benefício e não tem pessoa.`,
   },
   'REF-0009': {
     title: 'VITRINE TÁTIL DE COLEÇÃO',
