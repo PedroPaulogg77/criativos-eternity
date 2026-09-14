@@ -424,6 +424,32 @@ assert.equal(data.lotSameness([]).length, 0);
 const loteVariado = ['REF-0007', 'REF-0021', 'REF-0005'].map((id) => data.references.find((item) => item.id === id));
 assert.ok(data.lotSameness(loteVariado).length <= 1, 'lotSameness acusa repetição num lote variado');
 
+/*
+ * A pasta de curadoria e o app podem sair de sincronia quando alguem troca uma
+ * imagem la e nao copia para ca. Foi o que aconteceu com a REF-0015. Quando a
+ * pasta existe, o teste compara os bytes; quando nao existe, nao atrapalha.
+ */
+const pastaCuradoria = new URL('../../REFERENCIAS-COM-PROMPT/', import.meta.url);
+if (fs.existsSync(pastaCuradoria)) {
+  const curadas = fs.readdirSync(pastaCuradoria).filter((nome) => /^REF-\d{4}.*\.(png|jpg)$/i.test(nome));
+  const dessincronizadas = [];
+  for (const nome of curadas) {
+    const id = nome.slice(0, 8).toLowerCase();
+    const extensao = nome.slice(nome.lastIndexOf('.'));
+    const noApp = new URL(`../public/references/${id}${extensao}`, import.meta.url);
+    if (!fs.existsSync(noApp)) continue;
+    const a = fs.readFileSync(new URL(nome, pastaCuradoria));
+    const b = fs.readFileSync(noApp);
+    if (!a.equals(b)) dessincronizadas.push(id.toUpperCase());
+  }
+  assert.deepEqual(
+    dessincronizadas,
+    [],
+    `imagem trocada na pasta de curadoria e não copiada para o app: ${dessincronizadas.join(', ')}`,
+  );
+  console.log('Imagens do app conferem com a pasta de curadoria:', curadas.length, 'referências.');
+}
+
 console.log('Nenhum par de referências descreve a mesma peça, no teto de', Math.round(TETO_SIMILARIDADE * 100) + '%.');
 
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');

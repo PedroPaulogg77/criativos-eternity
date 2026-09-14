@@ -209,7 +209,7 @@ export const references: Reference[] = [
     modes: ['collection'],
     slots: 4,
     people: 'sem-pessoa',
-    drivers: ['funcao'],
+    drivers: ['estetica'],
     tags: ['plintos', 'coleção', 'vitrine', 'benefícios'],
     image: '/references/ref-0015.png',
     validated: false,

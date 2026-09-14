@@ -164,12 +164,14 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0015': {
     title: 'VITRINE MODULAR CLARA',
-    collection: `- Fundo claro e neutro, com uma moldura de filete discreto acompanhando a borda da peça.
-- Os quatro produtos aparecem apoiados sobre blocos geométricos claros de alturas diferentes e sobre as suas embalagens reais, formando níveis escalonados que ocupam a maior parte do quadro.
-- Cada produto fica em seu próprio nível, separado e inteiramente visível. Os blocos são apoios neutros, sem marca e sem texto.
-- O canto superior livre concentra a comunicação: uma linha curta em caixa alta espaçada, a oferta em duas linhas logo abaixo e até três benefícios confirmados com ícones de traço fino.
-- Luz ampla de vitrine, reflexos controlados e sombras curtas e limpas sob cada apoio.
-- Nada de elemento decorativo além dos blocos e das embalagens confirmadas.`,
+    collection: `- O que define esta direção: os produtos aparecem apoiados sobre BLOCOS CLAROS e sobre as PRÓPRIAS EMBALAGENS, em níveis escalonados, com uma moldura de filete fino acompanhando a borda da peça.
+- Fundo claro e neutro, contínuo, com sombra suave. A moldura de filete é discreta e não encosta no conteúdo.
+- Os quatro produtos ocupam níveis diferentes: um mais alto sobre um bloco, os outros apoiados nas caixas e no chão da cena. Cada um fica separado e inteiramente visível, com o acabamento e o logo legíveis.
+- As embalagens reais entram como apoio e contexto, nunca como protagonistas, e só quando estiverem confirmadas nas fontes. Os blocos são apoios neutros, sem marca e sem texto.
+- Todo o texto vive no canto superior livre, alinhado à esquerda e em dois níveis apenas: uma linha curta em caixa alta espaçada e a oferta logo abaixo, em caixa alta pesada.
+- Não existe lista de benefícios, não existe ícone, não existe faixa e não existe CTA. O canto de texto respira; se sobrar espaço, ele fica vazio.
+- Esta direção vende pelo acabamento do produto e pela oferta. Se houver benefício confirmado no contexto, ele fica de fora.
+- Luz ampla de vitrine, reflexos controlados e sombras curtas sob cada apoio.`,
   },
   'REF-0016': {
     title: 'CLOSE EDITORIAL EM USO',
