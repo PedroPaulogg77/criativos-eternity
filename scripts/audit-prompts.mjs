@@ -341,7 +341,7 @@ assert.ok(singleReference.includes('Preserve exatamente a oferta recebida'));
  * As quatro grades de colecao precisam abrir por tracos diferentes, senao o
  * modelo achata as quatro na mesma peca.
  */
-const grades = { 'REF-0007': 'DEITADOS', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'SANGRAM', 'REF-0039': 'EM PÉ SOBRE PLINTOS' };
+const grades = { 'REF-0007': 'DEITADOS', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'SANGRAM', 'REF-0039': 'EM PÉ SOBRE UM PLINTO' };
 for (const [id, marca] of Object.entries(grades)) {
   const prompt = compiler.compileReferencePrompt(collection, data.references.find((item) => item.id === id));
   assert.ok(prompt.includes('O que define esta direção'), `${id} não declara o que a separa das outras grades`);
@@ -373,6 +373,58 @@ const loteGrades = compiler.compileMasterPrompt(
 for (const [id, n] of [['REF-0007', 6], ['REF-0021', 3], ['REF-0023', 6], ['REF-0038', 8], ['REF-0039', 8]]) {
   assert.ok(loteGrades.includes(`Quantidade desta direção: ${n} produtos`), `${id} sem a quantidade no lote`);
 }
+
+/*
+ * Nenhum lote de cinco pode sair igual. Duas travas:
+ * 1. duas receitas nao podem dizer a mesma coisa especifica;
+ * 2. a selecao nao pode repetir todos os eixos que fazem duas pecas se parecerem.
+ *
+ * A similaridade ignora o vocabulario comum do dominio -- "produto", "oferta",
+ * "cartao" aparecem em quase toda receita e nao distinguem nada. Sobra o que e
+ * proprio de cada direcao.
+ */
+function palavrasProprias(textos) {
+  const bags = textos.map((texto) => new Set(
+    texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z\s]/g, ' ').split(/\s+/).filter((palavra) => palavra.length > 4),
+  ));
+  const frequencia = new Map();
+  for (const bag of bags) for (const palavra of bag) frequencia.set(palavra, (frequencia.get(palavra) ?? 0) + 1);
+  const dominio = new Set([...frequencia].filter(([, n]) => n > textos.length * 0.4).map(([palavra]) => palavra));
+  return bags.map((bag) => new Set([...bag].filter((palavra) => !dominio.has(palavra))));
+}
+
+const TETO_SIMILARIDADE = 0.5;
+for (const [mode, campanha] of [['single', single], ['collection', collection]]) {
+  const list = data.references.filter(({ modes }) => modes.includes(mode));
+  const receitas = list.map((reference) => {
+    const prompt = compiler.compileReferencePrompt(campanha, reference);
+    const resto = prompt.slice(prompt.indexOf('DIREÇÃO VISUAL') + 20);
+    return resto.slice(0, resto.search(/\n[A-ZÇÃÕÁÉÍÓÚÂÊÔ ]{6,}\n/));
+  });
+  const proprias = palavrasProprias(receitas);
+  for (let i = 0; i < list.length; i += 1) {
+    for (let j = i + 1; j < list.length; j += 1) {
+      const a = proprias[i];
+      const b = proprias[j];
+      const comuns = [...a].filter((palavra) => b.has(palavra)).length;
+      const similaridade = comuns / (a.size + b.size - comuns);
+      assert.ok(
+        similaridade < TETO_SIMILARIDADE,
+        `${list[i].id} e ${list[j].id} descrevem a mesma peça (${Math.round(similaridade * 100)}% do vocabulário próprio em comum). Duas direções assim devolvem criativos iguais.`,
+      );
+    }
+  }
+}
+
+// Um lote com cinco direções da mesma família e mesma quantidade é um lote repetido.
+const loteRepetido = ['REF-0038', 'REF-0039'].map((id) => data.references.find((item) => item.id === id));
+assert.ok(data.lotSameness(loteRepetido).length >= 2, 'lotSameness não detecta duas grades equivalentes');
+assert.equal(data.lotSameness([]).length, 0);
+const loteVariado = ['REF-0007', 'REF-0021', 'REF-0005'].map((id) => data.references.find((item) => item.id === id));
+assert.ok(data.lotSameness(loteVariado).length <= 1, 'lotSameness acusa repetição num lote variado');
+
+console.log('Nenhum par de referências descreve a mesma peça, no teto de', Math.round(TETO_SIMILARIDADE * 100) + '%.');
 
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');
 

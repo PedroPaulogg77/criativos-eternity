@@ -70,6 +70,7 @@ import {
   executionErrorStatuses,
   salesDrivers,
   sortByDriver,
+  lotSameness,
   recommendedReferenceIds,
   references,
   reviewOptions,
@@ -1046,6 +1047,7 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
         <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Escolha como pedir ao ChatGPT. As duas formas usam as mesmas receitas e as mesmas travas factuais: muda só quantas mensagens você cola." />
+        {lotSameness(selectedReferences).length >= 3 ? <div className="mb-5 rounded-2xl border border-amber-400/30 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-100/85"><p className="font-medium text-amber-100">As cinco direções escolhidas são parecidas demais entre si.</p><p className="mt-1">Elas repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. Um lote assim tende a devolver cinco peças que se parecem, e o teste de criativo perde o sentido. Troque pelo menos duas por direções de outra família ou com outra quantidade de produtos.</p></div> : null}
         <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden rounded-xl border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center rounded-tl bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
         <RadioGroup value={deliveryMode} onValueChange={(value) => setDeliveryMode(value as 'lote' | 'individual')} className="mb-5 grid gap-3 sm:grid-cols-2">
           <ChoiceCard value="lote" active={deliveryMode === 'lote'} icon={<Layers3 className="size-5" />} title="Cinco de uma vez" description="Uma mensagem só. Mais rápido, mas o ChatGPT às vezes falha na entrega." />

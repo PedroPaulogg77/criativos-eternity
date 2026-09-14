@@ -192,13 +192,13 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0018': {
     title: 'COMPARATIVO PROBLEMA E SOLUÇÃO',
-    single: `- Fundo branco de infográfico, limpo, com os dois territórios separados apenas pelo espaço.
-- Headline curta em duas linhas no topo, na cor da marca, nomeando o problema.
-- Coluna esquerda com até três cartões claros empilhados. Cada cartão traz a miniatura de uma alternativa, um ícone de recusa, o nome da alternativa e uma linha curta dizendo por que ela falha. Só entram alternativas e objeções confirmadas nas fontes.
-- Lado direito com o produto grande, em uma ou duas unidades reais em diagonal, nítido e inteiro. É o maior elemento da peça.
-- Um selo circular pequeno na cor da marca, encostado no produto, destaca o diferencial factual principal.
-- No rodapé, uma miniatura arredondada com o resultado real e uma seta discreta ligando o produto a ela, apenas quando esse resultado estiver comprovado.
-- Hierarquia clínica: problema em cima, alternativas à esquerda, solução à direita, prova embaixo.`,
+    single: `- O que define esta direção: é um INFOGRÁFICO DE COMPARAÇÃO sobre fundo branco chapado, onde as alternativas que não funcionam aparecem RECUSADAS e o produto aparece como a saída. Não é foto de ambiente, não é cena de uso, não é depoimento.
+- Headline curta em duas linhas no topo, na cor da marca, nomeando o incômodo que o produto resolve.
+- De um lado, até três cartões claros empilhados. Cada cartão mostra a miniatura de uma alternativa concorrente, um ícone de recusa, o nome dessa alternativa e uma linha curta dizendo por que ela falha. Só entram alternativas confirmadas nas fontes.
+- Do outro lado, o produto grande em still recortado, em uma ou duas unidades reais, nítido, sem cenário atrás e sem mão segurando.
+- Um selo circular pequeno na cor da marca, encostado no produto, destaca o dado factual que sustenta a comparação.
+- No rodapé, uma miniatura arredondada do resultado real e uma seta discreta ligando o produto a ela, apenas quando esse resultado estiver comprovado.
+- Tudo respira branco: sem textura, sem sombra dramática, sem ambiente. A peça parece uma página de explicação, não um anúncio de estilo.`,
   },
   'REF-0019': {
     title: 'COMO USAR EM TRÊS PASSOS',
@@ -212,13 +212,13 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0020': {
     title: 'PRODUTO COM PROVA SOCIAL',
-    single: `- Cena de ambiente real de uso, com fundo suavemente desfocado e coerente com o produto.
-- O produto ocupa a metade esquerda, grande e nítido, segurado por uma mão de forma natural ou apoiado no próprio ambiente. É o maior elemento da peça.
-- A metade direita recebe três cartões claros de cantos arredondados, empilhados e do mesmo tamanho.
-- Cada cartão traz, nesta ordem: o retrato do cliente apenas quando a foto for real e fornecida, as estrelas apenas quando a avaliação for confirmada, uma headline curta em duas linhas e o trecho fiel do depoimento.
+    single: `- O que define esta direção: é uma CENA REAL do ambiente onde o produto é usado, com fundo fotográfico desfocado, e a prova vem de CLIENTES QUE JÁ COMPRARAM. Não é infográfico, não é fundo branco e não compara com concorrente nenhum.
+- O produto aparece grande em primeiro plano, segurado por uma mão de forma natural ou apoiado no próprio ambiente, com o ambiente reconhecível mas fora de foco atrás dele.
+- Do lado oposto, três cartões claros de cantos arredondados, empilhados e do mesmo tamanho, flutuando sobre a foto com sombra suave.
+- Cada cartão traz o retrato do cliente apenas quando a foto for real e fornecida, as estrelas apenas quando a avaliação for confirmada, uma headline curta em duas linhas e o trecho fiel do depoimento.
 - Nenhum nome, nota, número ou depoimento pode ser inventado. Sem fonte, o cartão sai da peça em vez de ser preenchido.
-- No rodapé, até três benefícios confirmados, cada um com ícone circular de traço fino, separados por divisórias verticais discretas.
-- Os cartões nunca cobrem o produto nem encostam nele.`,
+- No rodapé, até três ganhos confirmados, cada um com ícone circular de traço fino, separados por divisórias verticais discretas.
+- Os cartões nunca cobrem o produto nem encostam nele. A sensação é de conversa real, não de folheto técnico.`,
   },
   'REF-0021': {
     title: 'COLEÇÃO EM PEDESTAL DE LUXO',
@@ -316,24 +316,24 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0038': {
     title: 'MOSAICO DE LOOKS COM CARD CENTRAL',
-    collection: `- O que define esta direção: todos os blocos são FOTOS DE MODELO usando as peças, e eles SANGRAM até a borda do quadro, encostando uns nos outros sem nenhum respiro branco entre eles.
+    collection: `- O que define esta direção: os blocos são FOTOS DE MODELO e eles SANGRAM até a borda, encostando uns nos outros sem nenhuma faixa branca entre eles. O quadro inteiro é foto, de canto a canto.
 - São oito blocos ao todo. Cada um traz uma pessoa diferente usando um produto ou look distinto, em pose de catálogo de moda, sobre fundo de estúdio claro e quente. Um único bloco pode ser still de acessório, para dar respiro.
-- Os blocos têm alturas diferentes e se encaixam como um quebra-cabeça que preenche o quadro inteiro. Nenhuma borda branca, nenhuma moldura, nenhuma margem externa.
-- No centro, sobre o encontro dos blocos, um cartão VERTICAL de cantos arredondados e borda fina, em tom claro: ornamento gráfico simples no topo, wordmark da loja em serifada, a headline da mecânica em duas linhas e uma linha por degrau da oferta, separadas por filetes horizontais curtos.
-- O cartão é alto e estreito, nunca quadrado, e não cobre parte reconhecível de nenhuma peça.
-- Nada de plinto, nada de flat lay, nada de produto deitado e nada de superfície visível: o produto sempre aparece vestido.
-- Todas as fotos compartilham a mesma paleta quente, a mesma luz e o mesmo tratamento, como se fossem da mesma sessão.`,
+- Os blocos têm alturas diferentes e se encaixam como um quebra-cabeça que preenche tudo. Nenhuma borda branca, nenhuma moldura, nenhuma margem externa, nenhum apoio sob os produtos.
+- No centro, sobre o encontro dos blocos, um cartão ALTO E ESTREITO de cantos arredondados e borda fina: ornamento gráfico simples no topo, wordmark da loja em serifada, a headline da mecânica em duas linhas e uma linha por degrau, empilhadas na vertical e separadas por filetes horizontais curtos.
+- O cartão é vertical, nunca largo, e os degraus ficam um embaixo do outro.
+- Aqui o produto só aparece vestido: nada de plinto, nada de peça deitada, nada de produto recortado e nada de superfície de apoio visível.
+- Paleta quente e luz de estúdio iguais em todos os blocos, como se fossem da mesma sessão.`,
   },
   'REF-0039': {
     title: 'VITRINE MODULAR COM CARD DE DESCONTO',
-    collection: `- O que define esta direção: os produtos aparecem EM PÉ SOBRE PLINTOS geométricos brancos, como uma vitrine de loja, sobre fundo branco frio.
-- São oito módulos ao todo. Cada um tem um plinto e um produto só. Os plintos têm alturas diferentes e projetam sombras curtas e nítidas. Os plintos são apoios neutros, sem marca e sem texto.
+    collection: `- O que define esta direção: cada produto está EM PÉ SOBRE UM PLINTO branco, como vitrine de loja, sobre fundo branco frio, e os módulos são separados por FAIXAS BRANCAS generosas.
+- São oito módulos ao todo. Cada um tem um plinto e um produto só. Os plintos têm alturas diferentes e projetam sombras curtas e nítidas. São apoios neutros, sem marca e sem texto.
 - Um único módulo foge da regra e traz uma pessoa usando o produto, funcionando como âncora humana da grade. Todos os outros são still sobre plinto.
 - Acessórios pequenos e confirmados podem ocupar módulos próprios, também sobre plinto.
-- Os módulos são separados por respiros brancos e se distinguem do fundo apenas pela sombra, não por moldura.
-- Wordmark da loja centralizado no topo do quadro, em corpo discreto e fora de qualquer cartão.
-- No centro, um cartão claro de cantos arredondados com um rótulo curto em caixa alta espaçada, a headline da mecânica em duas cores e os degraus da oferta LADO A LADO, em colunas separadas por divisórias verticais, com uma linha fina de condição abaixo.
-- Nada de flat lay, nada de produto deitado, nada de blocos sangrando na borda e nada de fundo quente: aqui o branco é frio e a luz é de catálogo.`,
+- Wordmark da loja centralizado no topo do quadro, em corpo discreto, fora de qualquer cartão.
+- No centro, um cartão LARGO de cantos arredondados: um rótulo curto em caixa alta espaçada, a headline da mecânica em duas cores e os degraus dispostos LADO A LADO, em colunas separadas por divisórias verticais, com uma linha fina de condição abaixo.
+- O cartão é horizontal, nunca alto, e os degraus ficam um ao lado do outro.
+- Aqui nada sangra até a borda: o branco do fundo circula entre os módulos e emoldura a grade inteira. Nada de flat lay, nada de peça deitada e nada de fundo quente.`,
   },
 };
 

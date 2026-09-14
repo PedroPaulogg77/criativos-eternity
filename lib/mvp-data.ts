@@ -484,6 +484,25 @@ export function sortByDriver(list: Reference[], driver: SalesDriver | null) {
   return [...list].sort((a, b) => driverFit(a, driver) - driverFit(b, driver));
 }
 
+/*
+ * Um lote de cinco nao pode sair igual. Estes sao os eixos que fazem duas pecas
+ * parecerem a mesma coisa; o app avisa quando a selecao repete todos eles.
+ */
+export type LotAxis = { label: string; value: string };
+
+export function lotSameness(list: Reference[]): LotAxis[] {
+  if (list.length < 2) return [];
+  const eixos: Array<[string, (item: Reference) => string]> = [
+    ['família visual', (item) => item.family],
+    ['presença humana', (item) => item.people ?? '—'],
+    ['quantidade de produtos', (item) => String(item.slots ?? '—')],
+    ['argumento de venda', (item) => (item.drivers ?? []).join('+')],
+  ];
+  return eixos
+    .filter(([, get]) => new Set(list.map(get)).size === 1)
+    .map(([label, get]) => ({ label, value: get(list[0]) }));
+}
+
 export const recommendedReferenceIds = [
   'REF-0001',
   'REF-0003',
