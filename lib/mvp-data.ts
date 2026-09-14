@@ -207,7 +207,7 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Óculos',
     modes: ['collection'],
-    slots: 4,
+    slots: 3,
     people: 'sem-pessoa',
     drivers: ['estetica'],
     tags: ['plintos', 'coleção', 'vitrine', 'benefícios'],

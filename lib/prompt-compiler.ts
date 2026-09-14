@@ -176,14 +176,15 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0015': {
     title: 'VITRINE MODULAR CLARA',
-    collection: `- O que define esta direção: os produtos aparecem apoiados sobre BLOCOS CLAROS e sobre as PRÓPRIAS EMBALAGENS, em níveis escalonados, com uma moldura de filete fino acompanhando a borda da peça.
-- Fundo claro e neutro, contínuo, com sombra suave. A moldura de filete é discreta e não encosta no conteúdo.
-- Os quatro produtos ocupam níveis diferentes: um mais alto sobre um bloco, os outros apoiados nas caixas e no chão da cena. Cada um fica separado e inteiramente visível, com o acabamento e o logo legíveis.
-- As embalagens reais entram como apoio e contexto, nunca como protagonistas, e só quando estiverem confirmadas nas fontes. Os blocos são apoios neutros, sem marca e sem texto.
-- Todo o texto vive no canto superior livre, alinhado à esquerda e em dois níveis apenas: uma linha curta em caixa alta espaçada e a oferta logo abaixo, em caixa alta pesada.
-- Não existe lista de benefícios, não existe ícone, não existe faixa e não existe CTA. O canto de texto respira; se sobrar espaço, ele fica vazio.
-- Esta direção vende pelo acabamento do produto e pela oferta. Se houver benefício confirmado no contexto, ele fica de fora.
-- Luz ampla de vitrine, reflexos controlados e sombras curtas sob cada apoio.`,
+    collection: `- O que define esta direção: é uma CENA DENSA DE COLECIONADOR. Cada produto vem acompanhado da sua própria embalagem, do seu estojo e dos impressos que vêm com ele, empilhados em camadas de profundidade. Não é vitrine limpa nem grade: é uma mesa cheia, arrumada com capricho.
+- Fundo claro e frio, contínuo, sem cenário. Uma moldura de filete fino e metálico acompanha a borda do quadro, com cantos arredondados e afastada da margem.
+- Três produtos ao todo, cada um em um nível de profundidade diferente: um mais ao fundo e mais alto, apoiado sobre um bloco claro; outro no meio, deitado sobre a própria caixa; outro à frente, apoiado no estojo. Os três aparecem em ângulos diferentes entre si.
+- As embalagens reais são parte da composição, não acessório: caixas fechadas servindo de apoio, estojo rígido sustentando um produto, capa de tecido ou couro sob outro. Só entram as que estiverem confirmadas nas fontes; sem elas, esta direção perde o sentido e outra deve ser escolhida.
+- Objetos pequenos de apoio dão o tom de coleção: um impresso que acompanha o produto, uma plaquinha de identificação discreta. Eles ficam na frente, pequenos, e nunca disputam com os produtos.
+- A câmera fica um pouco acima da altura da mesa, em três quartos. Luz difusa vinda de cima e de um lado, sombras suaves e alongadas para o lado oposto. Tudo nítido, sem desfoque de fundo.
+- A metade superior de um dos lados fica livre de objetos e é ali que vive o texto, alinhado à esquerda, em apenas dois níveis: uma linha curta em caixa alta espaçada e, logo abaixo, a oferta em caixa alta pesada e escura, em duas linhas.
+- Esta peça não tem logo da loja, não tem ícone, não tem lista de benefícios, não tem selo, não tem faixa e não tem pessoa.
+- Os únicos elementos gráficos são a moldura metálica e o texto escuro. Toda a cor vem dos produtos e das embalagens.`,
   },
   'REF-0016': {
     title: 'CLOSE EDITORIAL EM USO',
