@@ -323,27 +323,33 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0038': {
     title: 'MOSAICO DE LOOKS COM CARD CENTRAL',
-    collection: `- O que define esta direção: os blocos são FOTOS DE MODELO e eles SANGRAM até a borda, encostando uns nos outros sem nenhuma faixa branca entre eles. O quadro inteiro é foto, de canto a canto.
-- São oito blocos ao todo. Cada um traz uma pessoa diferente usando um produto ou look distinto, em pose de catálogo de moda, sobre fundo de estúdio claro e quente. Um único bloco pode ser still de acessório, para dar respiro.
-- Os blocos têm alturas diferentes e se encaixam como um quebra-cabeça que preenche tudo. Nenhuma borda branca, nenhuma moldura, nenhuma margem externa, nenhum apoio sob os produtos.
-- No centro, sobre o encontro dos blocos, um cartão ALTO E ESTREITO de cantos arredondados e borda fina: ornamento gráfico simples no topo, wordmark da loja em serifada, a headline da mecânica em duas linhas e uma linha por degrau, empilhadas na vertical e separadas por filetes horizontais curtos.
-- O cartão é vertical, nunca largo, e os degraus ficam um embaixo do outro.
-- A largura do cartão é fixa e estreita. Com mais degraus ele fica um pouco mais alto, nunca mais largo, e nunca passa de um terço da largura do quadro.
-- O texto do cartão usa o tom escuro da própria paleta quente da peça. Nada de vermelho de liquidação.
-- Aqui o produto só aparece vestido: nada de plinto, nada de peça deitada, nada de produto recortado e nada de superfície de apoio visível.
-- Paleta quente e luz de estúdio iguais em todos os blocos, como se fossem da mesma sessão.`,
+    collection: `- O que define esta direção: as fotos ficam ENCOSTADAS NAS BORDAS e o CENTRO DO QUADRO FICA VAZIO. Não é uma grade que preenche tudo: é uma coluna de fotos colada na borda esquerda, outra colada na borda direita, e uma faixa de fotos na base, deixando o meio livre.
+- Esse centro livre é fundo liso, na mesma cor quente e clara do estúdio das fotos. É nele que vivem o wordmark da loja, no alto, e o cartão da oferta, logo abaixo.
+- Três blocos na coluna esquerda, três na direita e dois na faixa inferior, oito ao todo. Os blocos de uma coluna não se alinham com os da outra: as alturas são diferentes e as emendas ficam em posições diferentes dos dois lados.
+- Cada bloco traz uma pessoa usando um produto ou look distinto, fotografada sobre o mesmo fundo bege de estúdio, com sombra suave. Um dos blocos da base é still de acessório empilhado, sem pessoa, e serve de pausa.
+- O enquadramento muda de bloco para bloco e é isso que dá vida à peça: uma pessoa aparece de corpo inteiro, outra cortada na cintura, outra só do pescoço à coxa, outra mostrando apenas as pernas. Não padronize o enquadramento.
+- O rosto aparece em alguns blocos e é cortado em outros, de propósito. Quando cortar, corte abaixo do nariz ou do queixo, nunca no meio dos olhos.
+- Os blocos sangram até a borda externa do quadro, sem moldura e sem margem branca contornando a peça.
+- No centro, o wordmark da loja em serifada alta e espaçada, com um filete fino logo abaixo dele, direto sobre o fundo — nunca dentro de uma caixa.
+- Abaixo do wordmark, um cartão de cantos arredondados e borda fina dourada, em tom creme mais claro que o fundo: um pequeno ornamento vegetal no topo, a headline da mecânica em duas linhas centralizadas, e uma linha por degrau, separadas por filetes curtos e centralizados.
+- Tudo no cartão é centralizado e em corpo de texto, sem nenhum número gigante. Esta direção não grita: a oferta é lida, não exibida.
+- A largura do cartão é fixa e não passa de um terço da largura do quadro. Com mais degraus ele fica um pouco mais alto, nunca mais largo.
+- Paleta quente e neutra em tudo: nada de vermelho, nada de cor de acento fora o dourado fino da borda e do ornamento.`,
   },
   'REF-0039': {
     title: 'VITRINE MODULAR COM CARD DE DESCONTO',
-    collection: `- O que define esta direção: cada produto está EM PÉ SOBRE UM PLINTO branco, como vitrine de loja, sobre fundo branco frio, e os módulos são separados por FAIXAS BRANCAS generosas.
-- São oito módulos ao todo. Cada um tem um plinto e um produto só. Os plintos têm alturas diferentes e projetam sombras curtas e nítidas. São apoios neutros, sem marca e sem texto.
-- Um único módulo foge da regra e traz uma pessoa usando o produto, funcionando como âncora humana da grade. Todos os outros são still sobre plinto.
-- Acessórios pequenos e confirmados podem ocupar módulos próprios, também sobre plinto.
-- Wordmark da loja centralizado no topo do quadro, em corpo discreto, fora de qualquer cartão.
-- No centro, um cartão LARGO de cantos arredondados: um rótulo curto em caixa alta espaçada, a headline da mecânica em duas cores e os degraus dispostos LADO A LADO, em colunas separadas por divisórias verticais, com uma linha fina de condição abaixo.
-- O cartão é horizontal, nunca alto, e os degraus ficam um ao lado do outro.
-- A altura do cartão é fixa e baixa. Com mais degraus as colunas ficam mais estreitas, nunca empilhadas, e o cartão nunca vira um bloco alto no meio da grade.
-- Aqui nada sangra até a borda: o branco do fundo circula entre os módulos e emoldura a grade inteira. Nada de flat lay, nada de peça deitada e nada de fundo quente.`,
+    collection: `- O que define esta direção: o quadro é dividido em TRÊS COLUNAS DE LARGURAS DESIGUAIS, e quanto mais estreita a coluna, mais blocos ela empilha. A coluna larga leva dois blocos grandes; a do meio, dois; a estreita, quatro pequenos.
+- Os blocos se TOCAM, sem respiro e sem moldura. A separação entre eles vem só da mudança de conteúdo, nunca de uma faixa branca.
+- São oito blocos ao todo. Um deles traz uma pessoa usando o produto, em pé, ocupando a coluna larga inteira. Todos os outros são still: cada produto apoiado sobre um bloco geométrico branco, fotografado de frente e ligeiramente de cima, com sombra curta projetada para o lado.
+- O fundo de todos os stills é branco levemente quente, e o bloco de apoio é branco puro. A distinção entre o apoio e o fundo vem só da sombra.
+- A escala dentro de cada bloco varia muito e isso é parte da peça: uma jaqueta preenche quase todo o seu bloco; uma presilha ou uma faixa de cabelo ocupam um terço do seu, com bastante branco em volta. Não normalize.
+- Os acessórios pequenos e confirmados ocupam blocos próprios, e são eles que enchem a coluna estreita.
+- O wordmark da loja fica no topo do quadro, centralizado, direto sobre a área clara da foto que estiver ali. Nunca dentro de caixa, nunca sobre cor.
+- O cartão da oferta NÃO é um módulo da grade: ele flutua por cima das fotos, com cantos arredondados e sombra suave, posicionado fora do centro e invadindo duas colunas.
+- Dentro do cartão, quatro níveis, nesta ordem: um rótulo minúsculo em caixa alta bem espaçada; a headline em duas linhas, onde parte da frase é escura e parte é da mesma cor em tom bem mais claro; os degraus em colunas lado a lado, cada um com o valor grande e as palavras de apoio minúsculas acima e abaixo; e uma linha fina de condição no rodapé.
+- Divisórias verticais finas separam as colunas de degraus. Com mais degraus, as colunas ficam mais estreitas; elas nunca empilham e o cartão nunca vira um bloco alto.
+- A peça inteira é branco, cinza e preto. A ÚNICA cor do quadro é a do texto do cartão, e ela aparece em dois tons da mesma família. Nenhuma outra cor entra em lugar nenhum.
+- Nada de flat lay, nada de peça deitada, nada de fundo quente e nada de respiro branco entre blocos.`,
   },
 };
 
