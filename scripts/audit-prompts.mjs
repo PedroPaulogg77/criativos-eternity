@@ -122,7 +122,7 @@ assert.ok(singleReference.includes('SOMENTE UM criativo publicitário mestre'));
 assert.ok(singleReference.includes('uma única imagem final e independente em 4:5'));
 assert.ok(singleReference.includes('Anuncie somente o produto “Suporte Pocket preto”'));
 assert.ok(collectionReference.includes('Anuncie somente a coleção “Automarken-Kollektion”'));
-assert.ok(collectionReference.includes('produtos ou looks distintos e elegíveis'));
+assert.ok(collectionReference.includes('SOMENTE itens que constem na lista de elegíveis'));
 
 assert.ok(recovery.startsWith('Você gerou corretamente o CRIATIVO 01. Não o gere novamente.'));
 assert.ok(recovery.includes('Agora gere somente os criativos pendentes: 02, 03, 04, 05.'));
@@ -360,7 +360,7 @@ for (const reference of comSlots) {
   const prompt = compiler.compileReferencePrompt(collection, reference);
   const palavra = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][reference.slots];
   assert.ok(
-    prompt.includes(`Mostre simultaneamente ${palavra} produtos`),
+    prompt.includes(`Mostre simultaneamente até ${palavra} produtos`),
     `${reference.id} não pede a própria quantidade (${reference.slots})`,
   );
 }
@@ -371,7 +371,7 @@ const loteGrades = compiler.compileMasterPrompt(
   ['REF-0007', 'REF-0021', 'REF-0023', 'REF-0038', 'REF-0039'].map((id) => data.references.find((item) => item.id === id)),
 );
 for (const [id, n] of [['REF-0007', 6], ['REF-0021', 3], ['REF-0023', 6], ['REF-0038', 8], ['REF-0039', 8]]) {
-  assert.ok(loteGrades.includes(`Quantidade desta direção: ${n} produtos`), `${id} sem a quantidade no lote`);
+  assert.ok(loteGrades.includes(`Quantidade alvo desta direção: ${n} produtos`), `${id} sem a quantidade no lote`);
 }
 
 /*
@@ -448,6 +448,18 @@ if (fs.existsSync(pastaCuradoria)) {
     `imagem trocada na pasta de curadoria e não copiada para o app: ${dessincronizadas.join(', ')}`,
   );
   console.log('Imagens do app conferem com a pasta de curadoria:', curadas.length, 'referências.');
+}
+
+/*
+ * Invencao de produto. A quantidade alta somada a uma ordem de nao mostrar menos
+ * fazia o modelo inventar categoria nova -- chapeu e bolsa numa campanha de
+ * vestidos -- so para fechar a conta de modulos.
+ */
+for (const reference of data.references.filter(({ modes, slots }) => modes.includes('collection') && slots)) {
+  const prompt = compiler.compileReferencePrompt(collection, reference);
+  assert.ok(prompt.includes('não uma cota a cumprir'), `${reference.id} trata a quantidade como cota`);
+  assert.ok(prompt.includes('proibido inventar categoria'), `${reference.id} sem a trava de categoria inventada`);
+  assert.ok(!/não mostre mais nem menos/.test(prompt), `${reference.id} ainda exige a quantidade exata`);
 }
 
 console.log('Nenhum par de referências descreve a mesma peça, no teto de', Math.round(TETO_SIMILARIDADE * 100) + '%.');

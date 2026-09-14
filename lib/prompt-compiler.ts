@@ -379,8 +379,8 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'MOSAICO DE LOOKS COM CARD CENTRAL',
     collection: `- O que define esta direção: as fotos ficam ENCOSTADAS NAS BORDAS e o CENTRO DO QUADRO FICA VAZIO. Não é uma grade que preenche tudo: é uma coluna de fotos colada na borda esquerda, outra colada na borda direita, e uma faixa de fotos na base, deixando o meio livre.
 - Esse centro livre é fundo liso, na mesma cor quente e clara do estúdio das fotos. É nele que vivem o wordmark da loja, no alto, e o cartão da oferta, logo abaixo.
-- Três blocos na coluna esquerda, três na direita e dois na faixa inferior, oito ao todo. Os blocos de uma coluna não se alinham com os da outra: as alturas são diferentes e as emendas ficam em posições diferentes dos dois lados.
-- Cada bloco traz uma pessoa usando um produto ou look distinto, fotografada sobre o mesmo fundo bege de estúdio, com sombra suave. Um dos blocos da base é still de acessório empilhado, sem pessoa, e serve de pausa.
+- Três blocos na coluna esquerda, três na direita e dois na faixa inferior quando houver oito itens elegíveis. Com menos itens, use menos blocos e deixe cada um maior, mantendo o centro livre. Os blocos de uma coluna não se alinham com os da outra: as alturas são diferentes e as emendas ficam em posições diferentes dos dois lados.
+- Cada bloco traz uma pessoa usando um produto ou look distinto, fotografada sobre o mesmo fundo bege de estúdio, com sombra suave. Um dos blocos da base pode ser still, sem pessoa, para dar pausa — mas ele mostra um dos itens elegíveis, nunca um acessório inventado.
 - O enquadramento muda de bloco para bloco e é isso que dá vida à peça: uma pessoa aparece de corpo inteiro, outra cortada na cintura, outra só do pescoço à coxa, outra mostrando apenas as pernas. Não padronize o enquadramento.
 - O rosto aparece em alguns blocos e é cortado em outros, de propósito. Quando cortar, corte abaixo do nariz ou do queixo, nunca no meio dos olhos.
 - Os blocos sangram até a borda externa do quadro, sem moldura e sem margem branca contornando a peça.
@@ -397,7 +397,7 @@ const testedDirections: Record<string, TestedDirection> = {
 - São oito blocos ao todo. Um deles traz uma pessoa usando o produto, em pé, ocupando a coluna larga inteira. Todos os outros são still: cada produto apoiado sobre um bloco geométrico branco, fotografado de frente e ligeiramente de cima, com sombra curta projetada para o lado.
 - O fundo de todos os stills é branco levemente quente, e o bloco de apoio é branco puro. A distinção entre o apoio e o fundo vem só da sombra.
 - A escala dentro de cada bloco varia muito e isso é parte da peça: uma jaqueta preenche quase todo o seu bloco; uma presilha ou uma faixa de cabelo ocupam um terço do seu, com bastante branco em volta. Não normalize.
-- Os acessórios pequenos e confirmados ocupam blocos próprios, e são eles que enchem a coluna estreita.
+- Se e somente se a campanha incluir acessórios na lista de elegíveis, eles ocupam blocos próprios e enchem a coluna estreita. Numa campanha de uma categoria só, todos os blocos trazem itens dessa categoria, e a coluna estreita fica com menos blocos e maiores.
 - O wordmark da loja fica no topo do quadro, centralizado, direto sobre a área clara da foto que estiver ali. Nunca dentro de caixa, nunca sobre cor.
 - O cartão da oferta NÃO é um módulo da grade: ele flutua por cima das fotos, com cantos arredondados e sombra suave, posicionado fora do centro e invadindo duas colunas.
 - Dentro do cartão, quatro níveis, nesta ordem: um rótulo minúsculo em caixa alta bem espaçada; a headline em duas linhas, onde parte da frase é escura e parte é da mesma cor em tom bem mais claro; os degraus em colunas lado a lado, cada um com o valor grande e as palavras de apoio minúsculas acima e abaixo; e uma linha fina de condição no rodapé.
@@ -535,7 +535,8 @@ function compileDirections(campaign: CampaignInput, selected: Reference[], round
       const people = peopleRule(reference);
       const peopleLines = people ? people.split('\n').slice(1).join('\n') : '';
       const slotLine = campaign.mode === 'collection' && reference.slots
-        ? `\n- Quantidade desta direção: ${reference.slots} produtos ou looks distintos. É parte da diagramação; não mostre mais nem menos.`
+        ? `
+- Quantidade alvo desta direção: ${reference.slots} produtos ou looks distintos, todos da lista de elegíveis. Com menos itens confirmados, use menos módulos e deixe cada um maior. Nunca invente produto nem categoria para preencher.`
         : '';
       const silentLines = reference.silent ? `\n${SILENT_RULE.split('\n').slice(1).join('\n')}` : '';
       return `CRIATIVO ${itemLabel(index, round)} — ${title}\n${recipe}${limite}${slotLine}${silentLines}${peopleLines ? `\n${peopleLines}` : ''}`;
@@ -561,8 +562,9 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
   const slotsWord = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][slots] ?? String(slots);
   const contentRule = campaign.mode === 'collection'
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
-- Mostre simultaneamente ${slotsWord} produtos ou looks distintos e elegíveis do CONTEXTO CAPTURADO — V004. Esta quantidade é parte da diagramação desta direção: não mostre mais nem menos.
-- Se o contexto não tiver ${slotsWord} itens confirmados, repita a quantidade máxima confirmada e reequilibre a composição, mas nunca invente produto para preencher módulo.
+- Mostre simultaneamente até ${slotsWord} produtos ou looks distintos, e SOMENTE itens que constem na lista de elegíveis do CONTEXTO CAPTURADO — V004. Essa quantidade é o alvo da diagramação, não uma cota a cumprir.
+- O número de itens confirmados manda sobre a quantidade da direção. Se houver menos itens do que módulos, use menos módulos e deixe cada um maior, reequilibrando a composição.
+- É proibido inventar produto para preencher espaço, e proibido inventar categoria que não está no contexto: se a campanha é de vestidos, não entram chapéus, cintos, bolsas, calçados nem acessórios. Um quadro com menos itens é correto; um quadro com item inventado é entrega inválida.
 - Preserve a separação visual entre os itens; não sugira um kit obrigatório e não misture marcas, logos, cores ou componentes.`
     : `- Anuncie somente o produto “${campaign.exactTarget}” e a variante factual registrada no CONTEXTO CAPTURADO.
 - Mostre o mesmo produto sem redesenhar, recolorir, misturar variantes ou inventar componentes.`;
