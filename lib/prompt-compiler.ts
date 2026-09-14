@@ -237,13 +237,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0021': {
     title: 'COLEÇÃO EM PEDESTAL DE LUXO',
-    collection: `- Cenário escuro e profundo de estúdio, com luz dirigida no centro e detalhes metálicos discretos derivados da identidade da loja.
-- Headline elegante em duas linhas no topo, em tipografia serifada e cor metálica, com uma linha fina de apoio logo abaixo, entre dois filetes curtos.
-- Os três produtos aparecem alinhados e em pé sobre um pedestal central, todos na mesma altura de apoio, frontais, grandes e sem sobreposição.
-- Cada produto mantém o seu próprio material, mostrador, cor e acabamento. Nada de recolorir ou repetir o mesmo produto para completar a fileira.
-- A oferta aparece em uma placa retangular com borda metálica fina, integrada à frente do pedestal, logo abaixo dos produtos.
-- Um detalhe geométrico metálico pode fechar o rodapé, sem texto e sem função comercial.
-- Acabamento de campanha de alto luxo: fundo escuro, brilho controlado e pouquíssimo texto.`,
+    collection: `- O que define esta direção: os produtos ficam EM PÉ E FRONTAIS sobre um pedestal escuro que atravessa a base do quadro inteiro, num estúdio quase preto. É uma vitrine de joalheria, não uma mesa nem uma grade.
+- Fundo de tom escuro e profundo, fechando nos cantos, com um clareamento suave logo atrás dos produtos. O pedestal é do mesmo tom do fundo e se distingue dele só pela aresta chanfrada e pelo reflexo na quina.
+- Três produtos, lado a lado, todos frontais e na mesma altura de base, com espaço regular entre eles. Eles não se tocam e não se sobrepõem.
+- Cada produto é um modelo diferente, com o seu próprio material, acabamento e cor. Não são variantes de cor do mesmo item, e nenhum pode ser recolorido para compor o trio.
+- Luz dirigida de cima e da frente, acendendo a face principal de cada produto e deixando reflexos metálicos nas laterais.
+- No topo, a headline em tipografia serifada e cor metálica, em duas linhas de tamanhos diferentes: a primeira bem maior que a segunda. Logo abaixo, uma linha fina em caixa mista e branca, ladeada por um filete horizontal curto de cada lado.
+- A oferta aparece numa placa retangular integrada à frente do pedestal, com moldura de borda dupla metálica e fundo escuro. O texto é branco em caixa alta, e apenas a palavra da vantagem vem na cor metálica.
+- Um detalhe geométrico metálico pode fechar o rodapé, abaixo do pedestal, sem texto e sem função comercial.
+- Esta peça não tem logo da loja, não tem ícone, não tem benefício escrito e não tem pessoa.
+- Só existem três cores: o escuro do cenário, o metálico dos elementos gráficos e o branco do texto de apoio. O resto vem dos próprios produtos.`,
   },
   'REF-0022': {
     title: 'VITRINE FÍSICA COM OFERTA',
