@@ -104,9 +104,12 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'MOSAICO EDITORIAL',
     collection: `- O que define esta direção: todos os produtos estão DEITADOS e fotografados DE CIMA, sobre uma única superfície contínua, como se fossem uma só fotografia recortada em módulos.
 - Nada de manequim, nada de pessoa, nada de plinto, nada de produto em pé e nada de cenário: só a peça deitada sobre a superfície, com a mesma luz e a mesma sombra em todos os módulos.
-- Os seis produtos ocupam módulos retangulares de tamanhos claramente diferentes, alguns altos e outros largos, separados por respiros brancos largos e retos que vão de borda a borda.
+- São exatamente seis produtos, nem cinco nem sete, cada um no seu módulo, mais o cartão ocupando um sétimo módulo. Os módulos são retangulares de tamanhos claramente diferentes, alguns altos e outros largos, separados por respiros brancos largos e retos que vão de borda a borda.
 - Cada produto ocupa sozinho o seu módulo, grande o bastante para reconhecer silhueta, cor, material, acabamento e logos. Quando um item for conjunto, as peças dele ficam juntas no mesmo módulo.
-- Um módulo do meio não é foto: é um cartão chapado, no mesmo tom da superfície, com a logo da loja, uma expressão curta e a oferta com o valor dominante.
+- Um módulo do meio não é foto: é um cartão chapado, no mesmo tom da superfície, com a logo da loja, uma expressão curta e a oferta.
+- Esse cartão é um módulo como os outros: mesmo tamanho, mesmo alinhamento, encaixado na grade. Ele nunca cresce, nunca ocupa duas células e nunca vira o maior elemento da peça.
+- Quando a oferta tiver vários degraus, só o valor principal fica grande dentro do cartão; os demais entram em uma linha fina abaixo dele, completos. O cartão não aumenta para acomodá-los.
+- O texto do cartão usa o preto ou o tom escuro da própria paleta da peça. Nada de vermelho de liquidação numa cena de tom neutro.
 - A superfície é sempre a mesma cor e textura em todos os módulos, sem variar de fundo entre um e outro.
 - Acabamento de catálogo de moda: nenhum adereço de cena, nenhuma sombra dura, nenhum elemento decorativo.`,
   },
@@ -270,6 +273,8 @@ const testedDirections: Record<string, TestedDirection> = {
 - Quando um item for um conjunto, as peças dele ficam juntas e alinhadas no mesmo quadrante, sem se misturar com o conjunto vizinho.
 - Tecidos, cores, estampas e logos permanecem fiéis a cada item. Não crie combinações que não existam nas fontes.
 - Um selo circular no centro do quadro concentra a oferta, com o valor da vantagem dominante e uma borda fina de acento.
+- O selo tem diâmetro fixo e modesto: ele cabe no vão central entre os quadrantes e nunca cresce para acomodar mais texto.
+- Quando a oferta tiver vários degraus, só o valor principal ocupa o selo; os demais entram em uma linha fina logo abaixo dele, fora do círculo.
 - O selo nunca cobre parte reconhecível de nenhum dos quatro itens.`,
   },
   'REF-0026': {
@@ -323,6 +328,8 @@ const testedDirections: Record<string, TestedDirection> = {
 - Os blocos têm alturas diferentes e se encaixam como um quebra-cabeça que preenche tudo. Nenhuma borda branca, nenhuma moldura, nenhuma margem externa, nenhum apoio sob os produtos.
 - No centro, sobre o encontro dos blocos, um cartão ALTO E ESTREITO de cantos arredondados e borda fina: ornamento gráfico simples no topo, wordmark da loja em serifada, a headline da mecânica em duas linhas e uma linha por degrau, empilhadas na vertical e separadas por filetes horizontais curtos.
 - O cartão é vertical, nunca largo, e os degraus ficam um embaixo do outro.
+- A largura do cartão é fixa e estreita. Com mais degraus ele fica um pouco mais alto, nunca mais largo, e nunca passa de um terço da largura do quadro.
+- O texto do cartão usa o tom escuro da própria paleta quente da peça. Nada de vermelho de liquidação.
 - Aqui o produto só aparece vestido: nada de plinto, nada de peça deitada, nada de produto recortado e nada de superfície de apoio visível.
 - Paleta quente e luz de estúdio iguais em todos os blocos, como se fossem da mesma sessão.`,
   },
@@ -335,6 +342,7 @@ const testedDirections: Record<string, TestedDirection> = {
 - Wordmark da loja centralizado no topo do quadro, em corpo discreto, fora de qualquer cartão.
 - No centro, um cartão LARGO de cantos arredondados: um rótulo curto em caixa alta espaçada, a headline da mecânica em duas cores e os degraus dispostos LADO A LADO, em colunas separadas por divisórias verticais, com uma linha fina de condição abaixo.
 - O cartão é horizontal, nunca alto, e os degraus ficam um ao lado do outro.
+- A altura do cartão é fixa e baixa. Com mais degraus as colunas ficam mais estreitas, nunca empilhadas, e o cartão nunca vira um bloco alto no meio da grade.
 - Aqui nada sangra até a borda: o branco do fundo circula entre os módulos e emoldura a grade inteira. Nada de flat lay, nada de peça deitada e nada de fundo quente.`,
   },
 };
