@@ -40,16 +40,22 @@ function roundReset(round: number) {
 const testedDirections: Record<string, TestedDirection> = {
   'REF-0001': {
     title: 'SPLIT PREMIUM ESCURO',
-    single: `- Composição assimétrica: título e oferta à esquerda; produto grande à direita.
-- Fundo de estúdio escuro com gradiente suave e luz concentrada atrás do produto.
-- Produto em perspectiva publicitária de três quartos, apoiado sobre base mineral escura, com sombra de contato realista.
-- A oferta é o principal elemento textual. Título curto e secundário. Logo da loja/anunciante pequena no alto.
-- Sensação premium, contraste alto e acabamento fotorrealista.`,
-    collection: `- Composição assimétrica: marca, título e oferta em um painel à esquerda; coleção à direita.
-- Organize os quatro produtos em uma composição editorial escalonada, com um produto principal e três apoios claramente distintos.
-- Fundo de estúdio escuro com gradiente suave, luz concentrada, base mineral e sombras de contato realistas.
-- A oferta é o principal elemento textual; o título da coleção é secundário.
-- Nenhum produto pode ficar escondido atrás de outro ou parecer uma variante inventada.`,
+    single: `- O que define esta direção: UM produto gigante, em pé e iluminado, contra um estúdio escuro, com a oferta sozinha do outro lado. A peça tem só dois assuntos: o produto e o preço.
+- O produto ocupa a maior parte do quadro, bem maior do que pareceria natural num anúncio comum, em três quartos, com a face principal voltada para o lado do texto.
+- Ele se apoia sobre uma plataforma de pedra clara e veiada, de borda curva, que atravessa o canto inferior em diagonal. A pedra é clara e contrasta com o fundo escuro.
+- Fundo de estúdio escuro com um halo de luz logo atrás do produto e névoa suave ao redor, escurecendo até os cantos.
+- A parte mais luminosa e mais colorida de toda a peça é a face principal do produto. Nada mais compete com ela.
+- Do lado oposto, alinhado à esquerda, o bloco de texto traz somente a oferta, em duas famílias tipográficas: a primeira linha em serifada clara e corpo menor, as linhas seguintes em sans pesada e cor metálica, bem maiores. Um filete fino fecha a primeira linha à direita.
+- Abaixo do bloco, um ornamento horizontal fecha a composição: um filete fino com uma pequena forma geométrica no centro, na mesma cor metálica.
+- Esta peça não tem título de produto, não tem benefício, não tem selo e não tem CTA. Se o contexto exigir a marca da loja, ela entra pequena e discreta no topo do lado do texto — e nada além disso.
+- Só existem três cores na peça: o escuro do estúdio, o metálico do texto e as cores próprias do produto.`,
+    collection: `- O que define esta direção: a mesma gramática do produto único, mas com o conjunto ocupando o lugar do produto gigante — um item claramente à frente e os demais escalonados atrás dele, todos em pé sobre a mesma plataforma de pedra clara.
+- Um produto vem na frente, maior e mais iluminado, com a face principal voltada para o lado do texto. Os outros ficam atrás em profundidade, menores, escalonados em altura, e nenhum é encoberto a ponto de perder a silhueta.
+- Fundo de estúdio escuro com halo de luz atrás do grupo, névoa suave e cantos escurecidos. A plataforma de pedra clara e veiada atravessa o canto inferior em diagonal.
+- Cada produto mantém o seu próprio material, cor e acabamento; o escuro do cenário não recolore nenhum. Nada de repetir o mesmo item para completar o grupo.
+- Do lado oposto, alinhado à esquerda, a oferta em duas famílias tipográficas: a primeira linha em serifada clara e corpo menor, as seguintes em sans pesada e cor metálica, bem maiores. Um filete fino fecha a primeira linha e um ornamento horizontal fecha o bloco embaixo.
+- Um título curto da coleção pode entrar acima da oferta, em corpo pequeno, mas ele nunca disputa com ela. Se o contexto exigir a marca da loja, ela entra pequena e discreta no topo do lado do texto.
+- Esta peça não tem benefício escrito, não tem selo, não tem ícone e não tem CTA.`,
   },
   'REF-0002': {
     title: 'LIFESTYLE ESPORTIVO EM MOVIMENTO',
