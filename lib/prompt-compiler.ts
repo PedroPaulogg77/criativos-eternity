@@ -288,15 +288,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0025': {
     title: 'FLAT LAY RADIAL DE COLEÇÃO',
-    collection: `- Vista de cima sobre superfície lisa de tom claro e quente, com sombra natural suave e nenhuma textura marcada.
-- A marca da loja aparece em wordmark grande no topo, com um filete curto abaixo e uma linha em caixa alta espaçada nomeando a coleção.
-- Os quatro produtos ou looks distintos ocupam os quatro cantos do quadro, cada um em seu próprio quadrante, dispostos em torno do centro.
-- Quando um item for um conjunto, as peças dele ficam juntas e alinhadas no mesmo quadrante, sem se misturar com o conjunto vizinho.
-- Tecidos, cores, estampas e logos permanecem fiéis a cada item. Não crie combinações que não existam nas fontes.
-- Um selo circular no centro do quadro concentra a oferta, com o valor da vantagem dominante e uma borda fina de acento.
-- O selo tem diâmetro fixo e modesto: ele cabe no vão central entre os quadrantes e nunca cresce para acomodar mais texto.
-- Quando a oferta tiver vários degraus, só o valor principal ocupa o selo; os demais entram em uma linha fina logo abaixo dele, fora do círculo.
-- O selo nunca cobre parte reconhecível de nenhum dos quatro itens.`,
+    collection: `- O que define esta direção: é um FLAT LAY DE QUATRO CONJUNTOS IGUAIS EM CORES DIFERENTES, dispostos nos quatro cantos, com um selo no meio costurando tudo. O que a peça vende é a escolha de cor de um mesmo conjunto, não uma seleção de produtos diferentes.
+- Fundo de tom claro e quente, uma superfície contínua só, sem módulo, sem respiro e sem moldura. Todas as peças estão deitadas e fotografadas de cima.
+- Quatro conjuntos, um por quadrante. Cada conjunto reúne as mesmas peças do conjunto vizinho, só que em outra cor confirmada nas fontes. Nenhuma cor pode ser inventada para completar os quatro.
+- Dentro de cada quadrante, a peça de cima fica atrás e acima, e a peça de baixo fica à frente e abaixo, sobrepondo-a de leve. As duas se tocam, como se tivessem sido postas juntas à mão.
+- Nada é alinhado com régua: cada conjunto vem num ângulo levemente diferente, com caimento natural do tecido, dobras reais e nenhuma peça perfeitamente reta.
+- Luz difusa de cima, sombra macia e alongada para o mesmo lado em todas as peças.
+- No topo, o wordmark da loja em tipografia serifada de caixa mista, grande e escuro. Abaixo dele um filete curto de acento metálico, e abaixo do filete uma linha em caixa alta espaçada nomeando o conjunto.
+- No centro exato do quadro, um selo circular escuro com borda fina metálica, sobreposto ao encontro dos quatro quadrantes. Ele cobre de propósito as bordas internas dos conjuntos vizinhos — é o que costura os quatro. O que ele não pode cobrir é a frente de nenhuma peça, o decote, o logo ou qualquer detalhe que identifique o produto.
+- Dentro do selo, três níveis: uma expressão curta em caixa alta e corpo pequeno, o valor da vantagem em corpo grande e cor metálica, e uma palavra em caixa alta logo abaixo. Um filete curto fecha a base.
+- O selo tem diâmetro fixo e modesto: ele cabe no vão central e nunca cresce para acomodar mais texto. Com vários degraus, só o principal ocupa o selo e os demais entram numa linha fina fora do círculo.
+- Esta peça não tem pessoa, não tem cenário, não tem ícone, não tem benefício escrito e não tem CTA.`,
   },
   'REF-0026': {
     title: 'MODELO EDITORIAL COM OFERTA GIGANTE',
