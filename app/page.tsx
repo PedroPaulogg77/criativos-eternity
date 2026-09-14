@@ -65,8 +65,11 @@ import {
   compileVideoPrompt,
   socialPrompts,
 } from '@/lib/flow-prompts';
+import type { SalesDriver } from '@/lib/mvp-data';
 import {
   executionErrorStatuses,
+  salesDrivers,
+  sortByDriver,
   recommendedReferenceIds,
   references,
   reviewOptions,
@@ -440,6 +443,7 @@ export default function Home() {
   const [exactTarget, setExactTarget] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
   const [linkAccess, setLinkAccess] = useState<CampaignInput['linkAccess']>('public');
+  const [salesDriver, setSalesDriver] = useState<SalesDriver | null>(null);
   const [offer, setOffer] = useState('');
   const [formError, setFormError] = useState('');
   const [contextChecks, setContextChecks] = useState<boolean[]>(() => contextCheckItems.map(() => false));
@@ -492,6 +496,7 @@ export default function Home() {
     const haystack = `${item.name} ${item.family} ${item.category} ${item.tags.join(' ')}`.toLowerCase();
     return matchesMode && matchesFamily && matchesCategory && haystack.includes(searchTerm.trim().toLowerCase());
   });
+  const orderedReferences = sortByDriver(filteredReferences, salesDriver);
   const compatibleReferences = references.filter((item) => item.modes.includes(campaignMode));
   const hiddenByModeCount = references.length - compatibleReferences.length;
   const pendingIndexes = selectedReferences
@@ -673,6 +678,7 @@ export default function Home() {
     if (contextStep === 2) return URL_PATTERN.test(sourceUrl.trim());
     if (contextStep === 3) return Boolean(linkAccess);
     if (contextStep === 4) return offer.trim().length > 1;
+    if (contextStep === 5) return Boolean(salesDriver);
     return true;
   }
 
@@ -682,8 +688,8 @@ export default function Home() {
       return;
     }
     setFormError('');
-    if (contextStep === 4) persistCampaign();
-    setContextStep((current) => Math.min(6, current + 1));
+    if (contextStep === 5) persistCampaign();
+    setContextStep((current) => Math.min(7, current + 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -862,7 +868,7 @@ export default function Home() {
   if (phase === 1) {
     if (contextStep === 0) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 1 de 5">
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 1 de 6">
           <QuestionScreen eyebrow="Vamos começar pelo essencial" title="O que você vai anunciar?" description="Essa escolha define o caminho da campanha. Coleções recebem automaticamente um carrossel com cinco produtos." next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <RadioGroup value={campaignMode} onValueChange={(value) => { setCampaignMode(value as CampaignInput['mode']); setSelectedIds([]); }} className="grid gap-3 sm:grid-cols-2">
               <ChoiceCard value="single" active={campaignMode === 'single'} icon={<Package className="size-5" />} title="Produto único" description="Um produto e uma variante factual." />
@@ -875,7 +881,7 @@ export default function Home() {
 
     if (contextStep === 1) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 2 de 5">
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 2 de 6">
           <QuestionScreen eyebrow="Alvo exato" title={campaignMode === 'collection' ? 'Qual coleção será anunciada?' : 'Qual produto será anunciado?'} description="Descreva somente o que pode aparecer nesta campanha." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="exact-target" className="mb-2 block text-sm font-medium">Alvo da campanha</label>
             <Input id="exact-target" value={exactTarget} onChange={(event) => setExactTarget(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder={campaignMode === 'collection' ? 'Ex.: coleção de óculos inspirada em marcas de carros' : 'Ex.: suporte Pocket preto para smartphone'} />
@@ -886,7 +892,7 @@ export default function Home() {
 
     if (contextStep === 2) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 3 de 5">
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 3 de 6">
           <QuestionScreen eyebrow="Fonte factual" title="Qual é o link da página de vendas?" description="Pode ser o link direto do produto, da coleção ou da loja." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="source-url" className="mb-2 block text-sm font-medium">Link da loja</label>
             <div className="relative"><Link2 className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" /><Input id="source-url" type="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} className="h-14 rounded-xl bg-card pr-4 pl-12 text-base" placeholder="https://sualoja.com/produto-ou-colecao" /></div>
@@ -897,7 +903,7 @@ export default function Home() {
 
     if (contextStep === 3) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 4 de 5">
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 4 de 6">
           <QuestionScreen eyebrow="Acesso ao link" title="O ChatGPT consegue abrir essa página?" description="Se a loja pedir senha, você usará os mesmos anexos durante todo o processo." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <RadioGroup value={linkAccess} onValueChange={(value) => setLinkAccess(value as CampaignInput['linkAccess'])} className="grid gap-3 sm:grid-cols-2">
               <ChoiceCard value="public" active={linkAccess === 'public'} icon={<Globe2 className="size-5" />} title="Sim, está pública" description="Abre sem login, senha ou bloqueio." />
@@ -911,8 +917,8 @@ export default function Home() {
 
     if (contextStep === 4) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 5 de 5">
-          <QuestionScreen eyebrow="Oferta" title="Qual é a oferta exata?" description="Escreva exatamente como deve aparecer, incluindo idioma e condições." back={backContext} next={advanceContext} nextLabel="Preparar contexto" nextDisabled={!contextAnswerReady()} error={formError}>
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 5 de 6">
+          <QuestionScreen eyebrow="Oferta" title="Qual é a oferta exata?" description="Escreva exatamente como deve aparecer, incluindo idioma e condições." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="offer" className="mb-2 block text-sm font-medium">Oferta da campanha</label>
             <Input id="offer" value={offer} onChange={(event) => setOffer(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder="Ex.: Kaufen Sie 2 und erhalten Sie 1 gratis" />
           </QuestionScreen>
@@ -921,6 +927,18 @@ export default function Home() {
     }
 
     if (contextStep === 5) {
+      return (
+        <PhaseShell {...shellProps} phase={1} detail="Pergunta 6 de 6">
+          <QuestionScreen eyebrow="Argumento de venda" title="O que faz o cliente comprar isso?" description="Categoria não responde: dois tênis na mesma prateleira podem vender por motivos opostos. Isso define quais direções visuais fazem sentido." back={backContext} next={advanceContext} nextLabel="Preparar contexto" nextDisabled={!contextAnswerReady()} error={formError}>
+            <RadioGroup value={salesDriver ?? ''} onValueChange={(value) => setSalesDriver(value as SalesDriver)} className="grid gap-3 sm:grid-cols-2">
+              {salesDrivers.map((item) => <ChoiceCard key={item.value} value={item.value} active={salesDriver === item.value} icon={<Sparkles className="size-5" />} title={item.label} description={item.description} />)}
+            </RadioGroup>
+          </QuestionScreen>
+        </PhaseShell>
+      );
+    }
+
+    if (contextStep === 6) {
       return (
         <PhaseShell {...shellProps} phase={1} detail="Mensagem inicial">
           <PageHeading eyebrow="Contexto pronto" title="Envie a primeira mensagem" description="Abra um novo chat no ChatGPT. Essa conversa acompanhará toda a campanha até o panfleto." />
@@ -994,7 +1012,7 @@ export default function Home() {
           </div>
         </div>
 
-        {filteredReferences.length ? <div className="reference-masonry" aria-label="Biblioteca de referências">{filteredReferences.map((item) => {
+        {orderedReferences.length ? <div className="reference-masonry" aria-label="Biblioteca de referências">{orderedReferences.map((item) => {
           const selectedIndex = selectedIds.indexOf(item.id);
           const selected = selectedIndex >= 0;
           const blocked = selectedIds.length >= 5 && !selected;

@@ -1,4 +1,5 @@
 import type { CampaignInput } from '@/lib/prompt-compiler';
+import { HOUSE_PRODUCT_RULE, HOUSE_PRODUCT_RULE_SHORT } from '@/lib/house-rules';
 
 export type OutputFormat = '1:1' | '9:16';
 
@@ -19,6 +20,8 @@ export function compileCarouselPrompt() {
   return `Usando exclusivamente o CONTEXTO CAPTURADO — V004 e as imagens factuais já anexadas nesta conversa, escolha aleatoriamente EXATAMENTE CINCO produtos ou looks distintos e elegíveis da coleção.
 
 Para cada uma das cinco imagens escolhidas, gere uma versão reenquadrada em proporção 4:5, com foco total no produto.
+
+${HOUSE_PRODUCT_RULE}
 
 QUANDO HOUVER UMA PESSOA NA IMAGEM
 - Corte o enquadramento para excluir o rosto. O corte começa por volta do pescoço ou queixo, removendo tudo que estiver acima: rosto, boca, nariz e olhos.
@@ -79,6 +82,8 @@ ADAPTAÇÃO
 - Não adicione, remova ou reescreva conteúdo comercial.
 - Não misture elementos, produtos ou direções entre os cinco criativos.
 
+${HOUSE_PRODUCT_RULE_SHORT}
+
 Antes de gerar, confira internamente: cinco arquivos separados; proporção ${format}; correspondência correta; textos completos e legíveis; nenhum produto ou fato alterado.
 
 Entregue somente as cinco adaptações, sem explicações adicionais.`;
@@ -94,6 +99,8 @@ export function compileCarouselFormatPrompt(format: OutputFormat) {
 - Mantenha fundo, escala visual, foco e iluminação consistentes entre os cinco cards.
 - Não adicione texto, oferta, acessórios, cenário ou elementos novos.
 - Não gere colagem, grade ou arquivo único.
+
+${HOUSE_PRODUCT_RULE_SHORT}
 
 Antes de gerar, confirme internamente: cinco arquivos separados; proporção ${format}; nenhum rosto incluído quando havia pessoa; produtos intactos; padronização preservada.
 
@@ -125,6 +132,8 @@ Crie 9 posts individuais para o Instagram, seguindo:
 - Estética lifestyle natural, premium e aspiracional
 - Produto inserido organicamente na rotina do público
 - Fidelidade total à cor, formato, textura, estampa, embalagem e logo do produto
+
+${HOUSE_PRODUCT_RULE}
 
 Varie entre:
 - Modelos diferentes
@@ -178,6 +187,8 @@ DESTAQUE 3 — INFORMAÇÕES
 
 Use apenas informações confirmadas no site. Não invente avaliações, prazos, políticas, garantias ou dados sobre a história da empresa.
 
+${HOUSE_PRODUCT_RULE_SHORT}
+
 Os três stories de cada destaque devem ter coerência visual, mas variar imagens, fundos, posição dos textos e composição.
 
 Entregue os 9 stories separadamente e informe também a copy exata usada em cada imagem e sua tradução para português, quando necessário.`,
@@ -207,6 +218,8 @@ DIRETRIZES GERAIS
 - Variar o modelo, as poses, os enquadramentos e o posicionamento dos elementos visuais e textuais em cada story, sem deixar todas as peças iguais
 - Manter consistência visual entre as peças, mas com composições diferentes
 - Não utilizar imagens de referência externas; basear toda a criação na identidade da loja já apresentada
+
+${HOUSE_PRODUCT_RULE_SHORT}
 
 TEMA 1 — BOM DIA
 Objetivo: desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja.
@@ -249,7 +262,9 @@ Garanta que todas as peças tenham acabamento de marca premium, estejam prontas 
     guardrail: 'Não invente nome de cliente, nota, número de vendas, prazo de entrega ou promessa de resultado.',
     prompt: `Me entregue 3 reviews de cliente de forma mais natural possível, como se algum cliente comprasse nossas roupas e marcasse a loja no Instagram.
 
-Precisa parecer o mais realista possível, não coloque nossa logo, apenas como se o cliente tivesse tirado uma foto, e estivesse fazendo um review do produto marcando nossa loja.`,
+Precisa parecer o mais realista possível, não coloque nossa logo, apenas como se o cliente tivesse tirado uma foto, e estivesse fazendo um review do produto marcando nossa loja.
+
+${HOUSE_PRODUCT_RULE_SHORT}`,
     note: 'Não invente nota, número de vendas, nome de cliente real, prazo de entrega ou promessa de resultado.',
   },
 ];
@@ -284,6 +299,8 @@ PARA CADA VÍDEO
 - Crie cenas cotidianas e factualmente coerentes com o uso real do produto.
 - Varie enquadramentos, distância de câmera, movimentos, ambiente e ações entre os takes.
 - Mantenha o produto como foco principal de todos os takes.
+
+${HOUSE_PRODUCT_RULE}
 - Inclua closes de detalhes, interação natural, produto em uso, preparação e manuseio somente quando essas ações fizerem sentido para o produto real.
 - Use transições e movimentos de câmera cinematográficos, naturais e executáveis.
 
@@ -338,6 +355,8 @@ Use essas informações para garantir que o flyer fique totalmente alinhado às 
 
 ETAPA 2 — CRIAÇÃO
 Crie 1 flyer promocional vertical, com aparência de material impresso premium, profissional e pronto para acompanhar o pedido na entrega.
+
+${HOUSE_PRODUCT_RULE_SHORT}
 
 O flyer deve comunicar que o cliente:
 - está participando de um sorteio;

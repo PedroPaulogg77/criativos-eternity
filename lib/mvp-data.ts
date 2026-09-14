@@ -1,9 +1,24 @@
+/*
+ * O que faz o cliente comprar. Uma referência declara quais argumentos ela sustenta;
+ * a campanha declara o argumento do produto. O cruzamento ordena a biblioteca.
+ */
+export type SalesDriver = 'aparencia' | 'funcao' | 'marca' | 'oferta';
+
+export const salesDrivers: Array<{ value: SalesDriver; label: string; description: string }> = [
+  { value: 'aparencia', label: 'A aparência', description: 'A foto vende sozinha. Roupa bonita, joia, óculos de estilo.' },
+  { value: 'funcao', label: 'Uma funcionalidade', description: 'O diferencial não aparece na foto e precisa ser dito.' },
+  { value: 'marca', label: 'A marca', description: 'O cliente quer aquela marca, não aquele produto.' },
+  { value: 'oferta', label: 'A oferta', description: 'Produto comum, preço ou condição agressiva.' },
+];
+
 export type Reference = {
   id: string;
   name: string;
   family: 'Oferta tipográfica' | 'Produto herói' | 'Lifestyle' | 'Editorial';
   category: 'Relógios & joias' | 'Vestuário' | 'Calçados' | 'Óculos' | 'Outros';
   modes: Array<'single' | 'collection'>;
+  people?: 'sem-pessoa' | 'corpo-suporte' | 'humanizado';
+  drivers?: SalesDriver[];
   tags: string[];
   image: string;
   sample?: string;
@@ -19,6 +34,8 @@ export const references: Reference[] = [
     family: 'Oferta tipográfica',
     category: 'Relógios & joias',
     modes: ['single', 'collection'],
+    people: 'sem-pessoa',
+    drivers: ['oferta', 'marca'],
     tags: ['split', 'luxo', 'produto grande'],
     image: '/references/ref-0001.png',
     sample: '/samples/sample-0001.png',
@@ -32,6 +49,8 @@ export const references: Reference[] = [
     family: 'Oferta tipográfica',
     category: 'Vestuário',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao', 'oferta'],
     tags: ['movimento', 'pessoa', 'camadas'],
     image: '/references/ref-0002.png',
     validated: false,
@@ -44,6 +63,8 @@ export const references: Reference[] = [
     family: 'Produto herói',
     category: 'Calçados',
     modes: ['single', 'collection'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'oferta'],
     tags: ['tátil', 'diagonal', 'selo oferta'],
     image: '/references/ref-0003.png',
     sample: '/samples/sample-0003.png',
@@ -52,24 +73,13 @@ export const references: Reference[] = [
       'Fundo e superfície tátil em tom quente, natural e sofisticado, com iluminação difusa. Produto(s) em diagonais suaves, headline curta no topo e oferta completa dentro de um selo circular de alto contraste no canto inferior.',
   },
   {
-    id: 'REF-0004',
-    name: 'Still life premium',
-    family: 'Produto herói',
-    category: 'Óculos',
-    modes: ['single', 'collection'],
-    tags: ['still life', 'minimalista', 'espaço negativo'],
-    image: '/references/ref-0004.png',
-    sample: '/samples/sample-0004.png',
-    validated: true,
-    recipe:
-      'Fundo branco a cinza muito claro, espaço negativo superior e superfície contínua. Produto(s) sobre plintos geométricos neutros de alturas diferentes, luz ampla e suave, reflexos controlados, sombras limpas e baixa densidade de texto.',
-  },
-  {
     id: 'REF-0005',
     name: 'Cartão físico de oferta',
     family: 'Lifestyle',
     category: 'Relógios & joias',
     modes: ['single', 'collection'],
+    people: 'corpo-suporte',
+    drivers: ['oferta'],
     tags: ['mãos', 'cartão físico', 'oferta diegética'],
     image: '/references/ref-0005.png',
     sample: '/samples/sample-0005.png',
@@ -83,6 +93,8 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Vestuário',
     modes: ['single'],
+    people: 'humanizado',
+    drivers: ['marca', 'oferta'],
     tags: ['modelo', 'luxo urbano', 'produto em uso'],
     image: '/references/ref-0006.png',
     validated: false,
@@ -95,6 +107,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Vestuário',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'oferta'],
     tags: ['mosaico', 'grade', 'multiproduto'],
     image: '/references/ref-0007.png',
     validated: true,
@@ -107,6 +121,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Outros',
     modes: ['single', 'collection'],
+    people: 'sem-pessoa',
+    drivers: ['oferta'],
     tags: ['retrô', 'native ad', 'feito à mão'],
     image: '/references/ref-0008.png',
     sample: '/samples/sample-0008.png',
@@ -120,6 +136,8 @@ export const references: Reference[] = [
     family: 'Produto herói',
     category: 'Calçados',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'oferta'],
     tags: ['coleção', 'textura', 'grupo', 'oferta lateral'],
     image: '/references/ref-0009.png',
     validated: false,
@@ -133,6 +151,8 @@ export const references: Reference[] = [
     family: 'Oferta tipográfica',
     category: 'Calçados',
     modes: ['single'],
+    people: 'sem-pessoa',
+    drivers: ['funcao'],
     tags: ['zenital', 'simétrico', 'benefícios', 'claro'],
     image: '/references/ref-0010.png',
     validated: false,
@@ -146,6 +166,8 @@ export const references: Reference[] = [
     family: 'Produto herói',
     category: 'Calçados',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'oferta'],
     tags: ['trio', 'cores', 'lançamento', 'fundo suave'],
     image: '/references/ref-0011.png',
     validated: false,
@@ -159,6 +181,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Calçados',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['oferta', 'funcao'],
     tags: ['catálogo', 'fileiras', 'variedade', 'fundo branco'],
     image: '/references/ref-0012.png',
     validated: false,
@@ -167,37 +191,13 @@ export const references: Reference[] = [
       'Fundo branco de catálogo com headline de oferta dividida em duas cores no topo. Exatamente quatro produtos distintos ocupam uma única fileira ampla, grandes e igualmente legíveis. Uma faixa curta de disponibilidade ou título factual aparece abaixo, seguida apenas de informações confirmadas.',
   },
   {
-    id: 'REF-0013',
-    name: 'Packshot com acessórios reais',
-    family: 'Produto herói',
-    category: 'Óculos',
-    modes: ['single'],
-    tags: ['packshot', 'embalagem', 'minimalista', 'claro'],
-    image: '/references/ref-0013.png',
-    validated: false,
-    limits: 'Só inclui embalagem ou acessório que esteja confirmado nas fontes.',
-    recipe:
-      'Packshot minimalista em fundo branco ou cinza muito claro, com o produto em primeiro plano e apenas embalagens ou acessórios reais recuados ao fundo. Luz uniforme, sombra macia, muito espaço negativo superior e texto comercial reduzido à marca, título curto e oferta.',
-  },
-  {
-    id: 'REF-0014',
-    name: 'Modelo herói com catálogo inferior',
-    family: 'Lifestyle',
-    category: 'Óculos',
-    modes: ['collection'],
-    tags: ['modelo', 'catálogo', 'benefícios', 'coleção'],
-    image: '/references/ref-0014.png',
-    validated: false,
-    limits: 'Requer um produto elegível em uso e três produtos adicionais confirmados.',
-    recipe:
-      'Retrato editorial ocupa cerca de dois terços da peça com um produto elegível em uso; painel lateral claro recebe oferta e benefícios confirmados. Na faixa inferior, três produtos adicionais distintos aparecem como miniaturas de catálogo. O modelo não pode ocultar a forma essencial do produto.',
-  },
-  {
     id: 'REF-0015',
     name: 'Vitrine modular clara',
     family: 'Editorial',
     category: 'Óculos',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['marca', 'oferta', 'funcao'],
     tags: ['plintos', 'coleção', 'vitrine', 'benefícios'],
     image: '/references/ref-0015.png',
     validated: false,
@@ -211,10 +211,12 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Óculos',
     modes: ['single'],
+    people: 'humanizado',
+    drivers: ['aparencia', 'marca', 'oferta'],
     tags: ['close', 'rosto', 'produto em uso', 'benefícios'],
     image: '/references/ref-0016.png',
     validated: false,
-    limits: 'Indicado quando o produto pode ser mostrado corretamente em uso.',
+    limits: 'Indicado quando o produto pode ser mostrado corretamente em uso e vende pelo desejo. Não comporta lista de benefícios: se o produto precisa de argumento escrito, use outra direção.',
     recipe:
       'Close assimétrico de pessoa usando o produto ocupa a metade esquerda, com corte editorial deliberado sem deformar rosto ou produto. A metade direita fica limpa para oferta dominante e até quatro benefícios confirmados em linhas separadas. Fundo claro, contraste alto e leitura imediata.',
   },
@@ -224,6 +226,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Outros',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao'],
     tags: ['antes e depois', 'resultado', 'comparação', 'produto pequeno'],
     image: '/references/ref-0017.jpg',
     validated: false,
@@ -237,6 +241,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Outros',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao'],
     tags: ['comparativo', 'problema solução', 'infográfico', 'benefícios'],
     image: '/references/ref-0018.jpg',
     validated: false,
@@ -250,6 +256,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Outros',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao'],
     tags: ['tutorial', 'três passos', 'demonstração', 'infográfico'],
     image: '/references/ref-0019.png',
     validated: false,
@@ -263,6 +271,8 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Outros',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao'],
     tags: ['reviews', 'prova social', 'produto na mão', 'benefícios'],
     image: '/references/ref-0020.png',
     validated: false,
@@ -276,6 +286,8 @@ export const references: Reference[] = [
     family: 'Produto herói',
     category: 'Relógios & joias',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['marca', 'aparencia'],
     tags: ['luxo', 'pedestal', 'coleção', 'oferta'],
     image: '/references/ref-0021.png',
     validated: false,
@@ -289,6 +301,8 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Relógios & joias',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['oferta', 'marca'],
     tags: ['loja física', 'vitrine', 'cartão', 'coleção'],
     image: '/references/ref-0022.png',
     validated: false,
@@ -302,6 +316,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Relógios & joias',
     modes: ['collection'],
+    people: 'corpo-suporte',
+    drivers: ['aparencia', 'funcao'],
     tags: ['mosaico', 'uso real', 'detalhes', 'coleção'],
     image: '/references/ref-0023.png',
     validated: false,
@@ -315,6 +331,8 @@ export const references: Reference[] = [
     family: 'Produto herói',
     category: 'Relógios & joias',
     modes: ['single'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'marca'],
     tags: ['caixa', 'presente', 'close', 'luxo claro'],
     image: '/references/ref-0024.png',
     validated: false,
@@ -328,6 +346,8 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Vestuário',
     modes: ['collection'],
+    people: 'sem-pessoa',
+    drivers: ['aparencia', 'oferta'],
     tags: ['flat lay', 'coleção', 'radial', 'selo central'],
     image: '/references/ref-0025.png',
     validated: false,
@@ -341,10 +361,12 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Vestuário',
     modes: ['single'],
+    people: 'humanizado',
+    drivers: ['marca', 'oferta', 'aparencia'],
     tags: ['modelo', 'oferta gigante', 'premium', 'benefícios'],
     image: '/references/ref-0026.png',
     validated: false,
-    limits: 'Requer imagem factual suficiente para preservar a peça vestida.',
+    limits: 'Requer imagem factual suficiente para preservar a peça vestida. Esta direção foi construída em torno de uma oferta curta, do tipo percentual. Não usar quando a oferta for uma frase longa de leve-mais-pague-menos: a tipografia gigante não sustenta mais de duas linhas.',
     recipe:
       'Modelo em corpo inteiro usando o produto ocupa a metade direita em cenário arquitetônico claro. A esquerda concentra marca, título factual e oferta muito grande; rodapé escuro recebe até três benefícios confirmados. Anatomia, caimento, logos e detalhes da peça devem permanecer íntegros.',
   },
@@ -354,6 +376,8 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Vestuário',
     modes: ['single'],
+    people: 'sem-pessoa',
+    drivers: ['oferta'],
     tags: ['unboxing', 'caixa de envio', 'oferta física', 'zenital'],
     image: '/references/ref-0027.png',
     validated: false,
@@ -367,6 +391,8 @@ export const references: Reference[] = [
     family: 'Lifestyle',
     category: 'Vestuário',
     modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['funcao'],
     tags: ['detalhe', 'feature', 'depoimento', 'close'],
     image: '/references/ref-0028.png',
     validated: false,
@@ -374,13 +400,74 @@ export const references: Reference[] = [
     recipe:
       'Close de uso real enquadra o detalhe funcional do produto e a interação da mão. Um bloco editorial de pincel recebe depoimento real curto, enquanto dois selos menores apontam o recurso e um benefício confirmado. Fundo neutro, produto dominante e nenhuma alegação sem fonte.',
   },
+  {
+    id: 'REF-0037',
+    name: 'Escada de desconto com modelo',
+    family: 'Oferta tipográfica',
+    category: 'Vestuário',
+    modes: ['single'],
+    people: 'corpo-suporte',
+    drivers: ['oferta'],
+    tags: ['escada de desconto', 'modelo', 'painel lateral', 'claro'],
+    image: '/references/ref-0037.png',
+    validated: false,
+    limits: 'Mostra um único look. Os degraus da oferta vêm do contexto e devem estar confirmados.',
+    recipe:
+      'Peça clara e editorial com composição assimétrica: comunicação à esquerda, com marca no alto e título curto; pessoa usando o produto à direita, grande e protagonista. A escada de desconto é o principal elemento textual, em degraus empilhados de força crescente, com o último marcado como melhor valor. A pessoa aparece de frente, em pose relaxada e enquadrada do queixo para baixo, com o produto inteiramente legível. Fundo neutro e quente contínuo entre os dois territórios, luz ampla e diagonal, sombra projetada suave.',
+  },
+  {
+    id: 'REF-0038',
+    name: 'Mosaico de looks com card central',
+    family: 'Editorial',
+    category: 'Vestuário',
+    modes: ['collection'],
+    people: 'humanizado',
+    drivers: ['aparencia', 'oferta'],
+    tags: ['mosaico', 'coleção', 'card central', 'quente'],
+    image: '/references/ref-0038.png',
+    validated: false,
+    limits: 'Coleção com quatro looks distintos; a escada exige três faixas de desconto confirmadas.',
+    recipe:
+      'Mosaico de blocos fotográficos que sangram até as bordas da peça, sem moldura externa, cada bloco com um produto ou look distinto, alternando pessoa e still de produto. Ao centro, um cartão vertical de cantos arredondados e borda fina concentra um ornamento gráfico simples, a headline da mecânica de desconto e três faixas em linhas separadas por filetes curtos. A marca aparece como wordmark serifado no topo da área central. Paleta quente e neutra, luz de estúdio suave e separação limpa entre os blocos, sem que um look invada o outro.',
+  },
+  {
+    id: 'REF-0039',
+    name: 'Vitrine modular com card de desconto',
+    family: 'Editorial',
+    category: 'Vestuário',
+    modes: ['collection'],
+    people: 'humanizado',
+    drivers: ['aparencia', 'oferta'],
+    tags: ['plintos', 'catálogo', 'card central', 'claro'],
+    image: '/references/ref-0039.png',
+    validated: false,
+    limits: 'Coleção com quatro produtos distintos; acessórios só entram se confirmados nas fontes.',
+    recipe:
+      'Grade modular em fundo branco frio, com produtos apoiados sobre plintos geométricos brancos de alturas diferentes e um único bloco de pessoa usando o produto funcionando como âncora da grade. Ao centro, um cartão claro de cantos arredondados reúne um rótulo curto em caixa alta, a headline da mecânica em duas cores e três faixas de desconto dispostas lado a lado, separadas por filetes verticais, com uma linha fina de condição abaixo. Marca em wordmark no topo do quadro. Luz ampla de catálogo, sombras curtas e nenhum elemento decorativo além dos plintos.',
+  },
 ];
+
+/*
+ * Ordena a biblioteca pelo argumento de venda do produto, sem esconder nada:
+ * o catálogo é pequeno, e sumir com metade dele não ensina quem escolhe.
+ * 0 = serve, 1 = neutra, 2 = briga com o argumento (peça densa para produto que vende pela foto).
+ */
+export function driverFit(reference: Reference, driver: SalesDriver | null) {
+  if (!driver || !reference.drivers?.length) return 1;
+  if (reference.drivers.includes(driver)) return 0;
+  if (driver === 'aparencia' && reference.drivers.includes('funcao')) return 2;
+  return 1;
+}
+
+export function sortByDriver(list: Reference[], driver: SalesDriver | null) {
+  return [...list].sort((a, b) => driverFit(a, driver) - driverFit(b, driver));
+}
 
 export const recommendedReferenceIds = [
   'REF-0001',
   'REF-0003',
-  'REF-0004',
   'REF-0005',
+  'REF-0007',
   'REF-0008',
 ];
 
@@ -388,6 +475,7 @@ export const reviewOptions = [
   { value: 'unreviewed', label: 'Aguardando conferência' },
   { value: 'correct', label: 'Correto' },
   { value: 'missing', label: 'Faltou ou veio só em texto' },
+  { value: 'collage', label: 'Veio dentro de uma colagem' },
   { value: 'repeated', label: 'Repetiu outro criativo' },
   { value: 'wrong-direction', label: 'Direção visual errada' },
   { value: 'content', label: 'Precisa revisar conteúdo' },
@@ -398,6 +486,7 @@ export type ReviewStatus = (typeof reviewOptions)[number]['value'];
 
 export const executionErrorStatuses: ReviewStatus[] = [
   'missing',
+  'collage',
   'repeated',
   'wrong-direction',
 ];
