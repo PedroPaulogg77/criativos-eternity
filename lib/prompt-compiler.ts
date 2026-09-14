@@ -163,13 +163,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0012': {
     title: 'CATÁLOGO AMPLO DE COLEÇÃO',
-    collection: `- Fundo branco frio e contínuo de catálogo, sem cenário e sem textura.
-- A oferta é a headline do topo, partida em dois blocos de cores diferentes separados por um traço vertical, com uma palavra pequena e espaçada logo abaixo. É o maior texto da peça.
-- Os oito produtos ocupam a faixa central em duas fileiras cheias de quatro, todos no mesmo ângulo, no mesmo tamanho e com o mesmo espaçamento entre si. A grade precisa parecer um mostruário completo de cores, não uma seleção.
-- Cada produto é uma variante ou modelo distinto e confirmado, com cor, material e detalhes próprios. Não invente cores para completar a grade.
-- Abaixo dos produtos, uma faixa escura curta em caixa alta com uma informação factual, seguida de até duas linhas de apoio.
-- Uma última linha fina com ícone pode trazer uma condição de entrega ou serviço, apenas quando confirmada no contexto.
-- Tudo centralizado no mesmo eixo, com muito respiro e legibilidade de catálogo.`,
+    collection: `- O que define esta direção: é um MOSTRUÁRIO DE VARIANTES DO MESMO MODELO, não uma seleção de produtos diferentes. O que a peça vende é a quantidade de cores disponíveis. Se a loja tiver muitas variantes confirmadas, mostre todas que couberem; se tiver poucas, esta direção não é a indicada.
+- Fundo branco frio, liso e contínuo, sem cenário, sem plinto e sem textura.
+- Nove unidades do mesmo modelo, uma por cor confirmada, em duas fileiras DESIGUAIS: quatro na de cima e cinco na de baixo. A fileira de baixo vem ligeiramente maior e mais à frente.
+- Todas as unidades estão exatamente no mesmo ângulo, viradas para o mesmo lado, no mesmo tamanho dentro da sua fileira, com espaçamento regular. Elas nunca se sobrepõem: cada uma fica isolada, com sombra suave própria.
+- Nenhuma cor pode ser inventada para completar a grade. Se faltarem variantes, reduza o número de unidades e reequilibre as fileiras.
+- No topo, a oferta partida em duas metades por um traço vertical fino, cada metade em uma cor diferente da identidade da loja, em caixa alta pesada ocupando quase toda a largura. É o maior elemento da peça.
+- Logo abaixo da segunda metade, alinhada à direita e não ao centro, uma palavra curta em caixa alta espaçada e em preto.
+- Abaixo dos produtos, uma faixa retangular preta chapada com uma condição curta em branco, caixa alta bem espaçada. Depois dela, duas linhas centralizadas em caixa mista, e por último uma linha menor com um ícone simples à esquerda.
+- Esta peça não tem logo da loja, não tem pessoa, não tem cenário e não tem moldura.
+- As únicas cores dos elementos gráficos são as duas da headline e o preto da faixa. Todo o resto é o branco do fundo e as cores próprias das variantes.`,
   },
   'REF-0015': {
     title: 'VITRINE MODULAR CLARA',

@@ -191,7 +191,7 @@ export const references: Reference[] = [
     family: 'Editorial',
     category: 'Calçados',
     modes: ['collection'],
-    slots: 8,
+    slots: 9,
     people: 'sem-pessoa',
     drivers: ['funcao'],
     tags: ['catálogo', 'fileiras', 'variedade', 'fundo branco'],
