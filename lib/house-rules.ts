@@ -35,6 +35,11 @@ export const HOUSE_DESIGN_RULE = `DESIGN E TIPOGRAFIA
  * do produto ou como personagem. Uma peça com pessoa correndo, sem rosto e fechada
  * no produto, é desumanizada.
  */
+export const SILENT_RULE = `PEÇA SEM TEXTO COMERCIAL
+- Esta direção não leva oferta, headline, preço, selo, CTA, wordmark nem qualquer bloco de texto. A peça vende só pela imagem.
+- Não crie cartão, etiqueta, faixa ou painel para acomodar texto. Se sobrar espaço, ele fica vazio.
+- A oferta desta campanha aparece nas outras peças do lote. Nesta, não aparece de forma alguma.`;
+
 export function peopleRule(reference: Reference) {
   if (reference.people === 'sem-pessoa') {
     return `PRESENÇA HUMANA — SEM PESSOA

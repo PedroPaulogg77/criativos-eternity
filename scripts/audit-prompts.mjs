@@ -319,6 +319,35 @@ for (const mode of ['single', 'collection']) {
   }
 }
 
+/*
+ * Peca silenciosa: referencia que na origem nao tem uma palavra comercial nao
+ * pode receber a oferta injetada pelo nucleo. Era o que fazia a REF-0023 sair
+ * com um bloco de texto que a peca original nunca teve.
+ */
+const silenciosas = data.references.filter(({ silent }) => silent);
+assert.ok(silenciosas.length, 'nenhuma referência marcada como peça sem texto');
+for (const reference of silenciosas) {
+  const prompt = compiler.compileReferencePrompt(
+    reference.modes.includes('single') ? single : collection,
+    reference,
+  );
+  assert.ok(prompt.includes('PEÇA SEM TEXTO COMERCIAL'), `${reference.id} sem a trava de peça silenciosa`);
+  assert.ok(!prompt.includes('Preserve exatamente a oferta recebida'), `${reference.id} ainda recebe a oferta do núcleo`);
+}
+// A referência normal continua obrigada a mostrar a oferta.
+assert.ok(singleReference.includes('Preserve exatamente a oferta recebida'));
+
+/*
+ * As quatro grades de colecao precisam abrir por tracos diferentes, senao o
+ * modelo achata as quatro na mesma peca.
+ */
+const grades = { 'REF-0007': 'DEITADOS', 'REF-0023': 'VÁRIOS CONTEXTOS DIFERENTES', 'REF-0038': 'SANGRAM', 'REF-0039': 'EM PÉ SOBRE PLINTOS' };
+for (const [id, marca] of Object.entries(grades)) {
+  const prompt = compiler.compileReferencePrompt(collection, data.references.find((item) => item.id === id));
+  assert.ok(prompt.includes('O que define esta direção'), `${id} não declara o que a separa das outras grades`);
+  assert.ok(prompt.includes(marca), `${id} perdeu o traço que a distingue`);
+}
+
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');
 
 console.log(

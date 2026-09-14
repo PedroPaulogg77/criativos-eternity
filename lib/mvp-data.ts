@@ -17,6 +17,8 @@ export type Reference = {
   modes: Array<'single' | 'collection'>;
   people?: 'sem-pessoa' | 'corpo-suporte' | 'humanizado';
   drivers?: SalesDriver[];
+  /* Peca que na origem nao tem uma palavra comercial. O nucleo para de injetar oferta. */
+  silent?: boolean;
   tags: string[];
   image: string;
   sample?: string;
@@ -316,6 +318,7 @@ export const references: Reference[] = [
     modes: ['collection'],
     people: 'corpo-suporte',
     drivers: ['funcao'],
+    silent: true,
     tags: ['mosaico', 'uso real', 'detalhes', 'coleção'],
     image: '/references/ref-0023.png',
     validated: false,
@@ -331,6 +334,7 @@ export const references: Reference[] = [
     modes: ['single'],
     people: 'sem-pessoa',
     drivers: ['estetica'],
+    silent: true,
     tags: ['caixa', 'presente', 'close', 'luxo claro'],
     image: '/references/ref-0024.png',
     validated: false,
