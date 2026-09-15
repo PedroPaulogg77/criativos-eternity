@@ -390,14 +390,18 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0028': {
     title: 'DETALHE FUNCIONAL COM DEPOIMENTO',
-    single: `- Fundo de estúdio claro e liso, sem cenário, com luz ampla e sombra suave.
-- Close lateral da parte do corpo onde o produto é usado, enquadrando exatamente o recurso que a peça quer provar, com uma mão em ação natural demonstrando o uso.
-- O produto ocupa o centro do quadro e o detalhe funcional aparece em foco máximo. Nada do corpo além da região necessária, e nenhum rosto.
-- Blocos de texto com aspecto de pincelada aplicada sobre a foto: um bloco maior recebe um depoimento real e curto entre aspas, com o nome de quem falou logo abaixo.
-- Dois blocos menores apontam, cada um, um recurso ou benefício confirmado, posicionados perto da parte do produto a que se referem.
-- Os blocos nunca cobrem o recurso que estão descrevendo.
-- Wordmark discreto da loja em uma das laterais.
-- Se não houver depoimento real, a peça sai apenas com os blocos de recurso confirmados.`,
+    single: `- O que define esta direção: a AÇÃO ESTÁ CONGELADA NO MEIO. O objeto que prova o recurso aparece meio dentro e meio fora — entrando no bolso, passando pelo fecho, sendo encaixado — e é esse instante que demonstra a funcionalidade. Produto parado não serve aqui.
+- Fundo de estúdio claro e liso, com leve gradiente, sem cenário e sem adereço. Luz ampla e sombra suave.
+- Close lateral da região do corpo onde o produto é usado, de perfil, indo da cintura até abaixo dos joelhos. Nada do corpo além disso, e nenhum rosto.
+- O recurso que está sendo provado — o bolso, o fecho, a costura, o forro — ocupa o centro do quadro e é a parte mais nítida da imagem. O produto aparece inteiro o suficiente para ser reconhecido.
+- A mão aparece em ação real, com a musculatura e a pega naturais de quem está de fato usando, não posando.
+- Sobre a foto, blocos brancos com BORDAS IRREGULARES, como pinceladas de tinta aplicadas por cima. Eles têm tamanhos diferentes e ficam perto da parte do produto a que se referem, sem nunca cobrir o recurso que descrevem.
+- O bloco maior traz um depoimento real e curto entre aspas, em caixa mista, com o trecho decisivo em peso forte e o resto em peso normal, e o nome de quem falou logo abaixo.
+- Dois blocos menores trazem, cada um, um recurso ou benefício confirmado, em caixa alta e peso forte, centralizados dentro da pincelada.
+- O wordmark da loja aparece VERTICAL, rotacionado, encostado numa das bordas laterais, em corpo pequeno e caixa alta espaçada.
+- Quando houver oferta a comunicar, ela entra dentro de um dos blocos de pincelada, junto do benefício, sem criar faixa nem selo novo.
+- Se não houver depoimento real, a peça sai apenas com os blocos de recurso confirmados.
+- Não existe cor de acento: a peça é o branco do estúdio, o preto do produto e do texto, e os tons de pele.`,
   },
   'REF-0037': {
     title: 'ESCADA DE DESCONTO COM MODELO',
