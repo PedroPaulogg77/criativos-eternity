@@ -564,7 +564,8 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
 - Mostre simultaneamente até ${slotsWord} produtos ou looks distintos, e SOMENTE itens que constem na lista de elegíveis do CONTEXTO CAPTURADO — V004. Essa quantidade é o alvo da diagramação, não uma cota a cumprir.
 - O número de itens confirmados manda sobre a quantidade da direção. Se houver menos itens do que módulos, use menos módulos e deixe cada um maior, reequilibrando a composição.
-- É proibido inventar produto para preencher espaço, e proibido inventar categoria que não está no contexto: se a campanha é de vestidos, não entram chapéus, cintos, bolsas, calçados nem acessórios. Um quadro com menos itens é correto; um quadro com item inventado é entrega inválida.
+- É proibido inventar produto ou categoria para preencher espaço. Vale exatamente o que a lista de elegíveis traz: se ela reúne várias categorias, todas entram; se traz uma só, a peça inteira é dessa categoria e nada de fora aparece.
+- Um quadro com menos itens do que módulos é correto. Um quadro com item que não está na lista é entrega inválida, por melhor que ele combine com a cena.
 - Preserve a separação visual entre os itens; não sugira um kit obrigatório e não misture marcas, logos, cores ou componentes.`
     : `- Anuncie somente o produto “${campaign.exactTarget}” e a variante factual registrada no CONTEXTO CAPTURADO.
 - Mostre o mesmo produto sem redesenhar, recolorir, misturar variantes ou inventar componentes.`;
