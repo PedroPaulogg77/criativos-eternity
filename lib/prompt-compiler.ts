@@ -265,13 +265,18 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0019': {
     title: 'COMO USAR EM TRÊS PASSOS',
-    single: `- Fundo liso de tom muito claro, com leve variação de cor derivada da identidade da loja.
-- Headline operacional no topo, em duas linhas, nomeando a sequência de uso.
-- O produto aparece grande e isolado no centro do quadro, em perspectiva, mostrando a face que explica o seu funcionamento. Quando for vendido em par, mostre o par.
-- Setas curtas e discretas podem apontar partes do produto, somente quando essas partes existirem de verdade.
-- Faixa inferior com exatamente três cartões do mesmo tamanho e alinhados no mesmo eixo. Cada cartão traz uma foto real da etapa, o número do passo e uma instrução de duas linhas.
+    single: `- O que define esta direção: o produto aparece grande e FLUTUANDO no meio do quadro, com setas coloridas apontando o mecanismo que o faz funcionar, e a sequência de uso em três fotos reais na faixa inferior.
+- Fundo liso de tom muito claro e frio, uniforme, sem cenário e sem textura.
+- O produto flutua em perspectiva inclinada, visto de cima e de lado ao mesmo tempo, com uma sombra elíptica suave logo abaixo. Não se apoia em mesa, plinto nem superfície. Quando for vendido em par, mostre os dois, espelhados e ligeiramente separados.
+- A face voltada para a câmera é a que explica o funcionamento — o relevo, o encaixe, o mecanismo —, não a face bonita.
+- Duas ou três setas curvas apontam partes específicas desse mecanismo. Elas são de uma cor VIVA E CONTRASTANTE com a do produto, escolhidas para saltar, não para se integrar. Só apontam partes que existem de verdade nas fontes.
+- Na faixa inferior, exatamente três fotos reais da sequência de uso, lado a lado, do mesmo tamanho e alinhadas no mesmo eixo. Cada uma tem cantos arredondados e um contorno de filete fino, sem fundo de cartão atrás.
+- Abaixo de cada foto, soltos sobre o fundo: o número do passo em caixa alta e peso forte na cor da identidade, e duas linhas de instrução em caixa mista e peso leve.
 - As três etapas precisam corresponder ao uso confirmado do produto. Se a sequência real tiver outro número de etapas, esta direção não deve ser usada.
-- Nas fotos das etapas, mãos e pés entram apenas como demonstração, sem rosto e sem identidade.`,
+- Nas fotos das etapas aparecem mãos e pés apenas como demonstração, sem rosto e sem nada que identifique a pessoa.
+- Headline no topo, em duas linhas centralizadas, em caixa mista e peso forte, na cor da identidade, nomeando a sequência.
+- Quando houver oferta a comunicar, ela entra em uma linha curta abaixo da headline, sem caixa e sem selo próprio.
+- Esta peça não tem logo da loja, não tem selo e não tem CTA.`,
   },
   'REF-0020': {
     title: 'PRODUTO COM PROVA SOCIAL',
