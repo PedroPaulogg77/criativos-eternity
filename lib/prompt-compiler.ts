@@ -335,13 +335,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0024': {
     title: 'PRODUTO EM CAIXA PRESENTEÁVEL',
-    single: `- Close premium de uma única caixa real do produto, aberta em ângulo de três quartos, ocupando quase todo o quadro.
-- O produto fica inteiramente visível sobre o apoio interno da caixa, nítido, com textura e escala fiéis.
-- A tampa interna aparece na parte superior e pode receber a marca da loja, apenas quando ela estiver confirmada nas fontes.
-- Fundo de tecido claro e macio, com adereço natural discreto e desfocado em um dos cantos.
-- Luz quente e lateral, reflexos suaves no material do produto e sombras curtas dentro da caixa.
-- Quando a peça precisar de título e oferta, eles entram no espaço livre de tecido, em corpo discreto, sem cobrir a caixa nem o produto.
-- Se a caixa real não estiver confirmada, troque-a por um apoio neutro em vez de inventar uma embalagem.`,
+    single: `- O que define esta direção: um CLOSE DA CAIXA ABERTA, tão perto que ela é cortada pelas bordas do quadro, com tudo no mesmo tom claro e o produto sendo o único brilho da cena.
+- A caixa aparece em três quartos, vista de cima e de lado, com a tampa aberta para trás. Ela ocupa quase todo o quadro e as bordas inferior e laterais cortam a imagem.
+- Todo o interior é forrado de tecido texturizado no mesmo tom claro da parte externa: a peça inteira é monocromática, e a única coisa que reluz é o produto.
+- O apoio interno é um rolo macio, cilíndrico, atravessando a caixa. As peças se acomodam sobre ele e as partes flexíveis — correntes, tiras, fechos — caem naturalmente pelas suas bordas.
+- Duas unidades do produto aparecem sobre o rolo, paralelas, uma acima da outra, ligeiramente diferentes entre si quando essa variação estiver confirmada nas fontes. Se só houver uma unidade confirmada, mostre uma e reequilibre a composição.
+- Na parte interna da tampa, ao fundo, a marca da loja impressa em cor metálica, em tipografia serifada e caixa alta espaçada, com um pequeno símbolo acima dela — somente quando essa marca e essa embalagem estiverem confirmadas nas fontes.
+- Ao fundo, fora de foco, um tecido acetinado dobrado e um adereço natural pequeno e claro num dos cantos. Nada disso pode competir com a caixa.
+- Luz quente e lateral, brilho no acetinado e nas partes metálicas do produto, sombras suaves dentro da caixa.
+- Se a caixa real não estiver confirmada, troque-a por um apoio neutro em vez de inventar uma embalagem.
+- Esta peça não tem logo separada, não tem selo, não tem ícone e não tem pessoa.`,
   },
   'REF-0025': {
     title: 'FLAT LAY RADIAL DE COLEÇÃO',
