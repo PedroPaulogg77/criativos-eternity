@@ -176,12 +176,15 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0010': {
     title: 'PRODUTO ZENITAL COM BENEFÍCIOS',
-    single: `- Fundo liso de tom muito claro e uniforme, sem cenário, sem textura e sem sombra dura.
-- Uma única unidade do produto vista de cima, centralizada na metade superior do quadro e apoiada em simetria perfeita. Quando o produto for vendido em par, mostre o par simétrico como uma unidade.
-- Sombra de contato suave logo abaixo do produto, sem separá-lo do fundo com contorno artificial.
-- Toda a comunicação fica centralizada na metade inferior, empilhada nesta ordem: uma linha curta em caixa alta leve, a headline em caixa alta pesada logo abaixo dela, um parágrafo de duas linhas com os atributos factuais e uma frase curta em itálico.
-- Na base, a oferta e um benefício confirmado aparecem lado a lado, em duas etiquetas de mesmo tamanho e cor de acento da marca. Se só a oferta estiver confirmada, use uma única etiqueta centralizada.
-- Simetria em todo o eixo vertical, leitura imediata e estética de catálogo funcional.`,
+    single: `- O que define esta direção: SIMETRIA TOTAL num eixo vertical, com o produto visto de cima na metade superior e todo o texto centralizado na metade inferior. A peça é lida de cima para baixo, como uma página, e nada quebra o eixo.
+- Fundo liso de tom muito claro e uniforme, sem cenário, sem textura e sem sombra dura.
+- O produto aparece de cima, centralizado, ocupando cerca de metade da altura. Quando for vendido em par, os dois aparecem espelhados e encostados um no outro no meio, com as aberturas para o mesmo lado. Nunca duplique um produto que não seja vendido em par.
+- Sombra de contato curta e suave, sem contorno artificial separando o produto do fundo.
+- Na metade inferior, cinco níveis de texto, todos centralizados e nesta ordem: uma linha curta em caixa alta e peso normal; a headline em caixa alta pesada, a maior linha da peça; os atributos factuais em DUAS LINHAS DE FRASE CORRIDA, separados por vírgula, em caixa alta e corpo menor — nunca em lista, nunca com ícone e nunca com marcador; e uma frase curta em caixa mista e itálico.
+- Na base, duas etiquetas retangulares de cantos retos, do mesmo tamanho, lado a lado, com texto branco em caixa alta: uma traz a oferta e a outra um benefício confirmado. Se só a oferta estiver confirmada, use uma única etiqueta centralizada.
+- A cor das etiquetas é tirada do PRÓPRIO PRODUTO — o tom do material, do couro, do tecido. Não é a cor da marca e nunca é um vermelho ou amarelo de promoção.
+- Esta peça não tem logo da loja, não tem ícone, não tem selo, não tem pessoa e não tem moldura.
+- Estética de catálogo funcional: leitura imediata, muito ar em volta do produto e nenhum elemento decorativo.`,
   },
   'REF-0011': {
     title: 'TRIO DE COLEÇÃO CROMÁTICA',
