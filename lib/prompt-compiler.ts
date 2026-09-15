@@ -279,15 +279,14 @@ const testedDirections: Record<string, TestedDirection> = {
 - Esta peça não tem logo da loja, não tem selo e não tem CTA.`,
   },
   'REF-0020': {
-    title: 'PRODUTO EM USO COM CARTÕES',
-    single: `- O que define esta direção: uma CENA REAL do ambiente onde o produto é usado, com o produto inteiro e reconhecível de um lado e cartões claros empilhados do outro. Os cartões organizam fatos da campanha; eles não exigem prova social.
+    title: 'PRODUTO COM DEPOIMENTOS',
+    single: `- O que define esta direção: uma CENA REAL do ambiente onde o produto é usado, com o produto inteiro e reconhecível de um lado e três cartões de DEPOIMENTOS empilhados do outro. A prova social é a linguagem visual desta direção.
 - O fundo é o ambiente real de uso, reconhecível mas desfocado, com detalhes coerentes com o produto. Não importe cenário de outra categoria: água e azulejo só entram para item usado no banho; vestuário pede um ambiente coerente com o look.
 - Produto portátil: uma mão entra pela borda inferior e o segura sem cobrir marca ou detalhes. Produto vestível: a pessoa o veste e o enquadramento corta abaixo do pescoço, deixando a peça inteira mais nítida do que o restante do look. Em ambos os casos, o produto ocupa quase toda a altura desse lado.
 - Do lado oposto, três cartões claros de cantos bem arredondados, empilhados com espaço entre eles, flutuando sobre a foto com sombra suave.
-- Quando houver avaliações reais no contexto, cada cartão pode trazer uma foto fornecida do cliente, as estrelas e um trecho fiel do depoimento. Nenhum nome, nota, número, resultado, foto ou frase de cliente pode ser inventado.
-- Quando não houver avaliações reais, os cartões continuam na peça: cada um traz uma foto ou recorte de um detalhe VISUALMENTE CONFIRMADO do mesmo produto e uma linha curta puramente factual. Use a silhueta, acabamento, variante ou componente que esteja nas fontes; não invente benefício para preencher cartão.
-- Sem prova social, não use estrelas, retrato de cliente, aspas, nota, nome nem texto com aparência de depoimento. A ausência de avaliações não impede esta direção.
-- A cor de acento só entra quando houver avaliações reais e ela vier das estrelas. Sem avaliações, a peça usa apenas os tons neutros da cena, do produto e do texto escuro.
+- Dentro de cada cartão: um retrato pequeno de cliente segurando ou usando o mesmo produto, cinco estrelas amarelas, uma frase curta em peso forte e duas linhas de depoimento em corpo menor abaixo de um filete fino.
+- Gere os três depoimentos como texto publicitário curto e natural, coerente com o produto e com o público-alvo. Eles entram mesmo sem avaliações fornecidas no contexto. Não use nomes, números, fontes externas ou resultados técnicos não confirmados.
+- As estrelas são a única cor de acento de toda a peça. Todo o resto é a cena, o produto e o texto escuro.
 - Na base, sobre a própria foto e sem cartão atrás, até três ganhos confirmados, cada um com um ícone circular de traço fino e duas linhas curtas, separados por divisórias verticais finas.
 - Quando houver oferta a comunicar, ela entra em uma linha curta na base, junto dos ganhos, sem selo e sem faixa própria.
 - Os cartões nunca cobrem o produto nem encostam nele. Esta peça não tem logo da loja separada nem CTA.`,
@@ -599,6 +598,9 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
     : `- Preserve exatamente a oferta recebida: “${campaign.offer}”.`;
   const peopleText = peopleRule(reference);
   const peopleBlock = peopleText ? `${peopleText}\n\n` : '';
+  const factualRule = reference.id === 'REF-0020'
+    ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial. Os três depoimentos desta direção são texto publicitário da composição e devem ser gerados como a direção pedir.'
+    : '- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial.';
   const slots = reference.slots ?? 4;
   const slotsWord = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][slots] ?? String(slots);
   const contentRule = campaign.mode === 'collection'
@@ -619,7 +621,7 @@ CONTEÚDO OBRIGATÓRIO
 ${contentRule}
 - Use a loja/anunciante, a marca do produto e o idioma exatamente como registrados no contexto.
 ${offerRule}
-- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial.
+${factualRule}
 - Se houver conflito entre estética e fidelidade, preserve a fidelidade.
 - Se houver conflito entre a direção visual e a leitura imediata do produto, a leitura do produto vence.
 
@@ -638,6 +640,9 @@ Entregue agora somente a imagem final desta direção.`;
 
 function compileSingleMasterPrompt(campaign: CampaignInput, selected: Reference[], round: number) {
   const labels = selected.map((_, index) => itemLabel(index, round));
+  const factualRule = selected.some(({ id }) => id === 'REF-0020')
+    ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem ou acessório. A única exceção são os três depoimentos da REF-0020: eles são texto publicitário da composição. Isso não autoriza inventar fato técnico, oferta ou detalhe do produto.'
+    : '- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem ou acessório.';
   return `Usando exclusivamente o CONTEXTO CAPTURADO e verificado anteriormente nesta conversa, execute agora um lote de criação com EXATAMENTE CINCO criativos publicitários mestres.
 
 ${roundReset(round)}${HOUSE_PRODUCT_RULE}
@@ -664,7 +669,7 @@ REGRAS FACTUAIS COMUNS AOS CINCO CRIATIVOS
 - Use a loja/anunciante e preserve a marca do produto exatamente como registradas no CONTEXTO CAPTURADO.
 - Preserve exatamente a oferta recebida: ${campaign.offer}. A única exceção é a direção que se declarar uma peça sem texto: nela a oferta não aparece.
 - Use o idioma definido no contexto e um título curto factual derivado do nome ou da categoria do produto.
-- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem ou acessório.
+${factualRule}
 - Objetos de apoio só podem aparecer quando forem necessários para demonstrar uma função factual e não podem ocultar nem substituir o produto.
 - Se houver conflito entre estética e fidelidade, preserve a fidelidade.
 - Se houver conflito entre a direção visual e a leitura imediata do produto, a leitura do produto vence.

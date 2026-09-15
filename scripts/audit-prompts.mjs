@@ -69,6 +69,8 @@ const collectionReference = compiler.compileReferencePrompt(collection, referenc
 const recovery = compiler.compileRecoveryPrompt(references, [1, 2, 3, 4]);
 const pilotReference = data.references.find(({ id }) => id === 'REF-0017');
 const pilotPrompt = compiler.compileReferencePrompt(single, pilotReference);
+const testimonialReference = data.references.find(({ id }) => id === 'REF-0020');
+const testimonialPrompt = compiler.compileReferencePrompt(single, testimonialReference);
 const singlePilotBatch = compiler.compileMasterPrompt(
   single,
   ['REF-0010', 'REF-0016', 'REF-0019', 'REF-0026', 'REF-0028'].map((id) =>
@@ -86,6 +88,8 @@ assert.ok(singleContext.startsWith('Vamos criar um criativo de PRODUTO ÚNICO.')
 assert.ok(singleContext.includes('LINK DO PRODUTO: https://loja.test/produto'));
 assert.ok(singleContext.includes('CONTEXTO CAPTURADO\n\nMarca:'));
 assert.ok(singleContext.includes('esta campanha anuncia somente o produto do link'));
+assert.ok(testimonialPrompt.includes('Os três depoimentos desta direção são texto publicitário da composição'), 'REF-0020 ainda bloqueia seus depoimentos sem fonte');
+assert.ok(testimonialPrompt.includes('Gere os três depoimentos como texto publicitário'), 'REF-0020 perdeu os três depoimentos');
 
 assert.ok(
   collectionContext.startsWith(

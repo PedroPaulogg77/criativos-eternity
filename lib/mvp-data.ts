@@ -298,18 +298,18 @@ export const references: Reference[] = [
   },
   {
     id: 'REF-0020',
-    name: 'Produto em uso com cartões',
+    name: 'Produto com depoimentos',
     family: 'Lifestyle',
     category: 'Outros',
     modes: ['single'],
     people: 'corpo-suporte',
     drivers: ['funcao', 'estetica'],
-    tags: ['produto em uso', 'cartões', 'detalhes factuais', 'benefícios'],
+    tags: ['depoimentos', 'prova social', 'produto em uso', 'cartões'],
     image: '/references/ref-0020.png',
     validated: false,
-    limits: 'Os cartões usam provas reais quando existirem; sem elas, mostram detalhes factuais do próprio produto.',
+    limits: 'Os três cartões são depoimentos publicitários que fazem parte da direção visual.',
     recipe:
-      'Produto grande em uso ocupa um lado da cena e cartões empilhados ocupam o outro. Os cartões usam avaliações reais quando houver fonte; sem elas, mostram detalhes visuais e fatos confirmados do próprio produto. Rodapé com até três benefícios factuais e fundo contextual suave.',
+      'Produto grande em uso ocupa um lado da cena e três cartões de depoimentos empilhados ocupam o outro. Os depoimentos são parte da direção visual e entram mesmo sem avaliações fornecidas. Rodapé com até três benefícios factuais e fundo contextual suave.',
   },
   {
     id: 'REF-0021',
