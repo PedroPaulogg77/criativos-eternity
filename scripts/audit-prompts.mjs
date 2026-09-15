@@ -458,7 +458,7 @@ if (fs.existsSync(pastaCuradoria)) {
 for (const reference of data.references.filter(({ modes, slots }) => modes.includes('collection') && slots)) {
   const prompt = compiler.compileReferencePrompt(collection, reference);
   assert.ok(prompt.includes('não uma cota a cumprir'), `${reference.id} trata a quantidade como cota`);
-  assert.ok(prompt.includes('proibido inventar categoria'), `${reference.id} sem a trava de categoria inventada`);
+  assert.ok(prompt.includes('É proibido inventar produto ou categoria'), `${reference.id} sem a trava de categoria inventada`);
   assert.ok(!/não mostre mais nem menos/.test(prompt), `${reference.id} ainda exige a quantidade exata`);
 }
 
