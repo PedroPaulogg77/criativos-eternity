@@ -115,13 +115,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0006': {
     title: 'EDITORIAL LIFESTYLE COM PAINEL DE OFERTA',
-    single: `- Cena editorial aspiracional em ambiente urbano sofisticado, luz natural suave e paleta neutra e quente.
-- Uma pessoa ocupa um dos lados do quadro usando ou carregando o produto-alvo; o produto aparece grande, desobstruído e legível, com foco nítido sobre ele.
-- O casting segue o público declarado do produto. Pose natural e serena, mãos corretas, nada do produto coberto por cabelo, tecido ou dedos.
-- O lado oposto da foto é mantido limpo e levemente escurecido e recebe todo o texto, empilhado de cima para baixo: linha de abertura curta em caixa alta espaçada, título em tipografia serifada elegante com acento metálico da identidade da loja e, abaixo, o painel da oferta.
-- O painel da oferta fica dentro de uma moldura discreta, com um degrau por linha: a condição à esquerda e o valor da vantagem dominante à direita. Se a oferta tiver um único degrau, use uma única linha.
-- Sem CTA, selo, urgência ou benefício que não esteja confirmado no contexto. O texto nunca invade o rosto nem o produto.
-- Acabamento de campanha de moda premium: pouco texto, muito ar e contraste suave.`,
+    single: `- O que define esta direção: uma fotografia de moda com LUZ NATURAL FORTE E DIRECIONAL, feita junto a uma arquitetura clássica de pedra clara — colunas, pilastras, cantaria. As sombras são nítidas e desenhadas, nunca difusas.
+- A foto ocupa o quadro inteiro. Não existe painel de cor: o texto assenta direto sobre a área em sombra da arquitetura, de um dos lados.
+- A pessoa aparece do outro lado, enquadrada da cabeça até a cintura, em três quartos, OLHANDO PARA FORA DO QUADRO — nunca para a câmera. Pose serena, queixo levemente erguido, nada de sorriso posado.
+- O produto aparece grande na metade inferior do lado dela, nítido e inteiro, com o padrão, a ferragem e os detalhes legíveis. A mão da pessoa toca o produto de forma natural — segurando a alça junto ao ombro, apoiando a borda — sem cobrir nada que o identifique.
+- Cabelo, tecido e dedos nunca invadem a parte reconhecível do produto.
+- O casting segue o público declarado do produto: gênero, faixa etária e biotipo compatíveis com quem a loja anuncia.
+- No lado em sombra, alinhado à esquerda e empilhado: uma linha curta em caixa alta bem espaçada, um filete horizontal fino abaixo dela, e o título em tipografia SERIFADA de caixa mista, grande, na cor de acento metálica. O título não é caixa alta e não é pesado.
+- Abaixo do título, o painel da oferta dentro de uma moldura de filete fino fechada nos quatro lados. Um degrau por linha, e as linhas separadas por filetes horizontais que atravessam a moldura.
+- Cada linha de degrau tem três tamanhos: a condição em corpo pequeno e tom claro, o valor da vantagem em corpo grande e cor metálica, e a palavra final em corpo pequeno de novo.
+- Esta peça não tem logo da loja, não tem CTA, não tem selo, não tem ícone e não tem benefício escrito.
+- A cor de acento metálica é a única cor gráfica. Todo o resto é a pedra clara, o figurino neutro e as cores do produto.`,
   },
   'REF-0007': {
     title: 'MOSAICO EDITORIAL',
