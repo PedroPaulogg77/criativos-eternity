@@ -239,12 +239,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0017': {
     title: 'ANTES E DEPOIS DIRETO',
-    single: `- O quadro é partido ao meio por uma divisória vertical fina: o mesmo enquadramento, na mesma distância, com a mesma luz, aparece dos dois lados.
-- O lado esquerdo mostra a situação inicial e o direito o resultado. A única diferença entre eles é a mudança que as fontes comprovam. Nada de retoque, maquiagem, ângulo ou iluminação diferentes entre os lados.
-- O recorte é fechado na região onde o resultado acontece, sem mostrar identidade da pessoa.
-- No rodapé, o produto real aparece pequeno e inteiro, apoiado sobre a imagem, no canto oposto ao texto.
-- Ao lado dele, um cartão claro de leitura fácil com uma frase curta e factual em duas linhas, na cor da marca.
-- Se a comparação não estiver comprovada pelas fontes, esta direção não pode ser usada.`,
+    single: `- O que define esta direção: A MESMA FOTOGRAFIA aparece dos dois lados de uma linha branca fina e vertical no centro exato, e a única coisa diferente entre elas é o resultado que o produto entrega. Mesma pessoa, mesmo enquadramento, mesma distância, mesma luz, mesma pele, mesmos detalhes.
+- Não existe rótulo escrito de antes e depois, nem seta, nem moldura separando os lados. A comparação é só visual, e o espectador entende sozinho.
+- O recorte fecha na região exata onde o resultado acontece, mostrando só a parte do corpo necessária. Nunca aparece o rosto inteiro nem nada que identifique a pessoa.
+- A foto ocupa o quadro inteiro. Nada de fundo de estúdio, nada de cenário montado: é uma foto real, com a textura de pele e a luz que ela tem.
+- Nenhum retoque além do resultado comprovado. Se a comparação não estiver comprovada pelas fontes, esta direção não pode ser usada de forma alguma.
+- No canto inferior, apoiadas sobre a foto, duas unidades do produto real, pequenas e inteiras, ligeiramente sobrepostas uma à outra, com o rótulo legível.
+- Ao lado delas, ocupando o resto da faixa inferior, um cartão claro de cantos arredondados encostado na borda, com uma frase curta e factual em duas linhas, em caixa mista e peso forte.
+- A cor do texto do cartão é a mesma do rótulo do produto, não uma cor de marca escolhida à parte.
+- Quando houver oferta a comunicar, ela entra como uma segunda linha menor dentro do mesmo cartão, abaixo da frase. O cartão não cresce e nenhum outro elemento é criado para acomodá-la.
+- Esta peça não tem logo da loja separada, não tem headline no topo, não tem selo e não tem ícone.`,
   },
   'REF-0018': {
     title: 'COMPARATIVO PROBLEMA E SOLUÇÃO',
