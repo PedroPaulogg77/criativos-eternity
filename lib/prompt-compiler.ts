@@ -405,13 +405,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0037': {
     title: 'ESCADA DE DESCONTO COM MODELO',
-    single: `- Fundo claro e quente, contínuo entre os dois lados da peça, com luz ampla e diagonal e sombra projetada suave.
-- Uma pessoa usando o produto ocupa a metade direita, de frente, em pose relaxada, enquadrada do pescoço para baixo. A peça vendida aparece inteira e nítida.
-- A metade esquerda recebe todo o texto, alinhado à esquerda e empilhado: wordmark da loja no topo, a headline em duas vozes tipográficas — parte em peso forte e parte em itálico leve —, um filete curto e até dois parágrafos curtos de condição.
-- Abaixo deles, a escada de desconto: um cartão por degrau, empilhados, cada um com um ícone simples à esquerda, a quantidade em corpo pequeno e o valor da vantagem dominante.
-- Os cartões escurecem progressivamente do primeiro ao último, e o último recebe uma fita diagonal curta marcando o melhor valor.
-- A escada é o principal elemento textual da peça; a headline é secundária.
-- Se a oferta tiver um único degrau, use um único cartão e dispense a fita.`,
+    single: `- O que define esta direção: uma ESCADA DE DESCONTO onde cada degrau é um cartão, e a QUANTIDADE DE ÍCONES DENTRO DELE CRESCE junto com a oferta — um ícone no primeiro degrau, dois no segundo, três no terceiro. A quantidade é mostrada, não só escrita.
+- A foto ocupa o quadro inteiro e o fundo claro e quente dela continua para o lado do texto, sem divisória e sem painel de cor. Uma sombra diagonal suave atravessa a parede.
+- A pessoa usando o produto ocupa o lado oposto ao texto, de frente, em pose relaxada e braços ao longo do corpo, enquadrada do pescoço até abaixo do joelho. A cabeça fica fora do quadro.
+- A peça vendida aparece inteira e nítida, com o acabamento e os detalhes legíveis, ocupando a maior parte da altura do corpo.
+- Do lado do texto, alinhado à esquerda e empilhado: o wordmark da loja no topo; a headline em duas partes que diferem em TRÊS coisas ao mesmo tempo — peso, cor e estilo: a primeira em peso forte e tom escuro, a segunda em itálico, peso leve e tom médio; um filete horizontal fino; e até dois parágrafos curtos de condição em corpo pequeno.
+- Abaixo deles, os cartões da escada, empilhados e do mesmo tamanho, com cantos arredondados. Cada cartão traz, da esquerda para a direita: os ícones de contorno fino, uma divisória vertical, e três níveis de texto — a quantidade em corpo pequeno, o valor da vantagem em corpo grande, e a palavra final em corpo médio.
+- Os cartões escurecem progressivamente do primeiro ao último. No último, os ícones e todo o texto invertem para claro, e uma fita diagonal curta no canto superior marca o melhor valor.
+- A escada é o principal elemento da peça; a headline é secundária.
+- Se a oferta tiver um único degrau, use um único cartão, com um ícone só, e dispense a fita.
+- Não existe cor de acento: a peça é o bege da parede, o preto do produto e do texto, e os cinzas da escada.`,
   },
   'REF-0038': {
     title: 'MOSAICO DE LOOKS COM CARD CENTRAL',
