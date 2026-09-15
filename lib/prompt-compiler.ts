@@ -280,13 +280,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0020': {
     title: 'PRODUTO COM PROVA SOCIAL',
-    single: `- O que define esta direção: é uma CENA REAL do ambiente onde o produto é usado, com fundo fotográfico desfocado, e a prova vem de CLIENTES QUE JÁ COMPRARAM. Não é infográfico, não é fundo branco e não compara com concorrente nenhum.
-- O produto aparece grande em primeiro plano, segurado por uma mão de forma natural ou apoiado no próprio ambiente, com o ambiente reconhecível mas fora de foco atrás dele.
-- Do lado oposto, três cartões claros de cantos arredondados, empilhados e do mesmo tamanho, flutuando sobre a foto com sombra suave.
-- Cada cartão traz o retrato do cliente apenas quando a foto for real e fornecida, as estrelas apenas quando a avaliação for confirmada, uma headline curta em duas linhas e o trecho fiel do depoimento.
-- Nenhum nome, nota, número ou depoimento pode ser inventado. Sem fonte, o cartão sai da peça em vez de ser preenchido.
-- No rodapé, até três ganhos confirmados, cada um com ícone circular de traço fino, separados por divisórias verticais discretas.
-- Os cartões nunca cobrem o produto nem encostam nele. A sensação é de conversa real, não de folheto técnico.`,
+    single: `- O que define esta direção: uma CENA REAL do ambiente onde o produto é usado, com a prova vindo de CLIENTES QUE JÁ COMPRARAM e que aparecem segurando o mesmo produto. Não é infográfico, não é fundo branco e não compara com concorrente nenhum.
+- O fundo é o ambiente real de uso, reconhecível mas desfocado, com os detalhes que provam o contexto — vidro molhado, azulejo, bancada.
+- Uma mão entra pela borda inferior de um dos lados e segura o produto de baixo para cima, quase na vertical. O produto ocupa quase toda a altura desse lado, nítido, com a marca e os detalhes legíveis. A mão segura pelo corpo do produto, sem cobrir o que o identifica.
+- Do lado oposto, três cartões claros de cantos bem arredondados, empilhados com espaço entre eles, flutuando sobre a foto com sombra suave.
+- Dentro de cada cartão: uma foto quadrada de cantos arredondados no canto superior, mostrando o cliente SEGURANDO o mesmo produto, no ambiente doméstico dele. São fotos com cara de foto de cliente, não de ensaio produzido.
+- Ao lado dessa foto, as estrelas da avaliação e uma headline curta em peso forte, com duas ou três linhas. Abaixo de um filete fino, o depoimento em corpo menor, ocupando a largura do cartão.
+- As estrelas são a única cor de acento de toda a peça. Todo o resto é a cena, o produto e o texto escuro.
+- Nenhum nome, nota, número ou depoimento pode ser inventado, e nenhuma foto de cliente pode ser fabricada. Sem fonte, o cartão sai da peça em vez de ser preenchido — dois cartões reais valem mais que três com um inventado.
+- Na base, sobre a própria foto e sem cartão atrás, até três ganhos confirmados, cada um com um ícone circular de traço fino e duas linhas curtas, separados por divisórias verticais finas.
+- Quando houver oferta a comunicar, ela entra em uma linha curta na base, junto dos ganhos, sem selo e sem faixa própria.
+- Os cartões nunca cobrem o produto nem encostam nele. Esta peça não tem logo da loja separada nem CTA.`,
   },
   'REF-0021': {
     title: 'COLEÇÃO EM PEDESTAL DE LUXO',
