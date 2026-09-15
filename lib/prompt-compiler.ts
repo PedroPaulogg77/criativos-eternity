@@ -252,13 +252,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0018': {
     title: 'COMPARATIVO PROBLEMA E SOLUÇÃO',
-    single: `- O que define esta direção: é um INFOGRÁFICO DE COMPARAÇÃO sobre fundo branco chapado, onde as alternativas que não funcionam aparecem RECUSADAS e o produto aparece como a saída. Não é foto de ambiente, não é cena de uso, não é depoimento.
-- Headline curta em duas linhas no topo, na cor da marca, nomeando o incômodo que o produto resolve.
-- De um lado, até três cartões claros empilhados. Cada cartão mostra a miniatura de uma alternativa concorrente, um ícone de recusa, o nome dessa alternativa e uma linha curta dizendo por que ela falha. Só entram alternativas confirmadas nas fontes.
-- Do outro lado, o produto grande em still recortado, em uma ou duas unidades reais, nítido, sem cenário atrás e sem mão segurando.
-- Um selo circular pequeno na cor da marca, encostado no produto, destaca o dado factual que sustenta a comparação.
-- No rodapé, uma miniatura arredondada do resultado real e uma seta discreta ligando o produto a ela, apenas quando esse resultado estiver comprovado.
-- Tudo respira branco: sem textura, sem sombra dramática, sem ambiente. A peça parece uma página de explicação, não um anúncio de estilo.`,
+    single: `- O que define esta direção: é uma PÁGINA DE EXPLICAÇÃO sobre branco puro, em que as alternativas que não funcionam aparecem recusadas de um lado e o produto aparece do outro como a saída. Não é cena, não é ambiente, não é anúncio de estilo.
+- Headline no topo, em duas linhas centralizadas, em caixa MISTA e peso forte, na cor escura da identidade — nunca caixa alta.
+- De um lado, até três alternativas empilhadas. Cada uma é uma miniatura quadrada de fundo cinza muito claro e cantos arredondados, com a foto da alternativa dentro. O TEXTO fica fora da miniatura, ao lado dela, direto sobre o branco.
+- Cada texto traz um ícone circular de recusa, o nome da alternativa em peso forte e duas linhas curtas dizendo por que ela falha. Só entram alternativas e objeções confirmadas nas fontes.
+- Os ícones de recusa são a ÚNICA cor quente da peça inteira. Todo o resto é branco, cinza claro e o tom escuro da identidade.
+- Do outro lado, duas unidades do produto real em still recortado, grandes, em diagonal ascendente e sobrepostas uma à outra. Sem cenário atrás, sem mesa, sem mão segurando e sem sombra dramática.
+- Encostado nos produtos, um selo em duas partes: um círculo escuro com um ícone simples em branco e, logo abaixo, uma etiqueta retangular da mesma cor com duas linhas curtas em branco, trazendo o dado factual que sustenta a comparação.
+- No canto inferior oposto, uma miniatura de cantos arredondados com a foto do resultado real, e uma seta curva e grossa saindo de baixo do produto e apontando para ela. A seta e a miniatura só entram quando esse resultado estiver comprovado nas fontes.
+- Quando houver oferta a comunicar, ela entra em uma linha curta logo abaixo da headline, no mesmo tom escuro, sem caixa e sem selo próprio.
+- Esta peça não tem logo da loja separada, não tem CTA e não tem pessoa além do recorte de resultado.`,
   },
   'REF-0019': {
     title: 'COMO USAR EM TRÊS PASSOS',
