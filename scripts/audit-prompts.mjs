@@ -291,9 +291,10 @@ for (const driver of ['funcao', 'estetica']) {
   assert.ok(ordenadas[0].drivers.includes(driver), `a primeira referência para ${driver} não serve a esse argumento`);
 }
 
-// Produto que vende pela foto não pode abrir a lista com peça cheia de tópicos.
+// Produto que vende pela foto não pode abrir a lista com peça exclusiva de explicação.
+// Direção declarada nos dois argumentos é flexível, não uma peça cheia de tópicos.
 const porEstetica = data.sortByDriver(data.references, 'estetica');
-const densaNaFrente = porEstetica.findIndex((item) => item.drivers.includes('funcao'));
+const densaNaFrente = porEstetica.findIndex((item) => item.drivers.length === 1 && item.drivers.includes('funcao'));
 const ultimaCompativel = porEstetica.map((item) => item.drivers.includes('estetica')).lastIndexOf(true);
 assert.ok(densaNaFrente > ultimaCompativel, 'referência cheia de tópicos apareceu antes das diretas');
 

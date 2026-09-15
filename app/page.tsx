@@ -91,6 +91,8 @@ type Phase = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type AppSurface = 'welcome' | 'flow' | 'workspace' | 'stage';
 type CreativeView = 'library' | 'prompt' | 'review';
 type IndividualAction = { index: number; kind: 'content' | 'variation' } | null;
+type RequirementActionKind = 'select' | 'copy';
+type RequirementAction = { reference: Reference; kind: RequirementActionKind } | null;
 
 type WebMcpTool = {
   name: string;
@@ -451,6 +453,8 @@ export default function Home() {
 
   const [creativeView, setCreativeView] = useState<CreativeView>('library');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [confirmedRequirements, setConfirmedRequirements] = useState<Record<string, true>>({});
+  const [requirementAction, setRequirementAction] = useState<RequirementAction>(null);
   const [familyFilter, setFamilyFilter] = useState('Todas as famílias');
   const [categoryFilter, setCategoryFilter] = useState('Todas as categorias');
   const [searchTerm, setSearchTerm] = useState('');
@@ -717,6 +721,24 @@ export default function Home() {
     });
   }
 
+  function runReferenceAction(reference: Reference, kind: RequirementActionKind) {
+    if (reference.requirement && !confirmedRequirements[reference.id]) {
+      setRequirementAction({ reference, kind });
+      return;
+    }
+    if (kind === 'select') toggleReference(reference.id);
+    else copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
+  }
+
+  function confirmRequirement() {
+    if (!requirementAction) return;
+    const { reference, kind } = requirementAction;
+    setConfirmedRequirements((current) => ({ ...current, [reference.id]: true }));
+    setRequirementAction(null);
+    if (kind === 'select') toggleReference(reference.id);
+    else copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
+  }
+
   function updateReview(id: string, value: ReviewStatus) {
     setReviewState((current) => ({ ...current, [id]: value }));
   }
@@ -743,6 +765,7 @@ export default function Home() {
     setContextChecks(contextCheckItems.map(() => false));
     setCreativeView('library');
     setSelectedIds([]);
+    setConfirmedRequirements({});
     setReviewState({});
     setSocialIndex(-1);
     setVideoStep(0);
@@ -1019,7 +1042,7 @@ export default function Home() {
           const blocked = selectedIds.length >= 5 && !selected;
           return (
             <article key={item.id} className={`reference-pin group w-full text-left ${selected ? 'reference-pin-active' : ''}`}>
-              <button type="button" disabled={blocked} onClick={() => toggleReference(item.id)} className={`reference-image-button ${blocked ? 'opacity-35' : ''}`} aria-pressed={selected} aria-label={`${selected ? 'Remover' : 'Adicionar'} ${item.name} ${selected ? 'do' : 'ao'} lote`}>
+              <button type="button" disabled={blocked} onClick={() => selected ? toggleReference(item.id) : runReferenceAction(item, 'select')} className={`reference-image-button ${blocked ? 'opacity-35' : ''}`} aria-pressed={selected} aria-label={`${selected ? 'Remover' : 'Adicionar'} ${item.name} ${selected ? 'do' : 'ao'} lote`}>
                 <img src={item.image} alt={`Referência completa: ${item.name}`} loading="lazy" className="h-auto w-full" />
                 {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
                 <span className="reference-hover-panel">
@@ -1033,10 +1056,24 @@ export default function Home() {
                   <span className="mt-2 block text-xs leading-5 text-white/66">{item.modes.length === 2 ? 'Produto ou coleção' : item.modes[0] === 'collection' ? 'Coleção' : 'Produto único'}{item.limits ? ` · ${item.limits}` : ''}</span>
                 </span>
               </button>
-              <Button type="button" variant="ghost" size="icon" title="Copiar so esta direcao" aria-label={`Copiar prompt da referencia ${item.name}`} className="reference-copy-button" onClick={() => copyText(compileReferencePrompt(campaign, item), `library-single-${item.id}`)}>{copiedKey === `library-single-${item.id}` ? <Check className="size-4" /> : <Copy className="size-4" />}</Button>
+              {item.requirement ? <div className="flex items-center gap-2 border-t border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs leading-5 text-amber-100"><AlertTriangle className="size-3.5 shrink-0 text-amber-300" />Precisa de {item.requirement.label}</div> : null}
+              <Button type="button" variant="ghost" size="icon" title="Copiar so esta direcao" aria-label={`Copiar prompt da referencia ${item.name}`} className="reference-copy-button" onClick={() => runReferenceAction(item, 'copy')}>{copiedKey === `library-single-${item.id}` ? <Check className="size-4" /> : <Copy className="size-4" />}</Button>
             </article>
           );
         })}</div> : <div className="rounded-2xl border border-dashed border-border py-16 text-center"><Search className="mx-auto size-6 text-muted-foreground" /><p className="mt-3 font-medium">Nenhuma referência encontrada</p><p className="mt-1 text-sm text-muted-foreground">Remova um filtro ou busque outro termo.</p></div>}
+        <Dialog open={requirementAction !== null} onOpenChange={(open) => !open && setRequirementAction(null)}>
+          <DialogContent className="max-w-lg border border-primary/20 bg-popover sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Antes de usar esta direção</DialogTitle>
+              <DialogDescription>{requirementAction?.reference.requirement?.question}</DialogDescription>
+            </DialogHeader>
+            <p className="text-sm leading-6 text-muted-foreground">Se esse fato não apareceu no contexto capturado, escolha outra referência. O ChatGPT não deve inventá-lo.</p>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setRequirementAction(null)}>Escolher outra</Button>
+              <Button type="button" onClick={confirmRequirement}>Sim, está confirmado</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <div className="mt-8 border-t border-border pt-6"><Button type="button" variant="ghost" size="lg" onClick={() => journeyMode === 'stage' ? openWorkspace() : campaignMode === 'collection' ? goPhase(2) : (goPhase(1), setContextStep(6))}><ArrowLeft data-icon="inline-start" /> Voltar</Button></div>
       </PhaseShell>
     );

@@ -4,6 +4,12 @@
  */
 export type SalesDriver = 'funcao' | 'estetica';
 
+/* Fato que uma direção específica precisa ter no contexto antes de ser usada. */
+export type ReferenceRequirement = {
+  label: string;
+  question: string;
+};
+
 export const salesDrivers: Array<{ value: SalesDriver; label: string; description: string }> = [
   { value: 'funcao', label: 'Uma funcionalidade', description: 'O diferencial não aparece na foto e precisa ser dito em texto.' },
   { value: 'estetica', label: 'A estética', description: 'A foto vende sozinha. O produto é bonito e isso basta.' },
@@ -26,6 +32,7 @@ export type Reference = {
   image: string;
   sample?: string;
   validated: boolean;
+  requirement?: ReferenceRequirement;
   limits?: string;
   recipe: string;
 };
@@ -243,6 +250,10 @@ export const references: Reference[] = [
     tags: ['antes e depois', 'resultado', 'comparação', 'produto pequeno'],
     image: '/references/ref-0017.jpg',
     validated: false,
+    requirement: {
+      label: 'antes e depois comprovado',
+      question: 'O contexto confirma um antes e depois real do mesmo caso, causado pelo produto?',
+    },
     limits: 'Só pode ser usado com resultado visual e comparação comprovados.',
     recipe:
       'Comparação vertical dividida ao meio mostrando antes e depois do mesmo enquadramento, com mudança visual somente quando comprovada pelas fontes. Produto pequeno sobreposto no rodapé e headline factual em caixa de alto contraste. Sem retoque exagerado nem resultado inventado.',
@@ -258,6 +269,10 @@ export const references: Reference[] = [
     tags: ['comparativo', 'problema solução', 'infográfico', 'benefícios'],
     image: '/references/ref-0018.jpg',
     validated: false,
+    requirement: {
+      label: 'comparação comprovada',
+      question: 'O contexto confirma alternativas reais, a limitação de cada uma e o resultado factual do produto?',
+    },
     limits: 'Exige problemas, alternativas e benefícios confirmados nas fontes.',
     recipe:
       'Infográfico claro dividido entre alternativas ou problemas no lado esquerdo e produto protagonista no lado direito. Headline curta no topo, três objeções factuais em cartões e um benefício visual comprovado no rodapé. Produto grande, setas discretas e hierarquia clínica limpa.',
@@ -273,24 +288,28 @@ export const references: Reference[] = [
     tags: ['tutorial', 'três passos', 'demonstração', 'infográfico'],
     image: '/references/ref-0019.png',
     validated: false,
+    requirement: {
+      label: 'três etapas reais de uso',
+      question: 'O contexto confirma exatamente três etapas reais para usar este produto?',
+    },
     limits: 'Requer sequência real de uso com exatamente três etapas confirmáveis.',
     recipe:
       'Headline operacional no topo, produto grande e isolado ao centro e três cartões numerados na faixa inferior demonstrando uma sequência real de uso. Fundo claro, cor de acento da marca e instruções muito curtas. Cada passo deve corresponder ao funcionamento confirmado do produto.',
   },
   {
     id: 'REF-0020',
-    name: 'Produto com prova social',
+    name: 'Produto em uso com cartões',
     family: 'Lifestyle',
     category: 'Outros',
     modes: ['single'],
     people: 'corpo-suporte',
-    drivers: ['funcao'],
-    tags: ['reviews', 'prova social', 'produto na mão', 'benefícios'],
+    drivers: ['funcao', 'estetica'],
+    tags: ['produto em uso', 'cartões', 'detalhes factuais', 'benefícios'],
     image: '/references/ref-0020.png',
     validated: false,
-    limits: 'Só usar avaliações, autores e resultados fornecidos ou confirmados.',
+    limits: 'Os cartões usam provas reais quando existirem; sem elas, mostram detalhes factuais do próprio produto.',
     recipe:
-      'Produto grande em uso ou sustentado por uma mão ocupa a metade esquerda. A direita recebe três cartões de avaliações reais, cada um com foto apenas se fornecida, estrelas apenas se confirmadas, headline e trecho fiel. Rodapé com até três benefícios factuais e fundo contextual suave.',
+      'Produto grande em uso ocupa um lado da cena e cartões empilhados ocupam o outro. Os cartões usam avaliações reais quando houver fonte; sem elas, mostram detalhes visuais e fatos confirmados do próprio produto. Rodapé com até três benefícios factuais e fundo contextual suave.',
   },
   {
     id: 'REF-0021',
@@ -470,11 +489,12 @@ export const references: Reference[] = [
 /*
  * Ordena a biblioteca pelo argumento de venda do produto, sem esconder nada:
  * o catálogo é pequeno, e sumir com metade dele não ensina quem escolhe.
- * 0 = serve, 1 = neutra, 2 = briga com o argumento (peça densa para produto que vende pela foto).
+ * 0 = direção própria para o argumento, 1 = direção flexível/neutra,
+ * 2 = briga com o argumento (peça densa para produto que vende pela foto).
  */
 export function driverFit(reference: Reference, driver: SalesDriver | null) {
   if (!driver || !reference.drivers?.length) return 1;
-  if (reference.drivers.includes(driver)) return 0;
+  if (reference.drivers.includes(driver)) return reference.drivers.length === 1 ? 0 : 1;
   // Peça cheia de tópicos num produto que vende pela foto é o erro caro: vai para o fim.
   if (driver === 'estetica' && reference.drivers.includes('funcao')) return 2;
   return 1;

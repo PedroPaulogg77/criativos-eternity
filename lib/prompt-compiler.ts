@@ -279,15 +279,15 @@ const testedDirections: Record<string, TestedDirection> = {
 - Esta peça não tem logo da loja, não tem selo e não tem CTA.`,
   },
   'REF-0020': {
-    title: 'PRODUTO COM PROVA SOCIAL',
-    single: `- O que define esta direção: uma CENA REAL do ambiente onde o produto é usado, com a prova vindo de CLIENTES QUE JÁ COMPRARAM e que aparecem segurando o mesmo produto. Não é infográfico, não é fundo branco e não compara com concorrente nenhum.
-- O fundo é o ambiente real de uso, reconhecível mas desfocado, com os detalhes que provam o contexto — vidro molhado, azulejo, bancada.
-- Uma mão entra pela borda inferior de um dos lados e segura o produto de baixo para cima, quase na vertical. O produto ocupa quase toda a altura desse lado, nítido, com a marca e os detalhes legíveis. A mão segura pelo corpo do produto, sem cobrir o que o identifica.
+    title: 'PRODUTO EM USO COM CARTÕES',
+    single: `- O que define esta direção: uma CENA REAL do ambiente onde o produto é usado, com o produto inteiro e reconhecível de um lado e cartões claros empilhados do outro. Os cartões organizam fatos da campanha; eles não exigem prova social.
+- O fundo é o ambiente real de uso, reconhecível mas desfocado, com detalhes coerentes com o produto. Não importe cenário de outra categoria: água e azulejo só entram para item usado no banho; vestuário pede um ambiente coerente com o look.
+- Produto portátil: uma mão entra pela borda inferior e o segura sem cobrir marca ou detalhes. Produto vestível: a pessoa o veste e o enquadramento corta abaixo do pescoço, deixando a peça inteira mais nítida do que o restante do look. Em ambos os casos, o produto ocupa quase toda a altura desse lado.
 - Do lado oposto, três cartões claros de cantos bem arredondados, empilhados com espaço entre eles, flutuando sobre a foto com sombra suave.
-- Dentro de cada cartão: uma foto quadrada de cantos arredondados no canto superior, mostrando o cliente SEGURANDO o mesmo produto, no ambiente doméstico dele. São fotos com cara de foto de cliente, não de ensaio produzido.
-- Ao lado dessa foto, as estrelas da avaliação e uma headline curta em peso forte, com duas ou três linhas. Abaixo de um filete fino, o depoimento em corpo menor, ocupando a largura do cartão.
-- As estrelas são a única cor de acento de toda a peça. Todo o resto é a cena, o produto e o texto escuro.
-- Nenhum nome, nota, número ou depoimento pode ser inventado, e nenhuma foto de cliente pode ser fabricada. Sem fonte, o cartão sai da peça em vez de ser preenchido — dois cartões reais valem mais que três com um inventado.
+- Quando houver avaliações reais no contexto, cada cartão pode trazer uma foto fornecida do cliente, as estrelas e um trecho fiel do depoimento. Nenhum nome, nota, número, resultado, foto ou frase de cliente pode ser inventado.
+- Quando não houver avaliações reais, os cartões continuam na peça: cada um traz uma foto ou recorte de um detalhe VISUALMENTE CONFIRMADO do mesmo produto e uma linha curta puramente factual. Use a silhueta, acabamento, variante ou componente que esteja nas fontes; não invente benefício para preencher cartão.
+- Sem prova social, não use estrelas, retrato de cliente, aspas, nota, nome nem texto com aparência de depoimento. A ausência de avaliações não impede esta direção.
+- A cor de acento só entra quando houver avaliações reais e ela vier das estrelas. Sem avaliações, a peça usa apenas os tons neutros da cena, do produto e do texto escuro.
 - Na base, sobre a própria foto e sem cartão atrás, até três ganhos confirmados, cada um com um ícone circular de traço fino e duas linhas curtas, separados por divisórias verticais finas.
 - Quando houver oferta a comunicar, ela entra em uma linha curta na base, junto dos ganhos, sem selo e sem faixa própria.
 - Os cartões nunca cobrem o produto nem encostam nele. Esta peça não tem logo da loja separada nem CTA.`,
