@@ -226,13 +226,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0016': {
     title: 'CLOSE EDITORIAL EM USO',
-    single: `- Close extremo de uma pessoa usando o produto ocupa a maior parte do quadro, com o rosto cortado de forma deliberada pela borda lateral. O corte é limpo e vertical na lateral, nunca no topo da cabeça.
-- O produto em uso é o elemento mais nítido e mais detalhado da imagem, mostrado por inteiro, na altura dos olhos de quem vê, com a pele e o cabelo em foco levemente menor.
-- A outra parte do quadro é um fundo claro, liso e contínuo com a pele iluminada, e recebe todo o texto alinhado a um único eixo.
-- O texto é curto e tem só dois níveis: um ornamento discreto com filete e uma linha em caixa alta espaçada no alto, e logo abaixo a oferta em caixa alta pesada, em duas ou três linhas.
-- A oferta é o único bloco grande da peça. Não existe lista de benefícios, não existe ícone, não existe CTA e não existe faixa no rodapé.
+    single: `- O que define esta direção: um CLOSE EXTREMO do rosto, cortado pela borda lateral, com o produto em uso na altura dos olhos e a oferta sozinha do outro lado. O fundo de estúdio é um só: ele passa por trás da pessoa e continua até a borda oposta, virando o espaço do texto sem nenhuma divisão.
+- O rosto aparece de três quartos, quase inteiro, com uma fatia cortada pela borda lateral. O corte é vertical e deliberado, nunca no topo da cabeça.
+- Verticalmente o enquadramento vai do alto do cabelo até a base do pescoço, e a pessoa veste algo escuro e liso que fecha o canto inferior.
+- O produto em uso ocupa uma faixa horizontal na altura dos olhos e é o elemento mais nítido e mais detalhado da peça: armação, ferragem, acabamento e logo legíveis. Pele e cabelo ficam um grau abaixo em nitidez.
+- O casting segue o público declarado do produto. Expressão neutra, sem sorriso, olhar para a frente ou levemente fora do quadro.
+- Do lado do fundo livre, o texto em dois níveis apenas. No alto, um ornamento discreto — um filete horizontal com uma pequena forma geométrica no centro — e, logo abaixo, uma linha curta em caixa alta bem espaçada.
+- Abaixo dela, a oferta em caixa alta muito pesada, em três linhas de tamanhos crescentes: a última é a maior de todas e fecha o bloco.
+- A oferta é o único bloco grande da peça. Não existe lista de benefícios, não existe ícone, não existe CTA, não existe faixa e não existe logo da loja.
 - Esta direção vende pelo desejo do produto, não por argumento escrito. Se houver benefício confirmado no contexto, ele fica de fora: o espaço é do close e da oferta.
-- Alto contraste entre a pele iluminada e o fundo claro, com leitura imediata em tela pequena.`,
+- Não há cor de acento: o texto é escuro sobre o fundo claro, e toda a cor vem da pele e do próprio produto.`,
   },
   'REF-0017': {
     title: 'ANTES E DEPOIS DIRETO',
