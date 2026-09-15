@@ -376,13 +376,17 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0027': {
     title: 'UNBOXING COM OFERTA NA TAMPA',
-    single: `- Vista de cima de uma caixa de envio genérica de papelão, aberta, apoiada sobre uma superfície real de bancada.
-- A caixa é neutra e sem marca de transportadora. A parte interna da tampa funciona como o suporte do texto, impresso diretamente no papelão.
-- A tampa concentra, nesta ordem: a marca da loja no topo, uma headline curta em duas linhas e uma linha por degrau da oferta, todas alinhadas no mesmo eixo.
-- Dentro da caixa, o produto aparece dobrado ou acomodado como chegaria ao cliente, inteiramente reconhecível, com cores, estampas e logos fiéis.
-- Papel de proteção discreto pode aparecer nas bordas internas, sem cobrir o produto.
-- Luz natural difusa, sombra macia e nenhum adereço de cena.
-- Não invente embalagem oficial, fita personalizada, cartão ou brinde que não estejam confirmados.`,
+    single: `- O que define esta direção: uma caixa de envio de papelão vista ESTRITAMENTE DE CIMA, com as quatro abas abertas formando uma cruz, e a oferta impressa na aba maior como se fizesse parte da embalagem.
+- A câmera está a prumo, direto acima da caixa. Sem perspectiva, sem inclinação, sem ângulo de três quartos.
+- A caixa é de papelão natural, sem impressão externa e sem marca de transportadora. As abas laterais ficam abertas para os lados e a aba de trás, a maior, fica aberta para cima e é onde vive todo o texto.
+- O texto parece IMPRESSO no papelão, com a textura do papel aparecendo através dele. Nada de adesivo, cartão colado ou etiqueta.
+- Na aba, tudo centralizado e nesta ordem: a marca da loja no topo, uma headline curta em duas linhas, e uma linha por degrau da oferta.
+- Todo esse texto é em CAIXA ALTA e sans condensada pesada, em preto. A marca da loja é o único elemento colorido da aba.
+- Dentro da caixa, o produto aparece dobrado como chegaria ao cliente, com a face principal para cima, inteiramente reconhecível, com cores, estampas e logos fiéis.
+- Papel de seda claro aparece amassado nas bordas internas, contornando o produto sem cobri-lo.
+- A caixa se apoia sobre uma bancada de pedra clara com grão visível. Luz difusa de cima, sombra macia projetada ao redor da caixa, e nenhum adereço de cena.
+- Não invente embalagem oficial, fita personalizada, cartão, brinde nem marca de terceiros que não estejam confirmados nas fontes.
+- Esta peça não tem selo, não tem ícone, não tem CTA e não tem pessoa.`,
   },
   'REF-0028': {
     title: 'DETALHE FUNCIONAL COM DEPOIMENTO',
