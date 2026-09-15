@@ -362,15 +362,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0026': {
     title: 'MODELO EDITORIAL COM OFERTA GIGANTE',
-    single: `- A peça toda vive num mesmo ambiente claro e quente. A área de texto à esquerda é a parede da própria cena, no mesmo tom da arquitetura ao fundo: a passagem da área de texto para a fotografia é suave e contínua, sem linha divisória, sem moldura e sem dois retângulos colados.
-- Uma pessoa em corpo inteiro usa o produto à direita, em pé, em pose natural e relaxada, num cenário arquitetônico claro com luz de sol lateral, sombra projetada macia e um elemento natural discreto ao fundo. Nada de parede de concreto cru e nada de cenário cinzento.
-- A peça vendida aparece inteira, nítida e bem iluminada, sem dobras que escondam corte, caimento ou logo.
-- Todo o texto fica na área clara à esquerda, alinhado à esquerda e empilhado nesta ordem: wordmark da loja em tipografia serifada no topo, filete curto na cor de acento, uma palavra em caixa alta espaçada, o título em caixa alta pesada, outro filete, uma expressão curta de introdução e a oferta.
-- A oferta é o maior elemento da peça inteira, em corpo muito grande, na cor de acento, com um único tamanho e um único peso. Abaixo dela, uma palavra em caixa alta espaçada fecha o bloco.
-- A cor de acento é premium — metálica, terrosa ou escura. Nada de vermelho de liquidação.
-- Só existem esses dois níveis de texto: a identidade no topo e a oferta embaixo. Não existe lista de benefícios, não existe ícone, não existe faixa no rodapé e não existe CTA.
+    single: `- O que define esta direção: uma foto de moda ao ar livre com SOL FORTE e arquitetura mediterrânea clara, onde a parede iluminada da própria cena vira o espaço do texto. Não existe painel de cor, não existe divisória e não existem dois retângulos colados.
+- O cenário é de pedra e reboco claro: parede lisa, degraus largos, e um vaso de pedra com uma planta de folha estreita num dos cantos. Luz de sol direta, sombras nítidas e desenhadas na parede.
+- A pessoa aparece de corpo inteiro no lado oposto ao texto, em pé, de três quartos, olhando para fora do quadro. Uma das mãos no bolso, postura relaxada, sem sorriso posado.
+- O conjunto vendido aparece inteiro, do peito aos joelhos, nítido, com os logos e o caimento legíveis. Nada de dobra que esconda corte ou acabamento.
+- Todo o texto fica na parede clara, alinhado à esquerda e empilhado nesta ordem: o wordmark da loja em tipografia SERIFADA de caixa mista; um filete curto na cor metálica; uma palavra em caixa alta espaçada; o título em caixa alta SANS CONDENSADA muito pesada; um segundo filete, mais longo que o primeiro; uma expressão curta em caixa alta espaçada; e a oferta.
+- A oferta é o maior elemento da peça inteira, em sans pesada e cor metálica, num único tamanho e num único peso. Abaixo dela, uma palavra em caixa alta com espaçamento de letra bem aberto fecha o bloco.
+- São três famílias tipográficas ao todo — serifada, condensada pesada e sans pesada — e duas cores gráficas: o escuro do texto e o metálico dos filetes e do número.
+- A cor metálica é premium: dourada, terrosa ou bronze. Nada de vermelho de liquidação.
+- Só existem esses dois territórios de texto: a identidade no topo e a oferta embaixo. Não existe lista de benefícios, não existe ícone, não existe faixa no rodapé e não existe CTA.
 - Esta direção vende pela marca e pelo preço. Se houver benefício confirmado no contexto, ele fica de fora: o espaço é do respiro e do número.
-- Acabamento de campanha de moda premium: muito ar em volta de cada bloco e nenhum elemento decorativo extra.
 - Acessórios e calçados da pessoa ficam discretos e nunca mais chamativos que a peça vendida.`,
   },
   'REF-0027': {
