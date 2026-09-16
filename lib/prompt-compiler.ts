@@ -16,6 +16,7 @@ type TestedDirection = {
 };
 
 const itemLabel = (index: number, round = 1) => String((round - 1) * 5 + index + 1).padStart(2, '0');
+const testimonialReferenceIds = new Set(['REF-0020', 'REF-0072', 'REF-0078']);
 
 /*
  * Rodadas seguidas na mesma conversa empilham instrução e colidem de numeração.
@@ -445,6 +446,412 @@ const testedDirections: Record<string, TestedDirection> = {
 - A peça inteira é branco, cinza e preto. A ÚNICA cor do quadro é a do texto do cartão, e ela aparece em dois tons da mesma família. Nenhuma outra cor entra em lugar nenhum.
 - Nada de flat lay, nada de peça deitada, nada de fundo quente e nada de respiro branco entre blocos.`,
   },
+  'REF-0014': {
+    title: 'MODELO HERÓI COM CATÁLOGO INFERIOR',
+    collection: `- O que define esta direção: um retrato enorme usando um produto ocupa o alto esquerdo, a oferta ocupa o alto direito e uma faixa de catálogo com quatro produtos distintos atravessa toda a base. O rosto vende o produto herói; a faixa prova a variedade da coleção.
+- A fotografia superior é um close frontal ou em três quartos, do topo da cabeça até pouco abaixo do queixo. O rosto aparece completo e corresponde ao público-alvo capturado.
+- O produto usado no rosto é a primeira leitura comercial: fica nítido, sem reflexo que esconda formato, lente, armação, cor, haste ou acabamento. Pele, cabelo e roupa permanecem secundários.
+- No lado oposto ao rosto, a oferta fica alinhada à esquerda sobre fundo claro, em sans-serif pesada e poucas linhas. A vantagem principal é a maior linha; marca e condição ficam menores.
+- Logo abaixo da oferta existe uma área retangular clara e vazia. Preserve esse vazio de propósito: não coloque ali benefício, ícone, selo, CTA, avaliação nem texto de apoio.
+- Uma linha horizontal separa o retrato da faixa inferior. Na faixa, quatro módulos iguais mostram quatro produtos elegíveis distintos, um por módulo, frontais ou em três quartos e sobre o mesmo fundo claro.
+- O produto no rosto pode ser um quinto item elegível. Se a coleção trouxer menos itens, use menos módulos e deixe-os maiores; não repita, recolora ou invente produto para completar.
+- As divisões da faixa são discretas e retas. Não use cartões com sombra, círculos, plintos, embalagens ou cenários individuais.
+- Toda a peça usa branco, cinzas suaves, texto escuro e as cores reais dos produtos. A fotografia superior e o catálogo inferior precisam parecer parte da mesma campanha.`,
+  },
+  'REF-0029': {
+    title: 'DUPLA DE PRODUTOS COM OFERTA LATERAL',
+    collection: `- O que define esta direção: dois produtos repousam soltos sobre uma única superfície bege e tátil, em ângulos diferentes, deixando um vazio claro no canto inferior direito para a oferta. Não existe grade, caixa ou pedestal.
+- O produto principal fica grande no primeiro plano, atravessando a base em diagonal suave. O segundo fica acima e mais ao fundo, menor e quase horizontal, sem tocar nem esconder o primeiro.
+- Os dois produtos são distintos e elegíveis. Cada um mantém mostrador, fecho, pulseira, material, cor e proporção reais; não crie uma segunda variante a partir do primeiro.
+- A câmera fica próxima da superfície, com profundidade de campo suficiente para os dois produtos serem reconhecíveis. Sombras de contato macias ancoram cada peça.
+- A superfície é quente e levemente irregular, como pedra fosca ou papel mineral. O fundo continua no mesmo material, sem horizonte marcado e sem objetos decorativos.
+- O wordmark da loja fica pequeno e centralizado no alto, em cor escura. Ele não disputa com os produtos.
+- No vazio inferior direito, uma linha curta de apoio pode ficar acima da oferta. A oferta vem em poucas linhas, alinhada à esquerda, usando a tipografia e as cores capturadas da loja.
+- Não copie chamadas de urgência, “última chance” ou “mix and match” da referência. Só entram mensagens e condições presentes no contexto.
+- Esta peça não tem pessoa, benefício em lista, selo, cartão, CTA, embalagem nem acessórios.`,
+  },
+  'REF-0032': {
+    title: 'PEÇA EM CAIXA COM PLACA GRANDE',
+    single: `- O que define esta direção: o produto aparece dentro de uma pequena caixa expositora aberta no primeiro plano, enquanto uma placa impressa muito maior se ergue logo atrás. O produto e a placa formam um único eixo vertical no balcão de uma loja física.
+- A caixa fica apoiada sobre o balcão e aberta em direção à câmera. O produto ocupa o centro interno, inteiro, nítido e grande o bastante para ser reconhecido antes de qualquer objeto do ambiente.
+- Use embalagem oficial somente quando ela estiver confirmada nas fontes. Caso contrário, a caixa é neutra, sem logo, sem estampa e com interior simples de exposição.
+- A placa atrás da caixa é alta e retangular, impressa em papel rígido. Ela traz o wordmark no alto, uma headline curta e a oferta completa em hierarquia forte, tudo alinhado como material real de ponto de venda.
+- A placa é maior do que a caixa, mas não encobre o produto. A base da placa desaparece atrás da caixa, criando profundidade real.
+- Ao fundo, uma joalheria ou loja premium quente, com madeira, metal e luzes suaves desfocadas. Qualquer mercadoria distante fica irreconhecível; não introduza outro produto da campanha.
+- A luz principal recai sobre o produto e a placa. Reflexos em metal e vidro são controlados e não apagam rótulos, pedras, gravações ou acabamento.
+- Todo o texto comercial fica na placa. Não acrescente faixa, selo, texto solto, CTA, avaliação, urgência ou benefício fora dela.
+- A cena não tem pessoa. A sensação é de fotografia real feita diante de uma vitrine, não de packshot recortado em fundo artificial.`,
+  },
+  'REF-0033': {
+    title: 'CAIXA DE ENVIO EM LOJA FÍSICA',
+    collection: `- O que define esta direção: uma caixa de papelão aberta, vista de frente sobre o balcão, funciona como expositor improvisado para a coleção. Uma folha impressa com a oferta está presa na face frontal da própria caixa.
+- A caixa é o maior objeto do quadro e fica no centro, com as abas superiores abertas. Ela parece uma caixa real de recebimento de mercadoria, não um expositor de luxo.
+- Dentro dela, os produtos elegíveis aparecem organizados em pequenas bases ou almofadas, formando fileiras irregulares e densas. Cada item continua separado e reconhecível.
+- A quantidade indicada para esta direção é um alvo visual. Se o contexto trouxer menos itens, use menos e aumente suas bases; jamais duplique, recolora ou invente produto para lotar a caixa.
+- Na face da caixa, uma folha branca retangular fica presa de modo simples. Ela concentra todo o texto: wordmark, headline curta, oferta e somente condições confirmadas.
+- Caixa e folha são genéricas quando as fontes não trouxerem materiais oficiais. Não invente etiqueta de envio, endereço, código, fita de marca ou embalagem proprietária.
+- O ambiente é uma loja moderna, clara e real. Pessoas da equipe podem aparecer atrás do balcão em foco suave, com rostos completos e postura natural, apenas para dar vida ao local.
+- O foco e a luz ficam na caixa e nos produtos; equipe, prateleiras e balcão recuam. Nenhuma pessoa segura ou cobre um item.
+- Não transforme esta direção em balcão de joalheria organizado nem em grade de catálogo. A caixa de papelão e a folha presa na frente são os dois sinais que a distinguem.`,
+  },
+  'REF-0034': {
+    title: 'BALCÃO DE JOALHERIA COM PLACA',
+    collection: `- O que define esta direção: uma placa física alta fica em pé no centro de um balcão de joalheria, e os produtos formam uma moldura baixa ao redor dela. Não existe caixa de envio nem pessoa.
+- A placa se apoia num suporte metálico discreto e ocupa o eixo central. Ela é o elemento vertical mais alto; os produtos nunca cobrem o texto principal.
+- Dentro da placa, wordmark no alto, headline curta no meio e oferta completa abaixo, em acabamento editorial premium. Todo o texto comercial vive nela.
+- Os produtos elegíveis ficam distribuídos sobre bases, almofadas e pequenos suportes reais de joalheria, dos dois lados e à frente da placa. A organização é abundante, mas não caótica.
+- Itens maiores ficam mais próximos das laterais; itens menores podem preencher a frente. Cada produto preserva forma, metal, pedra, mostrador, corrente, fecho e cor reais.
+- A quantidade é um alvo da composição. Com menos produtos, abra os espaços e aumente as bases; não repita ou invente para formar uma multidão artificial.
+- O balcão tem tampo claro ou madeira quente, reflexos suaves e iluminação de vitrine. O fundo traz a loja desfocada em tons quentes, sem outra mercadoria reconhecível.
+- Paleta neutra e luxuosa, com dourado ou latão apenas nos suportes e filetes quando coerente com a identidade. Nenhuma cor promocional forte é criada.
+- Esta peça não tem pessoa, selo, lista de benefícios, CTA, faixa gráfica, caixa de papelão ou texto fora da placa.`,
+  },
+  'REF-0036': {
+    title: 'DOIS PULSOS LIFESTYLE COM OFERTA',
+    collection: `- O que define esta direção: dois antebraços entram por lados opostos e se encontram no centro num gesto de cumplicidade, exibindo dois produtos distintos nos pulsos. Os rostos ficam totalmente fora do quadro.
+- Cada pulso sustenta um produto elegível diferente. Os dois têm importância semelhante, aparecem nítidos e mantêm mostrador, caixa, pulseira, fecho, material e cor reais.
+- As mãos formam punhos relaxados que se tocam de leve no centro. Dedos, articulações, escala e direção dos braços são anatomicamente corretos.
+- O enquadramento vai somente das mãos até parte dos antebraços. Roupa escura e neutra pode aparecer nos punhos, sem estampa nem marca concorrente.
+- O ambiente ao fundo lembra um bar ou lounge noturno sofisticado, com luzes âmbar e azuladas em bokeh. Nenhum copo, garrafa, tatuagem ou acessório decorativo entra em foco.
+- A parte superior escura fica livre para o texto. A oferta é centralizada em serifada branca, com linhas curtas e elegantes; uma linha de apoio em caixa alta espaçada pode aparecer em dourado logo abaixo.
+- O texto não toca os produtos nem os braços. Não acrescente cartão, selo, faixa, benefício, ícone, preço separado, avaliação ou CTA.
+- A luz lateral cria brilho controlado nos dois produtos e separa os braços do fundo. O gesto humano constrói o clima, mas os produtos continuam sendo a primeira leitura.`,
+  },
+  'REF-0040': {
+    title: 'MODELO INTEIRO COM ESCADA DE DESCONTO',
+    collection: `- O que define esta direção: um único look de corpo inteiro fica em pé numa lateral, enquanto a outra lateral apresenta uma escada de oferta aberta diretamente sobre o fundo cinza. Não existem cartões atrás dos degraus.
+- O estúdio é cinza claro e contínuo, com piso e parede unidos por transição suave. A luz vem ampla de um lado e projeta uma sombra longa e discreta atrás da pessoa.
+- A pessoa aparece da cabeça aos pés, de frente ou em leve três quartos, com rosto completo e expressão natural. Casting, idade, gênero e corpo seguem o público capturado.
+- O look é a primeira leitura de produto: aparece inteiro, nítido, sem casaco, bolsa ou acessório que cubra as peças. Um único look representa a coleção; não invente outros itens ao redor.
+- No lado vazio, o wordmark fica no alto. Abaixo dele, uma headline em duas linhas combina uma linha regular e outra mais pesada, sem virar um bloco maior do que a pessoa.
+- A escada fica abaixo da headline, aberta no próprio fundo. Cada degrau forma uma linha horizontal com ícones de sacola à esquerda, quantidade no meio, um filete vertical e a vantagem grande à direita.
+- A quantidade de ícones cresce de acordo com cada condição real da oferta. As linhas são separadas por filetes horizontais finos; não existe borda externa nem fundo de cartão.
+- Se a oferta tiver menos degraus, mostre menos linhas e preserve o espaço. Não invente percentuais, vantagens ou uma terceira condição para imitar a referência.
+- Paleta cinza, preta e branca, com somente uma cor suave da identidade se ela estiver presente na marca. Nada de selo, CTA, benefício, avaliação ou faixa inferior.`,
+  },
+  'REF-0046': {
+    title: 'GRADE SOBREPOSTA COM ESCADA SUPERIOR',
+    collection: `- O que define esta direção: seis peças frontais formam duas fileiras sobrepostas sobre fundo branco, e uma tabela de oferta de três colunas fica aberta no alto. Os produtos se tocam; não vivem em módulos separados.
+- A fileira de trás traz três peças ligeiramente mais altas. A fileira da frente traz outras três, deslocadas para cobrir apenas pequenas bordas das de trás.
+- Cada produto aparece de frente, como recorte de catálogo, com silhueta completa e detalhes nítidos. Cabides, manequins, corpos e cenários não aparecem.
+- A sobreposição cria profundidade, mas nenhuma peça perde gola, cintura, fechamento, estampa ou parte que a identifique. Sombras curtas e suaves separam uma camada da outra.
+- Se houver menos de seis itens elegíveis, use menos peças e aumente os intervalos; não repita, recolora ou invente produto. Se houver mais, escolha somente os necessários para esta composição.
+- Acima dos produtos, a oferta ocupa uma tabela horizontal de colunas lado a lado. Cada coluna traz a quantidade numa faixa branca superior e a vantagem numa faixa preta inferior.
+- Divisórias verticais finas separam as colunas. Com menos degraus, use menos colunas e centralize a tabela; não empilhe condições nem crie cartões individuais.
+- Wordmark pequeno e uma linha curta podem aparecer acima da tabela somente se houver espaço. A oferta continua sendo o único bloco textual dominante.
+- Esta peça usa branco, preto e as cores reais dos produtos. Não há pessoa, benefício, selo, ícone, CTA, fundo colorido ou grade de células.`,
+  },
+  'REF-0047': {
+    title: 'FLAT LAY NEUTRO COM OFERTA NO VAZIO',
+    collection: `- O que define esta direção: cinco produtos vistos de cima ficam espalhados em torno de um vazio no alto esquerdo, onde vivem marca e oferta. Não existe grade, círculo, cartão ou alinhamento rígido.
+- O fundo inteiro é uma única superfície bege clara e fosca, com pequenas variações naturais de textura. Não há horizonte nem cenário construído.
+- Os produtos ficam separados, cada um em uma direção levemente diferente. Alguns entram pelas bordas e outros ficam inteiros, criando um ritmo solto de editorial impresso.
+- Cada item mantém escala coerente com seu tamanho real. Peças maiores ocupam mais área; itens menores não são inflados para preencher o mesmo espaço.
+- Sombras suaves caem na mesma direção e deixam claro que tudo foi fotografado junto. Nada flutua nem recebe base individual.
+- Se o contexto trouxer menos itens, mantenha a assimetria com menos objetos e mais respiro. Não repita, recolora ou acrescente acessórios fora da lista de elegíveis.
+- No vazio superior esquerdo, wordmark pequeno, headline curta e degraus da oferta aparecem alinhados à esquerda. Cada degrau é uma linha de texto simples, sem fundo e sem ícone.
+- A hierarquia tipográfica é delicada: marca e apoio leves, vantagem em peso maior. O bloco não invade os produtos nem cresce até o centro.
+- Paleta quente e neutra, sem cor promocional estridente. Esta peça não tem pessoa, lista de benefícios, selo, CTA, moldura ou divisórias.`,
+  },
+  'REF-0048': {
+    title: 'FLAT LAY DENSO COM ESCADA LATERAL',
+    collection: `- O que define esta direção: uma coleção densa ocupa a maior parte direita de um flat lay bege, enquanto uma headline muito alta e condensada e uma escada de oferta ocupam a coluna esquerda. O contraste entre massa de produtos e massa tipográfica cria a peça.
+- O fundo é uma única superfície bege clara, fotografada de cima. Todos os produtos compartilham a mesma luz, sombra e direção de câmera.
+- Os itens se distribuem em diagonal, próximos entre si, com pequenas sobreposições naturais. Cada silhueta continua legível; a composição parece abundante, não amontoada.
+- Peças de roupa, calçados e acessórios só podem coexistir quando todos aparecem na lista de elegíveis. Se a campanha tiver uma única categoria, use somente essa categoria e deixe os itens maiores.
+- A quantidade é alvo de densidade, não obrigação. Com menos itens, aumente-os e abra o conjunto; nunca invente bolsa, boné, joia ou outra categoria para preencher.
+- A headline na esquerda usa sans-serif muito condensada, caixa alta e várias linhas curtas. Ela é o maior texto da peça, mas não ultrapassa visualmente o conjunto de produtos.
+- Abaixo dela, a escada fica aberta no fundo: ícones de sacola crescentes, quantidade, filete vertical e vantagem grande. Filetes horizontais finos separam os degraus.
+- A quantidade de linhas acompanha exatamente a oferta recebida. Sem cartões, cápsulas, selo ou faixa colorida.
+- O wordmark pode aparecer pequeno no topo da coluna de texto. Não há pessoa, benefício em lista, avaliação, CTA ou objetos decorativos.`,
+  },
+  'REF-0050': {
+    title: 'GRADE DE CINCO LOOKS COM OFERTA INFERIOR',
+    collection: `- O que define esta direção: cinco fotografias de looks formam uma grade assimétrica acima de uma faixa larga de oferta. Um módulo alto no centro atravessa duas fileiras; quatro módulos menores ocupam os cantos.
+- Respiros brancos retos separam as cinco fotos. A grade não tem moldura externa pesada e nenhuma imagem invade a outra.
+- O módulo central é o mais alto e funciona como âncora. Ele mostra uma pessoa do pescoço até abaixo do joelho, com o produto inteiro no corpo.
+- Os quatro cantos alternam enquadramentos mais fechados: tronco, cintura, pernas ou detalhe de caimento. O rosto fica fora de todos os quadros; o corpo serve como suporte.
+- Cada módulo mostra um look ou produto elegível distinto. Se houver menos de cinco, use menos módulos e amplie os restantes; não repita o mesmo look em cinco poses.
+- Todas as fotos compartilham fundo de estúdio claro, luz suave e tratamento editorial coerente. O produto recebe mais contraste do que pele, cabelo ou peças neutras de apoio.
+- A faixa inferior atravessa toda a largura com uma cor sólida retirada da identidade. Nela, uma linha pequena introduz a condição, a headline em caixa alta muito pesada domina o centro e os degraus aparecem abaixo em linhas compactas.
+- Se a oferta tiver um único degrau, a faixa mostra uma única condição completa. Não invente uma escada para preencher o rodapé.
+- Não existe wordmark solto sobre as fotos, selo, ícone, CTA, benefício ou produto sem pessoa. A grade de cinco fotos e a faixa inferior são os únicos blocos.`,
+  },
+  'REF-0051': {
+    title: 'FLAT LAY EDITORIAL COM ESCADA CENTRAL',
+    collection: `- O que define esta direção: seis produtos em flat lay são empurrados para as bordas e parcialmente cortados pelo quadro, deixando uma coluna branca e vazia no centro para marca, headline e oferta.
+- O fundo é branco puro e contínuo. Não existe mesa, textura, cenário, módulo ou cartão.
+- Dois produtos entram pelo alto, dois pelas laterais e dois pela base, em ângulos variados. O corte sugere abundância, mas cada item preserva a parte que permite reconhecê-lo.
+- Os produtos nunca atravessam a coluna central. Sombras de contato muito suaves os separam do fundo, todas na mesma direção.
+- Cada item é distinto e elegível. Com menos itens, use menos entradas pelas bordas e deixe os recortes maiores; não repita nem recolora.
+- No centro, o wordmark aparece em serifada elegante, acompanhado por uma linha pequena e espaçada. A headline vem abaixo em sans-serif de caixa alta e espaçamento amplo.
+- Um filete horizontal fino separa a headline da tabela vertical de oferta. Cada linha da tabela traz quantidade à esquerda e vantagem à direita, divididas por um filete vertical.
+- As linhas da oferta ficam abertas no fundo branco, separadas por filetes horizontais; não têm caixas, preenchimentos nem ícones.
+- A quantidade de linhas segue os degraus reais. Esta peça não tem pessoa, benefício, selo, CTA, cor de acento ou acessórios decorativos.`,
+  },
+  'REF-0052': {
+    title: 'MODELO SENTADO COM ESCADA LATERAL',
+    collection: `- O que define esta direção: um único look aparece numa pessoa sentada sobre um bloco na lateral direita, enquanto uma headline pesada e uma tabela compacta de oferta ocupam a lateral esquerda. A pose sentada e a tabela curta distinguem esta direção da modelo em pé.
+- O estúdio é off-white ou cinza muito claro, com parede e base contínuas. O bloco tem o mesmo tom do fundo e aparece somente pela sombra.
+- A pessoa fica sentada de lado, com o tronco voltado para a câmera e uma perna avançando em diagonal sobre a base. O corpo aparece da cabeça até os pés, com rosto completo e expressão natural.
+- O look é inteiro e nítido. Roupa, calçado e acessórios só aparecem quando pertencem ao produto ou são neutros e necessários ao uso; nada compete com a peça anunciada.
+- Um único look representa a coleção. Não espalhe produtos, não crie miniaturas e não invente outras peças para preencher o quadro.
+- No lado esquerdo, wordmark serifado pequeno no alto. A headline abaixo mistura uma primeira linha regular com duas linhas em sans-serif muito pesada, alinhadas à esquerda.
+- Um filete fino separa o título da oferta. Cada degrau ocupa uma linha compacta com ícones de sacola, quantidade, filete vertical e vantagem grande; tudo fica aberto no próprio fundo.
+- A quantidade de ícones cresce conforme a condição real. Com menos degraus, mostre menos linhas e preserve o vazio; não use cartões nem fita de melhor oferta.
+- Paleta clara e neutra, texto escuro e somente cores reais do look. Não há selo, CTA, benefício, avaliação ou faixa inferior.`,
+  },
+  'REF-0063': {
+    title: 'TRÊS PRODUTOS FRONTAIS COM OFERTA INFERIOR',
+    collection: `- O que define esta direção: três produtos frontais e recortados ocupam uma única fileira, quase encostados, entre um título tipográfico enorme no alto e uma oferta enorme na base. Não existe cenário, módulo ou pessoa.
+- Fundo branco ou cinza quase branco, contínuo e sem textura. Sombras de contato suaves ancoram os produtos na mesma linha.
+- Os três itens ficam na mesma escala e vistos exatamente de frente. O item central pode avançar levemente, mas nenhum vira protagonista absoluto.
+- Cada produto é distinto e elegível. Preserve formato, recortes, estampas, textura, logo, costura e cor; não crie variantes nem repita o mesmo item para completar o trio.
+- Se houver apenas dois itens elegíveis, use dois maiores e centralizados. A fileira nunca recebe produto de outra categoria para preencher o espaço.
+- No alto, o nome curto da função ou categoria aparece em sans-serif preta, caixa alta e peso extremo, ocupando a maior largura possível. Logo abaixo, o nome comercial vem em sans-serif muito leve e caixa mista.
+- A tipografia do topo forma um bloco compacto e centralizado, sem caixa, filete ou logotipo adicional. O título não toca nos produtos.
+- Na base, a oferta completa aparece em uma única linha ou em duas linhas muito compactas, em caixa alta pesada e vermelho vivo. Ela é o único elemento colorido fora dos produtos.
+- Esta peça não tem benefício em lista, selo, CTA, avaliação, embalagem, faixa de fundo ou objetos decorativos.`,
+  },
+  'REF-0067': {
+    title: 'PILHA DE UNIDADES COM SELO CIRCULAR',
+    single: `- O que define esta direção: várias unidades do mesmo produto formam uma pilha alta sobre uma mesa real, enquanto uma headline funcional ocupa o alto esquerdo e a oferta fica dentro de um círculo grande na base oposta.
+- A cena acontece em ambiente doméstico acolhedor, com sofá, almofadas e um vaso desfocados. A pilha fica sobre mesa de pedra clara no primeiro plano.
+- Cada unidade dobrada ou empilhada preserva uma parte imediatamente reconhecível do produto — cós, gola, rótulo, formato, embalagem ou outro sinal real. A pilha não pode parecer tecido genérico.
+- Repita somente o produto anunciado. Cores diferentes entram apenas quando forem variantes confirmadas; caso contrário, todas as unidades mantêm a mesma variante.
+- Produtos que não dobram são empilhados ou escalonados de forma fisicamente plausível, sem deformar o formato e sem inventar caixa ou embalagem.
+- A headline ocupa o alto esquerdo em sans-serif branca, caixa alta, muito pesada e com linhas apertadas. Uma sombra deslocada em laranja cria o efeito gráfico da referência sem virar contorno grosso.
+- A frase deve comunicar um benefício funcional confirmado ou o nome material do produto. Não copie promessas de fibra, conforto ou clima quando elas não vierem do contexto.
+- O selo circular laranja fica na base esquerda, parcialmente sobre a mesa, com a oferta centralizada em branco. A condição principal usa peso maior; apoio e limite só entram quando confirmados.
+- A pilha continua maior do que o selo e do que o conjunto de texto. Não há pessoa, lista de benefícios, CTA, avaliação, faixa ou produto solto adicional.`,
+  },
+  'REF-0068': {
+    title: 'PRODUTO ESCURO COM FAIXA INCLINADA',
+    single: `- O que define esta direção: um produto único, isolado e muito grande flutua no centro de um estúdio preto; uma headline vermelha monumental ocupa o alto e a oferta atravessa a base numa faixa amarela inclinada.
+- Fundo preto profundo com halo cinza suave atrás do produto e vinheta escura nos cantos. Uma sombra oval abaixo cria a sensação de suspensão sem parecer recorte mal colado.
+- O produto aparece frontal ou em três quartos, inteiro, nítido e com a parte mais reconhecível voltada para a câmera. Materiais escuros recebem luz de recorte para não desaparecer no fundo.
+- No alto, uma frase factual curta em sans-serif extremamente condensada, caixa alta e vermelho vivo ocupa quase toda a largura. Ela é o maior texto da peça.
+- Logo abaixo, uma linha curta em sans-serif branca e pesada funciona como apoio. Se não houver apoio factual, omita a linha e deixe mais ar sobre o produto.
+- A oferta completa entra numa faixa retangular amarela, levemente inclinada, sobre a parte inferior do produto sem cobrir sua característica principal. Texto preto, condensado, pesado e em caixa alta.
+- A faixa é um único elemento. Não acrescente selo, cartão, segunda faixa, preço separado ou ícone.
+- Qualquer frase de urgência, estoque ou prazo no rodapé só pode aparecer se estiver confirmada no contexto. Sem essa fonte, a área inferior fica apenas com sombra e fundo preto.
+- A peça usa preto, vermelho, amarelo, branco e as cores reais do produto. Não há pessoa, cenário, benefício em lista, avaliação ou CTA.`,
+  },
+  'REF-0069': {
+    title: 'PROVA DOCUMENTAL COM FAIXA DE OFERTA',
+    single: `- O que define esta direção: uma pessoa encara a câmera e segura dois resultados documentais lado a lado; “antes” e “depois” ficam sobre cada documento, uma seta liga os valores e o produto aparece dentro de um círculo grande na faixa inferior.
+- A cena é doméstica, quente e real, com fundo desfocado. A pessoa ocupa o centro, aparece do peito para cima e mantém rosto completo e expressão natural.
+- Cada mão segura uma evidência real fornecida pelo contexto. Os dois documentos têm mesma escala, orientação e altura, com os valores ou medidas confirmados claramente destacados.
+- O lado do antes recebe etiqueta retangular vermelha com texto branco; o lado do depois recebe etiqueta verde. Uma seta vermelha larga curva do primeiro resultado para o segundo.
+- Nunca invente conta, exame, captura, valor, medida, logotipo de empresa ou documento oficial. Use somente a forma de evidência realmente informada e reproduza os dados recebidos.
+- O rodapé é uma faixa vermelha sólida. À esquerda, uma mensagem curta explica o resultado e a oferta usando somente fatos confirmados, com palavras-chave em amarelo ou verde para marcar a mudança.
+- À direita, um círculo branco grande invade a fotografia e a faixa. Dentro dele, o produto aparece inteiro, frontal ou em três quartos, grande o bastante para ser reconhecido de imediato.
+- O círculo não vira foto de detalhe nem ícone. Ele é o único packshot do produto e recebe luz de catálogo limpa.
+- Esta peça não tem benefício adicional, depoimento, avaliação, CTA, urgência ou selo. Sem dois resultados comparáveis confirmados, não gere esta direção.`,
+  },
+  'REF-0072': {
+    title: 'DEPOIMENTO COM DUAS FOTOS DO CLIENTE',
+    single: `- O que define esta direção: um cartão grande de prova social traz duas fotos lado a lado da mesma cliente, um depoimento, avatar, nome e estrelas; o produto aparece recortado junto de uma cápsula de headline acima do cartão.
+- Fundo externo branco e limpo. O cartão usa uma cor escura da identidade, cantos muito arredondados e sombra suave, ocupando quase todo o quadro abaixo do cabeçalho.
+- No topo, um packshot do produto entra pela esquerda e se sobrepõe parcialmente a uma cápsula horizontal da mesma cor do cartão. O produto precisa ficar inteiro e reconhecível, nunca reduzido a um ícone.
+- A cápsula recebe uma frase curta em sans-serif branca e pesada, alinhada à esquerda depois do produto. Ela resume a experiência sem prometer benefício ausente do contexto.
+- Dentro do cartão, duas fotografias retangulares da mesma pessoa ficam lado a lado e com a mesma altura. Elas podem mostrar dois momentos ou situações de uso diferentes, com aparência espontânea de foto de cliente.
+- As duas fotos mantêm identidade, idade, gênero e características da mesma pessoa. Quando não houver antes e depois factual, não simule transformação: mostre apenas dois momentos de uso.
+- Abaixo das fotos, um depoimento publicitário curto ocupa poucas linhas centralizadas em branco. Ele pode ser criado para a peça, mas só menciona características e benefícios confirmados.
+- Na base, avatar circular, nome plausível e cinco estrelas amarelas formam uma assinatura compacta. Esses elementos são parte da linguagem publicitária da direção e não exigem avaliação real anexada.
+- Não inclua data, selo de compra verificada, número de clientes, resultado numérico, oferta ou CTA. Produto, cápsula e cartão formam a composição completa.`,
+  },
+  'REF-0076': {
+    title: 'COMPARATIVO FUNCIONAL EM DUAS COLUNAS',
+    single: `- O que define esta direção: o quadro é dividido verticalmente em duas colunas iguais — produto anunciado sobre fundo claro à esquerda, solução antiga sobre fundo escuro à direita — com imagens no alto e linhas comparativas alinhadas na base.
+- A coluna clara mostra o produto inteiro e, ao lado dele, somente componentes reais que pertençam ao conjunto. Tudo fica dentro de uma área clara de cantos suaves.
+- A coluna escura mostra a solução antiga ou alternativa realmente identificada no contexto, em ângulo semelhante e na mesma escala. Não use marca concorrente nem deixe o objeto grotesco além do que a evidência permite.
+- Um título curto no alto identifica a solução antiga. Quando houver nome factual para o produto anunciado, uma identificação equivalente pode aparecer no lado claro.
+- A metade inferior traz pares de linhas alinhadas. À esquerda, cada benefício confirmado começa com um círculo escuro e marca de acerto branca; à direita, o problema correspondente começa com círculo vermelho e marca de erro branca.
+- Cada par compara o mesmo critério. Não coloque cinco benefícios de um lado e problemas sem relação do outro.
+- Use somente diferenças, componentes e efeitos informados no contexto. Não invente percentuais, bactérias, riscos médicos, materiais, tecnologia ou desempenho para completar as linhas.
+- Se houver menos comparações, use menos linhas e aumente o respiro. Não force cinco tópicos.
+- Esta peça não tem pessoa, oferta, depoimento, avaliação, CTA, selo ou cenário. Sem alternativa e diferenças factuais, não gere esta direção.`,
+  },
+  'REF-0078': {
+    title: 'DEPOIMENTO VISUAL COM RELATO LONGO',
+    single: `- O que define esta direção: duas fotos grandes da mesma cliente ocupam o alto de um cartão branco, e um relato longo ocupa a parte inferior. O produto substitui o pequeno símbolo central e fica claramente reconhecível na divisão entre foto e texto.
+- O cartão tem cantos arredondados, borda branca e sombra muito suave sobre fundo cinza claro. Uma linha vertical fina separa as duas fotos e uma linha horizontal separa fotos e relato.
+- As fotografias são closes semelhantes da mesma pessoa, com luz e enquadramento comparáveis. A identidade permanece consistente nos dois lados.
+- Quando houver resultado visual factual, as fotos podem mostrar dois momentos desse resultado. Sem resultado confirmado, mostre duas situações de uso ou dois ângulos do mesmo cliente, sem insinuar transformação.
+- Pequenas etiquetas de tempo podem aparecer nos cantos inferiores das fotos somente quando o período estiver confirmado. Sem prazo factual, use rótulos neutros ou omita as etiquetas.
+- No centro da divisão, uma medalha circular clara recebe um recorte do produto, não um ícone abstrato. O produto ultrapassa levemente a medalha e mantém formato, rótulo e cor legíveis.
+- Abaixo, cinco estrelas em dourado, um título serifado em caixa alta, um filete curto, o depoimento em sans-serif e uma assinatura itálica formam uma coluna central.
+- O depoimento pode ser criado como texto publicitário, mas só usa benefícios e experiências compatíveis com o contexto. Não invente resultado médico, número, prazo ou garantia.
+- Esta peça não mostra oferta, CTA, selo de verificação, preço nem logo concorrente.`,
+  },
+  'REF-0081': {
+    title: 'CLOSE COMPARATIVO E PRODUTO EM CÍRCULO',
+    single: `- O que define esta direção: dois closes extremos do mesmo detalhe humano ocupam as metades superior e inferior, e um círculo grande com o produto se sobrepõe à divisão no lado esquerdo. A imagem vende um efeito visual específico.
+- Os dois closes usam o mesmo ângulo, escala, iluminação e pessoa para permitir comparação. O enquadramento mostra apenas a região necessária; não transforma o rosto inteiro em personagem.
+- A metade superior apresenta a condição inicial confirmada; a inferior apresenta o efeito confirmado após o uso. Não exagere textura, cor, densidade, tamanho ou perfeição além do que o contexto permite.
+- Uma faixa horizontal clara atravessa a divisão e segue até a borda direita. Nela, uma frase curta em sans-serif pesada e vermelha descreve o benefício ou a facilidade de uso.
+- No lado esquerdo, um círculo com contorno vermelho invade as duas imagens. Dentro dele, o produto aparece inteiro, acompanhado somente de peças que realmente pertençam ao conjunto.
+- O produto precisa ser reconhecível antes que o observador leia a frase: embalagem, formato, aplicador, cor, logo e componentes confirmados ficam legíveis.
+- Uma seta vermelha desenhada à mão sobe da parte inferior para o círculo, ligando o detalhe humano ao produto sem apontar para outra região.
+- Não acrescente rótulos de antes/depois, prazo, número, promessa médica, avaliação, oferta ou CTA quando esses elementos não estiverem no contexto.
+- Sem efeito visual factual e comparável, não gere esta direção.`,
+  },
+  'REF-0084': {
+    title: 'PRODUTO ISOLADO COM PROMESSA NUMÉRICA',
+    single: `- O que define esta direção: um único produto monumental ocupa o centro de um fundo branco quase vazio, entre um hook tipográfico no alto e uma promessa numérica isolada na base.
+- O fundo é branco ou cinza muito claro, com vinheta suave e nenhuma linha de horizonte. Não há cenário, pedestal ou objeto secundário.
+- O produto aparece inteiro em três quartos, grande, nítido e apoiado por sombra de contato longa e muito suave. Face principal, rótulo, controles e detalhes reais ficam voltados para a câmera.
+- No alto, o hook usa até três linhas centralizadas. A primeira é menor e cinza; a segunda e a terceira usam caixa alta espaçada em preto, com a palavra final em peso muito mais forte.
+- O hook explica a ação ou consequência do produto usando somente informações factuais. Não use urgência, medo ou afirmação social não confirmada.
+- Na base, o número confirmado aparece junto da unidade e do prazo em sans-serif fina e espaçada. O número e a palavra-chave recebem verde; o restante permanece cinza escuro.
+- Preserve exatamente valor, unidade e período. Não arredonde, traduza para outra medida, transforme média em garantia nem crie um prazo mais forte.
+- O produto é maior do que os dois blocos de texto juntos e continua sendo a primeira leitura visual.
+- Esta peça não tem pessoa, oferta comercial, selo, benefício adicional, CTA, avaliação ou logo solto. Sem número e prazo confirmados, não gere esta direção.`,
+  },
+  'REF-0085': {
+    title: 'SPLIT DE RESULTADO COM PRODUTO EM CÍRCULO',
+    single: `- O que define esta direção: um antes e depois do mesmo detalhe humano é dividido horizontalmente, enquanto o produto aparece grande dentro de um círculo vermelho sobre a divisão, acompanhado por duas setas curvas.
+- A imagem superior mostra a condição inicial e a inferior mostra o resultado confirmado. Enquadramento, escala, pessoa e luz permanecem comparáveis.
+- O corte é extremamente fechado no detalhe relevante. O restante do rosto ou corpo não vira personagem e não desvia a atenção do resultado.
+- Uma linha branca fina marca a divisão horizontal. Sobre ela, no lado esquerdo, uma cápsula vermelha de cantos arredondados recebe uma frase factual curta em branco.
+- No lado direito, o círculo vermelho invade as duas metades. Dentro dele, o produto e somente seus componentes reais aparecem em packshot claro, inteiros e legíveis.
+- Uma seta vermelha curva vem da imagem superior até o círculo e outra sai da região inferior em direção a ele, criando uma ligação visual contínua entre condição, produto e resultado.
+- Se houver prazo confirmado, ele pode ocupar a cápsula. Sem prazo, use um benefício curto e factual; jamais copie “30 segundos” ou qualquer número da referência.
+- Não suavize, clareie, emagreça, aumente ou aperfeiçoe o resultado além da evidência disponível.
+- Esta peça não tem oferta, depoimento, avaliação, CTA, selo ou lista de benefícios. Sem antes e depois visual confirmado, não gere.`,
+  },
+  'REF-0086': {
+    title: 'PRODUTO INSTALADO COM HEADLINE CENTRAL',
+    single: `- O que define esta direção: o produto aparece instalado e funcionando no centro de um ambiente real quase vazio; uma frase curta fica acima e um benefício grande fica abaixo. Não é packshot recortado.
+- Escolha o ambiente correto para a categoria — parede, bancada, piso, móvel, corpo de uso ou outra superfície factual. A instalação, encaixe, apoio ou forma de uso precisa ser fisicamente plausível.
+- O produto ocupa o centro, frontal ou em leve três quartos, com os elementos essenciais visíveis. Nenhuma mão ou objeto cobre rótulo, controle, forma ou acabamento.
+- O ambiente usa tons muito claros e textura discreta. Luz lateral suave cria sombra real e, somente quando o produto possui luz confirmada, um brilho coerente ao redor.
+- No alto, uma primeira linha curta em sans-serif leve introduz a ação; abaixo dela, uma frase em caixa alta destaca o benefício principal com a última palavra em peso forte.
+- Na base, uma linha grande e espaçada apresenta um benefício factual. Se houver dado numérico confirmado, ele pode abrir a frase em cor de destaque; sem número, use somente texto.
+- O texto segue a tipografia e o idioma capturados, permanece centralizado e não invade o produto.
+- Não copie tomada, parede, luz verde ou promessa de economia quando eles não pertencerem ao produto real. O contexto de uso muda; a estrutura vertical permanece.
+- Esta peça não tem pessoa como personagem, oferta, selo, CTA, avaliação, lista de benefícios ou objetos decorativos.`,
+  },
+  'REF-0097': {
+    title: 'PRODUTO EM CLOSE SOBRE SUPERFÍCIE PREMIUM',
+    single: `- O que define esta direção: uma fotografia silenciosa em close baixo, sem uma única palavra, em que o produto inclinado ocupa quase todo o quadro sobre uma superfície mineral polida.
+- A câmera fica próxima da altura da superfície. O produto atravessa o centro em diagonal suave, com a face principal voltada para a câmera e a forma completa ainda legível.
+- Quando o produto tiver alça, pulseira ou partes flexíveis, elas se abrem naturalmente para os lados e ajudam a preencher a base. Não invente componente para criar essa forma.
+- Mostrador, rótulo, textura, costura, metal, botões, fechos e cores reais recebem nitidez máxima. Reflexos são controlados para não apagar detalhes.
+- A superfície tem veios discretos e reflexo muito suave. Uma sombra de contato firme ancora o produto e impede aparência de recorte flutuante.
+- O fundo é neutro, claro e profundamente desfocado, com apenas manchas de luz e uma sugestão de verde ou arquitetura distante. Nenhum objeto é reconhecível.
+- A luz lateral macia desenha volume e brilho premium sem recolorir o produto. Profundidade de campo curta mantém a face principal nítida e dissolve o fundo.
+- Não inclua texto, logo da loja, oferta, selo, CTA, avaliação, pessoa, embalagem, pedestal ou decoração.`,
+  },
+  'REF-0126': {
+    title: 'CONJUNTO CLARO EM FLAT LAY',
+    single: `- O que define esta direção: todos os componentes reais de um único produto ou conjunto aparecem em flat lay branco sobre branco, levemente sobrepostos e sem qualquer texto.
+- A câmera fica exatamente acima. Fundo branco contínuo e fosco, sem horizonte, textura decorativa ou objeto de cena.
+- A peça principal ocupa o alto e o centro, aberta e vista de frente. Os demais componentes ficam em diagonal na base, sobrepondo apenas uma pequena parte da peça principal.
+- Mostre somente o que pertence à unidade comercial real. Produto de uma peça aparece sozinho e maior; conjunto de duas ou mais peças mostra cada componente uma vez.
+- Não invente shorts, camisa, cinto, embalagem, acessório ou segunda unidade para reproduzir a quantidade da referência.
+- Branco, off-white e materiais claros precisam se separar do fundo por textura real, costura, relevo e sombra suave; não escureça nem contorne artificialmente o produto.
+- Logos, bordados, botões, cós, cordões, gola, punhos e acabamentos reais permanecem na posição e cor corretas.
+- A luz é ampla e difusa, com sombras cinza muito suaves projetadas para o mesmo lado. Tudo parece fotografado junto.
+- Não inclua pessoa, cabide, manequim, texto, oferta, logo da loja, selo, CTA, avaliação ou decoração.`,
+  },
+  'REF-0140': {
+    title: 'PRODUTO NO CORPO EM AMBIENTE EXTERNO',
+    single: `- O que define esta direção: uma fotografia silenciosa em ambiente externo mostra a peça vestida em close, com o corpo cortado abaixo do rosto e o produto ocupando praticamente todo o quadro.
+- A pessoa aparece de frente ou em leve três quartos, enquadrada do maxilar até o quadril. Olhos e identidade facial ficam fora do quadro; o corpo serve somente para mostrar caimento e uso.
+- Casting, gênero, faixa etária, tom de pele e biotipo seguem o público capturado. Mãos podem entrar nos bolsos ou descansar ao lado do corpo sem cobrir o produto.
+- A peça anunciada fica inteira, central, nítida e mais contrastada do que pele, calça e ambiente. Preserve gola, mangas, botões, logo, estampa, textura, corte e acabamento reais.
+- As roupas de apoio são lisas, neutras e claramente secundárias. Retire relógio, joia, bolsa, óculos ou qualquer acessório que possa parecer o produto anunciado.
+- O fundo é uma rua, fachada ou arquitetura externa sofisticada, com tons neutros e profundidade de campo muito curta. Nenhuma placa, carro ou pessoa ao fundo fica reconhecível.
+- Luz natural suave modela o tecido e o corpo sem sombras duras. O produto não recebe brilho plástico nem mudança de cor.
+- Não inclua texto, oferta, logo da loja, selo, CTA, avaliação, benefício, borda ou efeito gráfico.`,
+  },
+  'REF-0141': {
+    title: 'OFERTA DIRETA SOBRE FUNDO BRANCO',
+    single: `- O que define esta direção: o quadro fica quase vazio e se divide em duas leituras muito claras — comunicação centralizada na parte superior e um único packshot monumental na parte inferior. Não é cena, não é catálogo e não é composição com cartões.
+- Fundo branco puro e contínuo, sem textura, horizonte, pedestal, objetos, degradê colorido ou recorte de ambiente.
+- No alto, centralizados e com bastante ar: o wordmark real da loja; abaixo dele, a oferta completa em sans-serif muito pesada e caixa alta; depois, o nome curto do produto em sans-serif leve e caixa mista.
+- A oferta é o primeiro texto lido. Ela ocupa uma ou duas linhas conforme o conteúdo real, mantendo todas as condições juntas. O nome do produto é bem menor e nunca compete com ela.
+- Na parte inferior, a unidade comercial real do produto aparece isolada, em vista de três quartos, com a face mais reconhecível voltada para a câmera.
+- Quando o produto for naturalmente vendido em par, as duas peças aparecem: uma maior à frente e outra atrás, deslocada para o lado, ambas na mesma variante e voltadas para a mesma direção. Quando for uma unidade avulsa, mostre apenas uma e amplie-a; não duplique para preencher.
+- O produto é nítido de ponta a ponta, preserva materiais, costuras, estampas, rótulos e proporções, e recebe somente uma sombra de contato cinza muito suave.
+- Toda a peça usa apenas branco, preto e as cores reais do produto. Não existe cor de acento criada para a oferta.
+- Esta direção não tem pessoa, cenário, cartão, borda, selo, ícone, lista de benefícios, preço separado nem CTA.`,
+  },
+  'REF-0142': {
+    title: 'LIFESTYLE COM PACKSHOT EM PRIMEIRO PLANO',
+    single: `- O que define esta direção: o MESMO PRODUTO aparece em duas escalas e com duas funções — sendo usado por uma pessoa no fundo e como packshot grande no primeiro plano. O primeiro plano vende o produto; a pessoa prova o contexto de uso.
+- A cena é externa, clara e sofisticada, construída com pedra ou arquitetura em tons neutros, luz natural de dia e profundidade real. O ambiente pode mudar para continuar coerente com a categoria, mas mantém superfícies claras e uma área vertical limpa para a comunicação.
+- A pessoa ocupa uma lateral e aparece em pose natural, sentada ou apoiada no ambiente, com rosto inteiro, expressão tranquila e contexto de vida reconhecível. Ela corresponde exatamente ao público registrado.
+- O produto em uso permanece visível e identificável na pessoa. Nenhuma roupa, acessório ou objeto secundário recebe mais contraste do que ele.
+- No primeiro plano, o mesmo produto e a mesma variante reaparecem muito maiores, apoiados sobre uma superfície real do ambiente e voltados em três quartos para a câmera. Esse packshot é a primeira coisa que o olho reconhece como produto anunciado.
+- A unidade comercial manda na quantidade: par natural aparece completo; item avulso aparece uma vez. A repetição entre uso e packshot não cria kit nem sugere duas unidades na oferta.
+- A comunicação ocupa a área clara da própria arquitetura, sem cartão sobreposto: wordmark no alto; nome curto do produto em corpo médio; um filete horizontal fino; e a oferta abaixo.
+- A oferta usa sans-serif pesada em caixa alta e três níveis: introdução menor, vantagem muito maior e condição final forte. Se a oferta não tiver número grande, destaque a vantagem principal por peso e escala, sem inventar percentual.
+- A paleta nasce da locação e do produto. Não acrescente cor promocional, selo ou faixa.
+- Esta direção não tem lista de benefícios, ícones, avaliação, CTA, moldura nem texto sobre o corpo da pessoa.`,
+  },
+  'REF-0143': {
+    title: 'MOSAICO DE USO E DETALHES',
+    single: `- O que define esta direção: uma fotografia alta de uso ocupa uma lateral inteira, enquanto a outra lateral funciona como uma sequência editorial de oferta, packshot, duas vistas menores e um macro de acabamento. Cada bloco cumpre uma função diferente; não são cinco anúncios repetidos.
+- Os dois lados têm larguras próximas. A foto de uso sangra no topo, na lateral e na base. Do outro lado, os módulos se separam por respiros brancos finos e regulares.
+- Na fotografia alta, uma pessoa aparece em contexto real, sentada ou apoiada, com rosto inteiro e o produto corretamente em uso. O corpo cabe inteiro o suficiente para que o uso seja entendido, e o produto recebe mais nitidez e contraste do que o restante do figurino.
+- O módulo superior da outra lateral é fundo claro da própria locação. Traz o wordmark centralizado, um filete fino e a oferta em sans-serif pesada e caixa alta. A vantagem é a maior linha; as palavras de apoio ficam menores acima e abaixo.
+- Logo abaixo, um módulo largo mostra o packshot principal apoiado no mesmo ambiente, inteiro e em vista de três quartos.
+- A faixa seguinte tem dois módulos menores lado a lado. Eles mostram o mesmo produto e a mesma variante em dois ângulos factual e visualmente possíveis. Não introduza outras cores, modelos ou categorias para diferenciar os quadros.
+- O último módulo é um macro fechado de um detalhe real que identifica o produto — acabamento, textura, costura, fecho, sola, rótulo ou mecanismo confirmado nas fontes. Ele não inventa componente interno nem benefício.
+- Todos os módulos compartilham a mesma luz natural, temperatura de cor e locação clara, como fotografias do mesmo ensaio.
+- Esta direção não tem título além da oferta, lista de benefícios, selo, CTA, cartão flutuante nem fundo de estúdio isolado.`,
+  },
+  'REF-0144': {
+    title: 'SPLIT CLARO COM USO E PACKSHOT',
+    single: `- O que define esta direção: o quadro tem dois lados contínuos da mesma locação clara — comunicação e packshot numa lateral, pessoa em corpo inteiro usando o mesmo produto na outra. Não é mosaico e o packshot não atravessa para o lado da pessoa.
+- A locação é externa, luminosa e sofisticada, com arquitetura de pedra clara, luz natural, sombras suaves e poucos elementos vegetais desfocados. Uma parede quase branca forma a área de comunicação.
+- Na lateral da comunicação, tudo se alinha à esquerda: wordmark da loja no alto, nome curto do produto abaixo, filete horizontal fino e oferta em sans-serif muito pesada.
+- A oferta usa três níveis: introdução forte, vantagem como a maior linha da peça e condição final logo abaixo. Quando não houver percentual, a vantagem real recebida assume o maior peso sem ser abreviada nem substituída.
+- Na base dessa lateral, o produto aparece como packshot grande, apoiado sobre um bloco da própria arquitetura e visto em três quartos. Mostre a unidade comercial real: par completo quando for naturalmente um par; uma unidade quando for item avulso.
+- Na outra lateral, a pessoa aparece de corpo inteiro ou quase inteiro, em pé e apoiada na arquitetura, com rosto completo e expressão natural. Ela corresponde ao público-alvo confirmado.
+- O mesmo produto e a mesma variante aparecem corretamente em uso na pessoa. O restante do figurino fica neutro e não compete com ele.
+- Packshot e produto em uso não sugerem kit nem quantidade promocional; são duas apresentações do mesmo item anunciado.
+- Não há cartão sobreposto, lista de benefícios, selo, ícone, CTA, preço isolado ou cor promocional. A paleta vem da pedra, da luz e do próprio produto.`,
+  },
+  'REF-0145': {
+    title: 'CLOSE ÍNTIMO COM OFERTA EM CARTÕES',
+    single: `- O que define esta direção: uma fotografia íntima e quente ocupa o quadro inteiro, com o produto vestido dominando um lado e toda a comunicação encaixada na área escura e vazia do outro. Não existe painel gráfico separando texto e foto.
+- A pessoa aparece sentada ou reclinada em ambiente doméstico acolhedor, com luz lateral baixa e quente, fundo marrom desfocado e tecido claro solto ao redor do corpo.
+- O enquadramento começa abaixo do pescoço e termina depois de toda a peça vendida. O rosto não aparece nem parcialmente. O corpo serve somente para mostrar caimento, forma e uso.
+- O produto é o ponto mais nítido e contrastado da fotografia. Tecidos ou outras peças do figurino permanecem abertos, claros e secundários, sem cobri-lo.
+- No alto da área vazia, wordmark da loja em serifada cursiva ou na tipografia real da marca; abaixo, um filete curto e fino.
+- A headline vem em serifada elegante, caixa mista e linhas curtas, maior do que o texto de apoio. O apoio usa sans-serif leve e ocupa poucas linhas.
+- Na base da coluna de texto, os degraus da oferta aparecem em cartões quadrados empilhados, do mesmo tamanho, com cantos arredondados e uma única cor suave retirada da identidade. Números e vantagem ficam centralizados em sans-serif branca e pesada.
+- Se a oferta tiver um único degrau, use um único cartão e deixe mais respiro ao redor. Não invente um segundo degrau para repetir a referência.
+- Esta direção não tem lista de benefícios, ícones, selo, CTA, preço, moldura ou logo sobre o produto.`,
+  },
+  'REF-0146': {
+    title: 'STILL LIFE COM LUPA DE DETALHE',
+    single: `- O que define esta direção: o produto aparece deitado como still life e um único círculo amplia exatamente o detalhe visual que sustenta a headline. O círculo é uma lupa fotográfica do mesmo produto, não um selo e não uma segunda variante.
+- Fundo feito por tecido claro e quente com dobras largas, acompanhado apenas por uma superfície de madeira clara na base. Luz natural lateral cria sombras suaves e revela a textura dos materiais.
+- O produto ocupa o centro e a metade inferior, deitado em diagonal suave, inteiro e sem embalagem. Preserve forma, estrutura, acabamento, costura e material sem estilizar.
+- No alto de uma lateral, wordmark da loja; abaixo, um filete curto; depois, headline serifada em caixa mista, distribuída em poucas linhas e alinhada à esquerda.
+- Na lateral oposta, um círculo grande com contorno branco mostra um macro real de acabamento, textura, costura, estampa, fecho ou componente confirmado. O recorte preenche o círculo e continua reconhecível como parte do produto.
+- No canto inferior oposto à lupa, um selo circular grande recebe os degraus da oferta, centralizados e separados por um filete fino. O selo usa uma cor só da identidade, com texto branco em sans-serif pesada.
+- Com um único degrau de oferta, o selo mantém o formato circular e usa apenas esse conteúdo, maior e centralizado. Não invente outro degrau.
+- A lupa e o selo equilibram lados opostos da peça e não cobrem o produto principal.
+- Esta direção não tem pessoa, cenário montado, lista de benefícios, ícone, CTA, avaliação, preço separado nem objetos decorativos.`,
+  },
+  'REF-0147': {
+    title: 'PAINEL EDITORIAL COM PRODUTO NO CORPO',
+    single: `- O que define esta direção: um painel branco estreito organiza toda a comunicação numa lateral, enquanto um close limpo da pessoa usando o produto ocupa a lateral maior. A peça vendida aparece inteira no corpo e é maior do que todo o conjunto de textos.
+- Fundo branco ou off-white contínuo, com leve sombra natural atrás do corpo. A divisão entre painel e fotografia nasce da composição, sem linha vertical, moldura ou mudança brusca de cor.
+- A pessoa fica de frente, enquadrada abaixo do pescoço até depois de toda a peça vendida. O rosto não aparece. Braços e mãos permanecem fora da frente do produto.
+- A peça vendida é nítida, preserva recortes, textura, acabamento e transparências reais. A outra roupa usada pela pessoa é neutra e não compete com ela.
+- No alto do painel, o wordmark da loja; abaixo, um filete curto; uma linha pequena em sans-serif espaçada com o nome do produto; e a headline principal em serifada, caixa mista e poucas linhas.
+- Abaixo da headline, os degraus da oferta aparecem em cartões retangulares empilhados, do mesmo tamanho, com cantos arredondados. Cada cartão usa uma única cor suave da identidade e texto branco centralizado em sans-serif pesada.
+- Uma linha curta de condição pode aparecer abaixo dos cartões, em sans-serif leve, somente se vier do contexto.
+- Na base do painel, miniaturas pequenas podem mostrar outras vistas reais da MESMA VARIANTE. Se as fontes não trouxerem vistas adicionais, omita as miniaturas e mantenha o espaço em branco. Nunca transforme essa faixa em catálogo de cores.
+- Esta direção não tem benefício em lista, ícone, selo, CTA, preço, cenário, acessório ou texto sobre o corpo.`,
+  },
 };
 
 function compileSingleContextPrompt(campaign: CampaignInput) {
@@ -600,9 +1007,11 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
   const peopleBlock = peopleText ? `${peopleText}\n\n` : '';
   const factualRule = reference.id === 'REF-0020'
     ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial. Os três depoimentos desta direção são texto publicitário da composição e devem ser gerados como a direção pedir.'
-    : '- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial.';
+    : testimonialReferenceIds.has(reference.id)
+      ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial. O depoimento, o nome, o avatar e as estrelas desta direção são elementos de texto publicitário e devem ser gerados como a receita pedir, sempre limitados aos fatos confirmados sobre o produto.'
+      : '- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem, acessório ou condição comercial.';
   const slots = reference.slots ?? 4;
-  const slotsWord = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][slots] ?? String(slots);
+  const slotsWord = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][slots] ?? String(slots);
   const contentRule = campaign.mode === 'collection'
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
 - Mostre simultaneamente até ${slotsWord} produtos ou looks distintos, e SOMENTE itens que constem na lista de elegíveis do CONTEXTO CAPTURADO — V004. Essa quantidade é o alvo da diagramação, não uma cota a cumprir.
@@ -640,8 +1049,8 @@ Entregue agora somente a imagem final desta direção.`;
 
 function compileSingleMasterPrompt(campaign: CampaignInput, selected: Reference[], round: number) {
   const labels = selected.map((_, index) => itemLabel(index, round));
-  const factualRule = selected.some(({ id }) => id === 'REF-0020')
-    ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem ou acessório. A única exceção são os três depoimentos da REF-0020: eles são texto publicitário da composição. Isso não autoriza inventar fato técnico, oferta ou detalhe do produto.'
+  const factualRule = selected.some(({ id }) => testimonialReferenceIds.has(id))
+    ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem ou acessório. Nas referências de depoimento, depoimento, nome, avatar e estrelas são elementos de texto publicitário e devem ser gerados como a receita pedir. Isso não autoriza inventar fato técnico, oferta ou detalhe do produto.'
     : '- Não invente preço, benefício, avaliação, garantia, cupom, urgência, selo, embalagem ou acessório.';
   return `Usando exclusivamente o CONTEXTO CAPTURADO e verificado anteriormente nesta conversa, execute agora um lote de criação com EXATAMENTE CINCO criativos publicitários mestres.
 

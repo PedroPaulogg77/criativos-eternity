@@ -71,6 +71,8 @@ const pilotReference = data.references.find(({ id }) => id === 'REF-0017');
 const pilotPrompt = compiler.compileReferencePrompt(single, pilotReference);
 const testimonialReference = data.references.find(({ id }) => id === 'REF-0020');
 const testimonialPrompt = compiler.compileReferencePrompt(single, testimonialReference);
+const testimonialPhotoPrompt = compiler.compileReferencePrompt(single, data.references.find(({ id }) => id === 'REF-0072'));
+const testimonialLongPrompt = compiler.compileReferencePrompt(single, data.references.find(({ id }) => id === 'REF-0078'));
 const singlePilotBatch = compiler.compileMasterPrompt(
   single,
   ['REF-0010', 'REF-0016', 'REF-0019', 'REF-0026', 'REF-0028'].map((id) =>
@@ -90,6 +92,8 @@ assert.ok(singleContext.includes('CONTEXTO CAPTURADO\n\nMarca:'));
 assert.ok(singleContext.includes('esta campanha anuncia somente o produto do link'));
 assert.ok(testimonialPrompt.includes('Os três depoimentos desta direção são texto publicitário da composição'), 'REF-0020 ainda bloqueia seus depoimentos sem fonte');
 assert.ok(testimonialPrompt.includes('Gere os três depoimentos como texto publicitário'), 'REF-0020 perdeu os três depoimentos');
+assert.ok(testimonialPhotoPrompt.includes('O depoimento, o nome, o avatar e as estrelas desta direção são elementos de texto publicitário'), 'REF-0072 ainda bloqueia o depoimento');
+assert.ok(testimonialLongPrompt.includes('O depoimento, o nome, o avatar e as estrelas desta direção são elementos de texto publicitário'), 'REF-0078 ainda bloqueia o depoimento');
 
 assert.ok(
   collectionContext.startsWith(
@@ -363,7 +367,7 @@ assert.ok(new Set(comSlots.map(({ slots }) => slots)).size >= 4, 'as grades de c
 
 for (const reference of comSlots) {
   const prompt = compiler.compileReferencePrompt(collection, reference);
-  const palavra = ['', '', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][reference.slots];
+  const palavra = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'][reference.slots] ?? String(reference.slots);
   assert.ok(
     prompt.includes(`Mostre simultaneamente até ${palavra} produtos`),
     `${reference.id} não pede a própria quantidade (${reference.slots})`,
@@ -436,14 +440,19 @@ assert.ok(data.lotSameness(loteVariado).length <= 1, 'lotSameness acusa repetiç
  */
 const pastaCuradoria = new URL('../../REFERENCIAS-COM-PROMPT/', import.meta.url);
 if (fs.existsSync(pastaCuradoria)) {
-  const curadas = fs.readdirSync(pastaCuradoria).filter((nome) => /^REF-\d{4}.*\.(png|jpg)$/i.test(nome));
+  const listarCuradas = (pasta) => fs.readdirSync(pasta, { withFileTypes: true }).flatMap((item) => {
+    const caminho = new URL(encodeURIComponent(item.name) + (item.isDirectory() ? '/' : ''), pasta);
+    if (item.isDirectory()) return listarCuradas(caminho);
+    return /^REF-\d{4}.*\.(png|jpg)$/i.test(item.name) ? [{ nome: item.name, caminho }] : [];
+  });
+  const curadas = listarCuradas(pastaCuradoria);
   const dessincronizadas = [];
-  for (const nome of curadas) {
+  for (const { nome, caminho } of curadas) {
     const id = nome.slice(0, 8).toLowerCase();
     const extensao = nome.slice(nome.lastIndexOf('.'));
     const noApp = new URL(`../public/references/${id}${extensao}`, import.meta.url);
     if (!fs.existsSync(noApp)) continue;
-    const a = fs.readFileSync(new URL(nome, pastaCuradoria));
+    const a = fs.readFileSync(caminho);
     const b = fs.readFileSync(noApp);
     if (!a.equals(b)) dessincronizadas.push(id.toUpperCase());
   }
