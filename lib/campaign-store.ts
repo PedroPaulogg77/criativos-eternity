@@ -9,6 +9,8 @@ export type CampaignRecord = {
   id: string;
   createdAt: number;
   updatedAt: number;
+  /* Nome curto exibido na navegação. Não altera o alvo usado nos prompts. */
+  tabName: string;
   mode: 'single' | 'collection';
   exactTarget: string;
   sourceUrl: string;
@@ -53,6 +55,7 @@ export function createCampaign(partial: Partial<CampaignRecord> = {}): CampaignR
     id: newId(),
     createdAt: now,
     updatedAt: now,
+    tabName: '',
     mode: 'single',
     exactTarget: '',
     sourceUrl: '',
@@ -90,6 +93,7 @@ function sanitize(raw: unknown): CampaignRecord | null {
     id: value.id,
     createdAt: typeof value.createdAt === 'number' ? value.createdAt : Date.now(),
     updatedAt: typeof value.updatedAt === 'number' ? value.updatedAt : Date.now(),
+    tabName: text(value.tabName),
     mode: value.mode,
     exactTarget: text(value.exactTarget),
     sourceUrl: text(value.sourceUrl),
@@ -182,9 +186,9 @@ export function removeCampaign(store: CampaignStore, id: string): CampaignStore 
 
 /* Uma campanha sem alvo e sem etapa concluída é rascunho: pode ser reaproveitada em vez de virar lixo na lista. */
 export function isBlank(record: CampaignRecord) {
-  return !record.exactTarget.trim() && !record.offer.trim() && record.donePhases.length === 0 && record.selectedIds.length === 0;
+  return !record.tabName.trim() && !record.exactTarget.trim() && !record.offer.trim() && record.donePhases.length === 0 && record.selectedIds.length === 0;
 }
 
 export function campaignLabel(record: CampaignRecord) {
-  return record.exactTarget.trim() || 'Campanha sem alvo';
+  return record.tabName.trim() || record.exactTarget.trim() || 'Novo produto';
 }

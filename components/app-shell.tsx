@@ -4,6 +4,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  Boxes,
   Film,
   Layers3,
   LayoutDashboard,
@@ -12,6 +13,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Pencil,
   Plus,
   SlidersHorizontal,
   Sparkles,
@@ -22,6 +24,16 @@ import {
 } from 'lucide-react';
 
 import { phaseNames, type Phase } from '@/lib/phases';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 const SIDEBAR_STORAGE_KEY = 'eternity:sidebar-collapsed';
 
@@ -36,6 +48,7 @@ export type ShellNav = {
   campaigns: Array<{ id: string; label: string; detail: string }>;
   activeCampaignId: string | null;
   onSwitchCampaign: (id: string) => void;
+  onRenameCampaign: (id: string, name: string) => void;
 };
 
 function NavItem({
@@ -203,6 +216,8 @@ export function AppShell({
 }) {
   const [storedCollapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [renamingCampaignId, setRenamingCampaignId] = useState<string | null>(null);
+  const [campaignNameDraft, setCampaignNameDraft] = useState('');
   const campaignTabsRef = useRef<HTMLDivElement>(null);
   /* Um painel de ferramentas não cabe em faixa de ícones: nessa tela o menu fica sempre aberto. */
   const collapsed = panel ? false : storedCollapsed;
@@ -239,6 +254,17 @@ export function AppShell({
     });
   }
 
+  function beginRename(id: string, currentName: string) {
+    setRenamingCampaignId(id);
+    setCampaignNameDraft(currentName);
+  }
+
+  function finishRename() {
+    if (!renamingCampaignId || !campaignNameDraft.trim()) return;
+    nav.onRenameCampaign(renamingCampaignId, campaignNameDraft.trim());
+    setRenamingCampaignId(null);
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {mobileOpen ? (
@@ -261,6 +287,65 @@ export function AppShell({
 
       <div className={`flex min-h-screen flex-col transition-[padding] duration-200 ${collapsed ? 'lg:pl-[4.75rem]' : 'lg:pl-64'}`}>
         <header className="sticky top-0 z-30 border-b border-border bg-background/92 backdrop-blur-xl">
+          <div className="flex min-w-0 items-stretch border-b border-border bg-card/65">
+            <div className="flex shrink-0 items-center gap-2 border-r border-border px-3 sm:px-4">
+              <Boxes className="size-4 text-accent-foreground" />
+              <div className="hidden md:block">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground">Meus produtos</p>
+                <p className="text-[11px] text-muted-foreground">Clique para trocar</p>
+              </div>
+              <span className="text-xs font-semibold md:hidden">Produtos</span>
+            </div>
+
+            <nav aria-label="Trocar produto" className="flex min-w-0 flex-1 items-stretch">
+              <div ref={campaignTabsRef} className="no-scrollbar flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto p-1.5">
+                {nav.campaigns.map((campaign) => {
+                  const active = campaign.id === nav.activeCampaignId;
+                  return (
+                    <div
+                      key={campaign.id}
+                      className={`flex max-w-64 shrink-0 items-stretch border transition-colors ${active
+                        ? 'border-primary/70 bg-primary/[0.13]'
+                        : 'border-border bg-background/45 hover:border-white/25 hover:bg-white/[0.04]'}`}
+                    >
+                      <button
+                        type="button"
+                        title={`${campaign.label}${campaign.detail ? ` · ${campaign.detail}` : ''}`}
+                        aria-current={active ? 'page' : undefined}
+                        onClick={() => nav.onSwitchCampaign(campaign.id)}
+                        className="min-w-0 px-3 py-2 text-left"
+                      >
+                        <span className={`block truncate text-sm ${active ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground'}`}>{campaign.label}</span>
+                        <span className="hidden truncate text-[11px] text-muted-foreground xl:block">{campaign.detail}</span>
+                      </button>
+                      {active ? (
+                        <button
+                          type="button"
+                          onClick={() => beginRename(campaign.id, campaign.label)}
+                          className="grid w-9 shrink-0 place-items-center border-l border-primary/25 text-accent-foreground transition-colors hover:bg-primary/15 hover:text-foreground"
+                          aria-label={`Renomear ${campaign.label}`}
+                          title="Renomear esta aba"
+                        >
+                          <Pencil className="size-3.5" />
+                        </button>
+                      ) : null}
+                    </div>
+                  );
+                })}
+                {nav.campaigns.length === 0 ? <span className="px-3 py-2.5 text-sm text-muted-foreground">Nenhum produto ainda</span> : null}
+              </div>
+              <button
+                type="button"
+                onClick={nav.onNewCampaign}
+                className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-primary/[0.1] sm:px-5"
+                aria-label="Adicionar produto"
+                title="Adicionar produto"
+              >
+                <Plus className="size-4" /> <span className="hidden sm:inline">Novo produto</span>
+              </button>
+            </nav>
+          </div>
+
           <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
             <button
               type="button"
@@ -285,38 +370,6 @@ export function AppShell({
             </div>
           </div>
 
-          <nav aria-label="Trocar produto ou campanha" className="flex min-w-0 items-stretch border-t border-border/70">
-            <div ref={campaignTabsRef} className="no-scrollbar flex min-w-0 flex-1 items-stretch overflow-x-auto px-2 sm:px-4">
-              {nav.campaigns.map((campaign) => {
-                const active = campaign.id === nav.activeCampaignId;
-                return (
-                  <button
-                    key={campaign.id}
-                    type="button"
-                    title={`${campaign.label}${campaign.detail ? ` · ${campaign.detail}` : ''}`}
-                    aria-current={active ? 'page' : undefined}
-                    onClick={() => nav.onSwitchCampaign(campaign.id)}
-                    className={`relative max-w-56 shrink-0 truncate border-b-2 px-4 py-3 text-sm transition-colors ${active
-                      ? 'border-primary bg-primary/[0.08] font-medium text-foreground'
-                      : 'border-transparent text-muted-foreground hover:bg-white/[0.04] hover:text-foreground'}`}
-                  >
-                    {campaign.label}
-                  </button>
-                );
-              })}
-              {nav.campaigns.length === 0 ? <span className="px-4 py-3 text-sm text-muted-foreground">Nenhum produto ainda</span> : null}
-            </div>
-            <button
-              type="button"
-              onClick={nav.onNewCampaign}
-              className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-primary/[0.08] sm:px-5"
-              aria-label="Nova campanha"
-              title="Nova campanha"
-            >
-              <Plus className="size-4" /> <span className="hidden sm:inline">Nova campanha</span>
-            </button>
-          </nav>
-
           {step ? (
             <div className="h-0.5 w-full bg-white/[0.06]">
               <div className="h-full bg-primary transition-[width] duration-300" style={{ width: `${(step / 8) * 100}%` }} />
@@ -332,6 +385,23 @@ export function AppShell({
           {bleed ? children : <div className="mx-auto w-full max-w-4xl">{children}</div>}
         </main>
       </div>
+
+      <Dialog open={renamingCampaignId !== null} onOpenChange={(open) => !open && setRenamingCampaignId(null)}>
+        <DialogContent className="border border-primary/20 bg-popover sm:max-w-md">
+          <form onSubmit={(event) => { event.preventDefault(); finishRename(); }}>
+            <DialogHeader>
+              <DialogTitle>Renomear a aba</DialogTitle>
+              <DialogDescription>Use um nome curto para encontrar este produto. O produto enviado aos prompts não será alterado.</DialogDescription>
+            </DialogHeader>
+            <label htmlFor="campaign-tab-name" className="mt-5 mb-2 block text-xs font-medium uppercase tracking-[0.1em] text-muted-foreground">Nome da aba</label>
+            <Input id="campaign-tab-name" value={campaignNameDraft} onChange={(event) => setCampaignNameDraft(event.target.value)} maxLength={40} className="h-11" />
+            <DialogFooter className="mt-5">
+              <Button type="button" variant="ghost" onClick={() => setRenamingCampaignId(null)}>Cancelar</Button>
+              <Button type="submit" disabled={!campaignNameDraft.trim()}>Salvar nome</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -712,6 +712,16 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function renameCampaign(id: string, name: string) {
+    const next: CampaignStore = {
+      ...storeRef.current,
+      items: storeRef.current.items.map((record) => record.id === id
+        ? { ...record, tabName: name.trim(), updatedAt: Date.now() }
+        : record),
+    };
+    commitStore(next);
+  }
+
   function deleteCampaign(record: CampaignRecord) {
     const next = removeCampaign(storeRef.current, record.id);
     commitStore(next);
@@ -889,11 +899,12 @@ export default function Home() {
     onNewCampaign: resetCampaign,
     campaigns: campaigns.filter((record) => !isBlank(record) || record.id === campaignId).map((record) => ({
       id: record.id,
-      label: record.exactTarget.trim() || 'Novo produto',
-      detail: `${record.mode === 'collection' ? 'Coleção' : 'Produto único'}${record.offer.trim() ? ` · ${record.offer.trim()}` : ''}`,
+      label: campaignLabel(record),
+      detail: `${record.tabName.trim() && record.exactTarget.trim() ? `${record.exactTarget.trim()} · ` : ''}${record.mode === 'collection' ? 'Coleção' : 'Produto único'}${record.offer.trim() ? ` · ${record.offer.trim()}` : ''}`,
     })),
     activeCampaignId: campaignId,
     onSwitchCampaign: switchCampaign,
+    onRenameCampaign: renameCampaign,
   };
 
   const shellProps = {
@@ -946,8 +957,8 @@ export default function Home() {
     return (
       <AppShell
         nav={nav}
-        eyebrow="Painel da campanha"
-        title="Escolha onde continuar"
+        eyebrow="Painel"
+        title="Etapas e materiais"
         bleed
         alert={linkAccess === 'protected' && hasContext ? <AttachmentAlert compact /> : null}
         actions={<SameChatPill />}
@@ -957,13 +968,13 @@ export default function Home() {
         <section className="border border-border bg-card/55 p-5">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold tracking-[0.12em] text-accent-foreground uppercase">Campanha ativa</p>
-              <h2 className="mt-2 truncate text-xl font-semibold tracking-[-0.03em] sm:text-2xl">{exactTarget.trim() || 'Campanha sem alvo'}</h2>
-              <p className="mt-1 truncate text-sm text-muted-foreground">{campaignMode === 'collection' ? 'Coleção' : 'Produto único'}{offer.trim() ? ` · ${offer}` : ''}</p>
+              <p className="text-xs font-semibold tracking-[0.12em] text-accent-foreground uppercase">Próxima etapa</p>
+              <h2 className="mt-2 truncate text-xl font-semibold tracking-[-0.03em] sm:text-2xl">{doneCount === applicablePhases.length ? 'Campanha concluída' : phaseNames[nextPhase - 1]}</h2>
+              <p className="mt-1 truncate text-sm text-muted-foreground">{doneCount} de {applicablePhases.length} etapas concluídas</p>
             </div>
             <div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center">
               <div className="w-full sm:w-44">
-                <p className="text-xs text-muted-foreground"><strong className="text-foreground">{doneCount}</strong> de {applicablePhases.length} etapas concluídas</p>
+                <p className="text-xs text-muted-foreground">Progresso deste produto</p>
                 <div className="mt-2 h-1 w-full bg-white/[0.07]"><div className="h-full bg-primary transition-[width] duration-300" style={{ width: `${(doneCount / applicablePhases.length) * 100}%` }} /></div>
               </div>
               <Button type="button" className="h-11 shrink-0" onClick={() => openStage(nextPhase)}>
@@ -1016,8 +1027,8 @@ export default function Home() {
         </div>
 
         <details className="mt-10 border-t border-border pt-5">
-          <summary className="cursor-pointer text-sm font-medium text-accent-foreground">Gerenciar campanhas salvas</summary>
-          <p className="mt-3 text-sm text-muted-foreground">Cada campanha guarda seu próprio contexto, lote e conferência neste navegador.</p>
+          <summary className="cursor-pointer text-sm font-medium text-accent-foreground">Gerenciar produtos salvos</summary>
+          <p className="mt-3 text-sm text-muted-foreground">Cada produto guarda seu próprio contexto, lote e conferência neste navegador.</p>
           <div className="mt-4 grid gap-2">
             {campaigns.map((record) => {
               const applicable = record.mode === 'collection' ? 8 : 7;
@@ -1031,7 +1042,7 @@ export default function Home() {
                       {active ? <span className="shrink-0 bg-primary/20 px-2 py-0.5 text-[11px] font-medium text-accent-foreground">aberta</span> : null}
                     </div>
                     <p className="mt-1 truncate text-sm text-muted-foreground">
-                      {record.mode === 'collection' ? 'Coleção' : 'Produto único'}{record.offer.trim() ? ` · ${record.offer}` : ''} · {recordDone} de {applicable} etapas · {formatDate(record.updatedAt)}
+                      {record.tabName.trim() && record.exactTarget.trim() ? `${record.exactTarget} · ` : ''}{record.mode === 'collection' ? 'Coleção' : 'Produto único'}{record.offer.trim() ? ` · ${record.offer}` : ''} · {recordDone} de {applicable} etapas · {formatDate(record.updatedAt)}
                     </p>
                   </div>
                   {active ? null : <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => switchCampaign(record.id)}>Abrir</Button>}
@@ -1045,13 +1056,13 @@ export default function Home() {
         <Dialog open={campaignToDelete !== null} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
           <DialogContent className="max-w-lg border border-primary/20 bg-popover sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Apagar esta campanha?</DialogTitle>
+            <DialogTitle>Apagar este produto?</DialogTitle>
               <DialogDescription>{campaignToDelete ? campaignLabel(campaignToDelete) : ''}</DialogDescription>
             </DialogHeader>
-            <p className="text-sm leading-6 text-muted-foreground">O contexto, o lote de cinco e a conferência dessa campanha somem deste navegador. Não dá para desfazer.</p>
+            <p className="text-sm leading-6 text-muted-foreground">O contexto, o lote de cinco e a conferência deste produto somem deste navegador. Não dá para desfazer.</p>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCampaignToDelete(null)}>Manter</Button>
-              <Button type="button" variant="destructive" onClick={() => campaignToDelete && deleteCampaign(campaignToDelete)}>Apagar campanha</Button>
+              <Button type="button" variant="destructive" onClick={() => campaignToDelete && deleteCampaign(campaignToDelete)}>Apagar produto</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -1263,15 +1274,6 @@ export default function Home() {
       </div>
     );
 
-    const libraryActions = (
-      <div className="hidden min-w-0 items-center gap-2 border border-border bg-card/55 px-3 py-1.5 text-xs md:flex">
-        <Package className="size-3.5 shrink-0 text-muted-foreground" />
-        <span className="max-w-[14rem] truncate">{exactTarget || 'Campanha sem alvo definido'}</span>
-        {offer ? <><span className="text-muted-foreground">·</span><span className="max-w-[12rem] truncate text-muted-foreground">{offer}</span></> : null}
-        {offerMechanic ? <><span className="text-muted-foreground">·</span><span className="text-muted-foreground">{offerMechanics.find((item) => item.value === offerMechanic)?.label}</span></> : null}
-      </div>
-    );
-
     return (
       <PhaseShell
         {...shellProps}
@@ -1281,7 +1283,6 @@ export default function Home() {
         panel={galleryPanel}
         menuLabel="Abrir filtros e lote"
         menuBadge={galleryFilterCount || undefined}
-        actions={libraryActions}
         toolbar={libraryToolbar}
       >
         {orderedReferences.length ? <div className="reference-masonry pb-20 lg:pb-0" aria-label="Biblioteca de referências">{orderedReferences.map((item) => {
