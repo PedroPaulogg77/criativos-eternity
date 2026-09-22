@@ -209,7 +209,7 @@ function PhaseShell({
       panel={panel}
       menuLabel={menuLabel}
       menuBadge={menuBadge}
-      eyebrow={`Etapa ${phase} de 8 · ${phaseNames[phase - 1]}`}
+      eyebrow={`Etapa ${phase} de 8`}
       title={title ?? phaseNames[phase - 1]}
       step={phase}
       detail={detail}
@@ -234,7 +234,7 @@ function QuestionScreen({
   nextDisabled,
   error,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   children: React.ReactNode;
@@ -253,7 +253,7 @@ function QuestionScreen({
       }}
     >
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center py-8 text-center">
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p>
+        {eyebrow ? <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p> : null}
         <h1 className="text-3xl font-semibold leading-[1.08] tracking-[-0.045em] sm:text-5xl">{title}</h1>
         {description ? <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground">{description}</p> : null}
         <div className="mt-8 text-left">{children}</div>
@@ -272,13 +272,13 @@ function PageHeading({
   title,
   description,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
 }) {
   return (
     <div className="mb-7 border-b border-border pb-6">
-      <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p>
+      {eyebrow ? <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p> : null}
       <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">{title}</h1>
       <p className="mt-3 max-w-4xl text-base leading-7 text-muted-foreground">{description}</p>
     </div>
@@ -337,7 +337,7 @@ function PromptStep({
           <div className="flex min-w-60 flex-1 items-start gap-3">
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-300" />
             <p className="text-sm leading-6 text-amber-100/85">
-              <strong className="font-medium text-amber-100">Deu erro?</strong> Quando um pedido junta várias imagens, o ChatGPT às vezes devolve colagem, peça faltando ou repetida. Não é o prompt: é um limite dele. Nesse caso, peça uma peça por mensagem.
+              Veio colagem, peça faltando ou repetida? É limite do ChatGPT com várias imagens de uma vez, não do prompt.
             </p>
           </div>
           <Button type="button" variant="outline" className="h-10 shrink-0" onClick={() => setShowPieces((value) => !value)}>
@@ -1380,7 +1380,7 @@ export default function Home() {
         <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-xl lg:hidden">
           <Button type="button" variant="ghost" size="icon" aria-label="Voltar" className="shrink-0" onClick={goBackFromLibrary}><ArrowLeft className="size-4" /></Button>
           <span className="text-sm text-muted-foreground"><strong className="text-foreground">{selectedIds.length}</strong> de 5</span>
-          <Button type="button" className="ml-auto h-10" disabled={selectedIds.length !== 5} onClick={openPromptView}>Criar prompt <ArrowRight data-icon="inline-end" /></Button>
+          <Button type="button" className="ml-auto h-10 disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-muted-foreground disabled:opacity-100" disabled={selectedIds.length !== 5} onClick={openPromptView}>Criar prompt <ArrowRight data-icon="inline-end" /></Button>
         </div>
       </PhaseShell>
     );
@@ -1426,7 +1426,7 @@ export default function Home() {
 
     return (
       <PhaseShell {...shellProps} phase={3} detail={`${correctCount} de 5 aprovados`} wide>
-        <PageHeading eyebrow="Conferência" title="Confira os cinco criativos" description="Marque só o que deu errado. O que você não marcar segue aprovado." />
+        <PageHeading title="Confira os cinco criativos" description="Marque só o que deu errado. O que você não marcar segue aprovado." />
 
         <div className="space-y-2">
           {selectedReferences.map((item, index) => {
@@ -1535,7 +1535,7 @@ export default function Home() {
   if (phase === 4) {
     return (
       <PhaseShell {...shellProps} phase={4} detail="1:1 e 9:16 · opcionais">
-        <PageHeading eyebrow="Adaptação de formatos" title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
+        <PageHeading title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
         <div className="mb-6 border border-violet-400/25 bg-violet-500/[0.07] p-5 text-sm leading-6 text-violet-100/80"><strong className="text-violet-100">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
         <div className="grid gap-4 xl:grid-cols-2">
           {campaignMode === 'collection' ? (
@@ -1604,7 +1604,7 @@ export default function Home() {
   if (phase === 5 && socialIndex === -1) {
     return (
       <PhaseShell {...shellProps} phase={5} detail="Entenda antes de gerar">
-        <PageHeading eyebrow="Playbook de redes sociais" title="A rede social sustenta a venda do anúncio" description="O objetivo principal do Instagram aqui não é vender sozinho. É eliminar dúvidas e dar credibilidade quando a pessoa que viu o anúncio visita o perfil antes de comprar." />
+        <PageHeading title="A rede social sustenta a venda do anúncio" description="O objetivo principal do Instagram aqui não é vender sozinho. É eliminar dúvidas e dar credibilidade quando a pessoa que viu o anúncio visita o perfil antes de comprar." />
         <div className="border border-primary/25 bg-[linear-gradient(135deg,rgba(126,45,255,.14),rgba(16,12,24,.65))] p-6 sm:p-8">
           <p className="max-w-2xl text-xl font-semibold leading-8 tracking-[-0.03em] sm:text-2xl">Um criativo pode trazer o clique. Um perfil vivo, coerente e confiável ajuda o cliente a decidir que a loja é real.</p>
           <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="border border-white/10 bg-black/15 p-4"><p className="text-xs font-semibold text-violet-300">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
@@ -1678,7 +1678,7 @@ export default function Home() {
   if (phase === 7 && videoStep === 0) {
     return (
       <PhaseShell {...shellProps} phase={7} detail="Etapa condicional">
-        <QuestionScreen eyebrow="Takes de vídeo" title="Você encontrou bons vídeos reais do produto?" description="O Kling só entra quando não existem vídeos utilizáveis. As imagens originais do produto continuam sendo a fonte." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(6)} next={() => { if (hasGoodVideos) { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Vídeos reais confirmados. Não foi necessário usar o Kling.'); else goPhase(8); } else setVideoStep(1); }} nextLabel={hasGoodVideos ? (journeyMode === 'stage' ? 'Concluir esta etapa' : 'Pular Kling') : 'Preparar prompts Kling'} nextDisabled={hasGoodVideos === null}>
+        <QuestionScreen title="Você encontrou bons vídeos reais do produto?" description="O Kling só entra quando não existem vídeos utilizáveis. As imagens originais do produto continuam sendo a fonte." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(6)} next={() => { if (hasGoodVideos) { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Vídeos reais confirmados. Não foi necessário usar o Kling.'); else goPhase(8); } else setVideoStep(1); }} nextLabel={hasGoodVideos ? (journeyMode === 'stage' ? 'Concluir esta etapa' : 'Pular Kling') : 'Preparar prompts Kling'} nextDisabled={hasGoodVideos === null}>
           <RadioGroup value={hasGoodVideos === null ? '' : hasGoodVideos ? 'yes' : 'no'} onValueChange={(value) => setHasGoodVideos(value === 'yes')} className="grid gap-3 sm:grid-cols-2"><ChoiceCard value="yes" active={hasGoodVideos === true} icon={<CheckCircle2 className="size-5" />} title="Sim, encontrei" description="Usarei os vídeos reais e seguirei para o panfleto." /><ChoiceCard value="no" active={hasGoodVideos === false} icon={<Film className="size-5" />} title="Não encontrei" description="Preparar três prompts detalhados para Kling." /></RadioGroup>
         </QuestionScreen>
       </PhaseShell>
@@ -1688,7 +1688,7 @@ export default function Home() {
   if (phase === 7) {
     return (
       <PhaseShell {...shellProps} phase={7} detail="3 vídeos · Kling">
-        <PageHeading eyebrow="Vídeo com IA" title="Crie três roteiros visuais para o Kling" description="Os prompts usam as fotos originais, preservam somente cores confirmadas e reutilizam a narração já aprovada." />
+        <PageHeading title="Crie três roteiros visuais para o Kling" description="Os prompts usam as fotos originais, preservam somente cores confirmadas e reutilizam a narração já aprovada." />
         <PromptStep title="Três roteiros para o Kling" delivers="Texto, não imagem: volta um prompt completo para cada um dos três vídeos." batchPrompt={videoPrompt} batchKey="video" copiedKey={copiedKey} onCopy={copyText} />
         <BottomActions back={() => setVideoStep(0)} next={() => { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Etapa de vídeos com IA concluída.'); else goPhase(8); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Preparar panfleto'} />
       </PhaseShell>
@@ -1698,7 +1698,7 @@ export default function Home() {
   if (phase === 8 && !completed && flyerStep === 0) {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 1 de 3">
-        <QuestionScreen eyebrow="Panfleto impresso" title="Qual é o prêmio do sorteio?" description="Essa será a única imagem de produto permitida no panfleto." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(7)} next={() => setFlyerStep(1)} nextDisabled={prize.trim().length < 2}>
+        <QuestionScreen title="Qual é o prêmio do sorteio?" description="Essa será a única imagem de produto permitida no panfleto." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(7)} next={() => setFlyerStep(1)} nextDisabled={prize.trim().length < 2}>
           <label htmlFor="prize" className="mb-2 block text-sm font-medium">Prêmio</label><Input id="prize" value={prize} onChange={(event) => setPrize(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder="Ex.: iPhone 17" />
         </QuestionScreen>
       </PhaseShell>
@@ -1708,7 +1708,7 @@ export default function Home() {
   if (phase === 8 && !completed && flyerStep === 1) {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 2 de 3">
-        <QuestionScreen eyebrow="Panfleto impresso" title="Qual cupom o cliente receberá?" description="Digite exatamente como o código deve aparecer dentro do voucher." back={() => setFlyerStep(0)} next={() => setFlyerStep(2)} nextDisabled={coupon.trim().length < 2}>
+        <QuestionScreen title="Qual cupom o cliente receberá?" description="Digite exatamente como o código deve aparecer dentro do voucher." back={() => setFlyerStep(0)} next={() => setFlyerStep(2)} nextDisabled={coupon.trim().length < 2}>
           <label htmlFor="coupon" className="mb-2 block text-sm font-medium">Código do cupom</label><Input id="coupon" value={coupon} onChange={(event) => setCoupon(event.target.value)} className="h-14 bg-card px-4 text-base uppercase" placeholder="Ex.: NOMEDALOJA20" />
         </QuestionScreen>
       </PhaseShell>
@@ -1718,7 +1718,7 @@ export default function Home() {
   if (phase === 8 && !completed && flyerStep === 2) {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 3 de 3">
-        <QuestionScreen eyebrow="Panfleto impresso" title="Qual é o desconto da próxima compra?" description="Informe o valor completo, incluindo símbolo ou condição necessária." back={() => setFlyerStep(1)} next={() => setFlyerStep(3)} nextLabel="Preparar panfleto" nextDisabled={discount.trim().length < 1}>
+        <QuestionScreen title="Qual é o desconto da próxima compra?" description="Informe o valor completo, incluindo símbolo ou condição necessária." back={() => setFlyerStep(1)} next={() => setFlyerStep(3)} nextLabel="Preparar panfleto" nextDisabled={discount.trim().length < 1}>
           <label htmlFor="discount" className="mb-2 block text-sm font-medium">Valor do desconto</label><Input id="discount" value={discount} onChange={(event) => setDiscount(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder="Ex.: 20%" />
         </QuestionScreen>
       </PhaseShell>
