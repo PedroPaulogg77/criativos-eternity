@@ -40,3 +40,9 @@ next-env.d.ts
 # build info e config local
 tsconfig.tsbuildinfo
 .claude/
+
+# páginas de análise geradas localmente: ferramenta nossa, não fazem parte do app
+/public/auditoria-referencias.html
+/public/caminhos.html
+/public/lacunas.html
+/public/decisoes.html

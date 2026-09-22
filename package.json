@@ -10,6 +10,10 @@
     "build": "next build",
     "start": "next start",
     "test:prompts": "node scripts/audit-prompts.mjs",
+    "audit:cobertura": "node scripts/audit-coverage.mjs",
+    "pagina:caminhos": "node scripts/build-paths-page.mjs",
+    "pagina:lacunas": "node scripts/build-gaps-page.mjs",
+    "pagina:decisoes": "node scripts/build-decisions-page.mjs",
     "lint": "oxlint",
     "format": "oxfmt"
   },

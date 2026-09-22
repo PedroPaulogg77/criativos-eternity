@@ -1,7 +1,10 @@
 import type { CampaignInput } from '@/lib/prompt-compiler';
-import { HOUSE_PRODUCT_RULE, HOUSE_PRODUCT_RULE_SHORT } from '@/lib/house-rules';
+import { HOUSE_DESIGN_RULE, HOUSE_PRODUCT_RULE, HOUSE_PRODUCT_RULE_SHORT, peopleRule } from '@/lib/house-rules';
+import type { Reference } from '@/lib/mvp-data';
 
 export type OutputFormat = '1:1' | '9:16';
+
+export type SocialPiece = { label: string; prompt: string };
 
 export type SocialPrompt = {
   id: 'feed' | 'highlights' | 'weekly' | 'reviews';
@@ -12,47 +15,59 @@ export type SocialPrompt = {
   before: string;
   howToUse: string[];
   guardrail: string;
+  /* Uma peça por mensagem. O pedido em bloco fica em `prompt`, como alternativa. */
+  pieces: SocialPiece[];
   prompt: string;
   note?: string;
 };
 
-export function compileCarouselPrompt() {
-  return `Usando exclusivamente o CONTEXTO CAPTURADO — V004 e as imagens factuais já anexadas nesta conversa, escolha aleatoriamente EXATAMENTE CINCO produtos ou looks distintos e elegíveis da coleção.
-
-Para cada uma das cinco imagens escolhidas, gere uma versão reenquadrada em proporção 4:5, com foco total no produto.
-
-${HOUSE_PRODUCT_RULE}
-
-QUANDO HOUVER UMA PESSOA NA IMAGEM
+const CAROUSEL_PERSON_BLOCK = `QUANDO HOUVER UMA PESSOA NA IMAGEM
 - Corte o enquadramento para excluir o rosto. O corte começa por volta do pescoço ou queixo, removendo tudo que estiver acima: rosto, boca, nariz e olhos.
 - Isso é um recorte de composição, não uma remoção da pessoa.
 - Mantenha corpo, pele visível, pose, mãos e pernas exatamente como estão abaixo da linha de corte.
-- Não apague a pessoa, não a substitua por manequim e não deixe o produto flutuando sobre um corpo invisível.
+- Não apague a pessoa, não a substitua por manequim e não deixe o produto flutuando sobre um corpo invisível.`;
 
-QUANDO O PRODUTO ESTIVER SEM PESSOA
+function carouselNoPersonBlock(scaleRule: string) {
+  return `QUANDO O PRODUTO ESTIVER SEM PESSOA
 - Preserve integralmente o produto e apenas reenquadre a cena para valorizá-lo.
-- Centralize e ajuste a escala de forma coerente entre os cinco cards.
-- Não invente modelo, mãos, corpo, suporte, embalagem ou acessórios.
+- ${scaleRule}
+- Não invente modelo, mãos, corpo, suporte, embalagem ou acessórios.`;
+}
 
-REGRA ABSOLUTA DE FIDELIDADE
+const CAROUSEL_FIDELITY_BLOCK = `REGRA ABSOLUTA DE FIDELIDADE
 - O produto não pode sofrer nenhuma alteração: mesma cor, mesmo material, mesmo tecido, mesma textura, mesma estampa, mesmo logotipo, mesmo formato, mesmos componentes e mesmo caimento do original.
-- Não recrie, redesenhe, simplifique, recolora ou misture produtos e variantes.
+- Não recrie, redesenhe, simplifique, recolora ou misture produtos e variantes.`;
 
-PADRONIZAÇÃO DO CARROSSEL
+const CAROUSEL_STANDARD_BLOCK = `PADRONIZAÇÃO DO CARROSSEL
 - Fundo liso neutro, branco ou cinza-claro, igual nos cinco cards.
 - Iluminação de estúdio uniforme e suave.
 - Mesmo nível de nitidez, contraste, distância visual e acabamento em todas as saídas, como se fossem da mesma sessão de fotos.
 - Sem textos, preços, ofertas, selos ou elementos comerciais.
 - Não invente nem adicione elementos novos.
-- Elementos que já existam na imagem original não devem ser removidos quando isso exigir reconstruir o corpo ou o produto.
+- Elementos que já existam na imagem original não devem ser removidos quando isso exigir reconstruir o corpo ou o produto.`;
+
+export function compileCarouselPrompt() {
+  return `Usando exclusivamente o CONTEXTO CAPTURADO — V004 e as imagens factuais já anexadas nesta conversa, escolha aleatoriamente até CINCO produtos ou looks distintos e elegíveis da coleção. Essa quantidade é o alvo do carrossel, não uma cota a cumprir: se a coleção confirmada tiver menos itens, use os que existem e entregue menos cards. É proibido inventar produto, categoria ou cor para fechar os cinco.
+
+Para cada uma das cinco imagens escolhidas, gere uma versão reenquadrada em proporção 4:5, com foco total no produto.
+
+${HOUSE_PRODUCT_RULE}
+
+${CAROUSEL_PERSON_BLOCK}
+
+${carouselNoPersonBlock('Centralize e ajuste a escala de forma coerente entre os cinco cards.')}
+
+${CAROUSEL_FIDELITY_BLOCK}
+
+${CAROUSEL_STANDARD_BLOCK}
 
 SAÍDA
-- Entregue cinco imagens finais SEPARADAS e INDEPENDENTES, todas em 4:5.
-- Entregue uma imagem para cada produto escolhido, na ordem CARD 01, 02, 03, 04 e 05.
+- Entregue as imagens finais SEPARADAS e INDEPENDENTES, todas em 4:5, uma para cada produto escolhido, na ordem CARD 01, 02, 03, 04 e 05.
+- Se a coleção tiver menos de cinco itens confirmados, entregue um card por item confirmado e pare aí.
 - Não entregue colagem, grade, carrossel montado ou uma única imagem contendo os cinco produtos.
 
 Antes de entregar, confirme internamente:
-1. Existem cinco arquivos separados em 4:5.
+1. Existe um arquivo separado em 4:5 para cada produto confirmado, e nenhum produto foi inventado para completar cinco.
 2. Quando havia pessoa, nada acima do pescoço ou queixo aparece no quadro.
 3. Corpo, pele e pose abaixo da linha de corte permanecem intactos.
 4. Cada produto está idêntico à sua fonte factual.
@@ -62,12 +77,70 @@ Antes de entregar, confirme internamente:
 Entregue agora somente os cinco cards, sem explicações adicionais.`;
 }
 
+/*
+ * Um card por mensagem. O ChatGPT falha quando precisa devolver cinco imagens de uma vez,
+ * então cada card carrega a receita inteira e não depende das mensagens anteriores.
+ */
+export function compileCarouselCardPrompt(index: number) {
+  const card = String(index + 1).padStart(2, '0');
+  const escolha = index === 0
+    ? 'Escolha um produto ou look distinto e elegível da coleção. Ele define o padrão visual que os outros quatro cards vão seguir.'
+    : `Escolha um produto ou look distinto e elegível da coleção que ainda NÃO tenha sido usado nos cards anteriores desta conversa. O CARD ${card} precisa parecer da mesma sessão de fotos dos cards já entregues.`;
+
+  return `Usando exclusivamente o CONTEXTO CAPTURADO — V004 e as imagens factuais já anexadas nesta conversa, gere agora SOMENTE o CARD ${card} de cinco do carrossel, em proporção 4:5 e com foco total no produto.
+
+${escolha}
+
+${HOUSE_PRODUCT_RULE}
+
+${CAROUSEL_PERSON_BLOCK}
+
+${carouselNoPersonBlock(index === 0 ? 'Centralize o produto e defina uma escala que possa ser repetida nos outros quatro cards.' : 'Centralize o produto e use a mesma escala visual dos cards já entregues.')}
+
+${CAROUSEL_FIDELITY_BLOCK}
+
+${CAROUSEL_STANDARD_BLOCK}
+
+SAÍDA
+- Entregue exatamente UMA imagem final em 4:5, correspondente ao CARD ${card}.
+- Não gere os outros cards nesta resposta.
+- Não entregue colagem, grade, carrossel montado, miniaturas ou uma imagem com mais de um produto.
+
+Antes de entregar, confirme internamente:
+1. Existe um único arquivo em 4:5.
+2. Quando havia pessoa, nada acima do pescoço ou queixo aparece no quadro.
+3. Corpo, pele e pose abaixo da linha de corte permanecem intactos.
+4. O produto está idêntico à sua fonte factual.
+5. Fundo, luz, foco e acabamento seguem o padrão dos cards anteriores.
+6. Nenhum elemento novo foi adicionado.
+
+Entregue agora somente o CARD ${card}, sem explicações adicionais.`;
+}
+
 const formatDimensions: Record<OutputFormat, string> = {
   '1:1': '1:1, preferencialmente 1080 × 1080 px',
   '9:16': '9:16, preferencialmente 1080 × 1920 px',
 };
 
-export function compileCreativeFormatPrompt(format: OutputFormat) {
+/*
+ * A adaptação recompõe a cena, e era aí que a cabeça sumia: o mestre carrega a regra de
+ * presença humana, a adaptação não carregava nenhuma. Agora ela vai junto, e quando a
+ * direção é conhecida a regra exata daquela peça vem colada.
+ */
+const FORMAT_PEOPLE_BLOCK = `PESSOA NO NOVO FORMATO
+- O enquadramento da pessoa é o mesmo do mestre: o que aparecia continua aparecendo e o que estava fora continua fora.
+- Nunca corte cabeça, topo da cabeça ou parte do rosto pela borda do quadro. Se o mestre mostra o rosto, ele aparece inteiro aqui.
+- Se o mestre corta abaixo do pescoço, mantenha exatamente esse corte: não revele o rosto e não corte mais alto.
+- Se a pessoa não couber inteira no novo formato, afaste a câmera e recomponha a cena. O espaço que sobra no formato mais alto vai para cenário, respiro e texto, nunca para aumentar o corte na pessoa.
+- Se o mestre corta no pescoço, esse corte fica na borda superior do quadro: nunca deixe fundo vazio acima de um corpo sem cabeça. A altura extra é ganha para baixo.
+- Mãos, dedos e membros continuam anatomicamente corretos.`;
+
+function referencePeopleBlock(reference?: Reference) {
+  const regra = reference ? peopleRule(reference) : '';
+  return regra ? `\n\n${regra}` : '';
+}
+
+export function compileCreativeFormatPrompt(format: OutputFormat, references: Reference[] = []) {
   return `Usando exclusivamente os cinco criativos mestres 4:5 aprovados nesta conversa, crie uma adaptação de cada um para ${formatDimensions[format]}.
 
 REGRA DE CORRESPONDÊNCIA
@@ -82,9 +155,15 @@ ADAPTAÇÃO
 - Não adicione, remova ou reescreva conteúdo comercial.
 - Não misture elementos, produtos ou direções entre os cinco criativos.
 
+${FORMAT_PEOPLE_BLOCK}
+${references.map((reference, index) => {
+  const regra = peopleRule(reference);
+  return regra ? `\nCRIATIVO ${String(index + 1).padStart(2, '0')} — ${reference.name}\n${regra}` : '';
+}).join('')}
+
 ${HOUSE_PRODUCT_RULE_SHORT}
 
-Antes de gerar, confira internamente: cinco arquivos separados; proporção ${format}; correspondência correta; textos completos e legíveis; nenhum produto ou fato alterado.
+Antes de gerar, confira internamente: cinco arquivos separados; proporção ${format}; correspondência correta; textos completos e legíveis; nenhum produto ou fato alterado; nenhuma cabeça, rosto ou topo de cabeça cortado pela borda.
 
 Entregue somente as cinco adaptações, sem explicações adicionais.`;
 }
@@ -96,16 +175,504 @@ export function compileCarouselFormatPrompt(format: OutputFormat) {
 - Entregue cinco imagens separadas e independentes.
 - Reenquadre cada imagem para o novo formato sem esticar, redesenhar ou alterar o produto.
 - Preserve exatamente corpo, pose, pele visível, corte sem rosto, produto, cor, textura, estampa, logo, fundo neutro, luz e acabamento.
+- O corte da pessoa é o mesmo do card aprovado: não revele rosto e não corte mais alto.
 - Mantenha fundo, escala visual, foco e iluminação consistentes entre os cinco cards.
+
+SEM CABEÇA NO QUADRO ALTO
+- O card aprovado corta a pessoa no pescoço ou no queixo. Esse corte continua igual e fica exatamente na BORDA SUPERIOR do novo quadro.
+- Nunca deixe fundo vazio acima do corte. Um tronco sem cabeça flutuando no meio do quadro é entrega inválida, mesmo que o resto esteja correto.
+- A altura que sobra no formato mais alto é ganha para baixo: mais corpo, mais superfície, mais cenário abaixo, ou enquadramento mais fechado no produto. Nunca para cima.
+- Não invente cabeça, cabelo, pescoço inteiro, rosto nem sombra de rosto para preencher o topo.
 - Não adicione texto, oferta, acessórios, cenário ou elementos novos.
 - Não gere colagem, grade ou arquivo único.
 
 ${HOUSE_PRODUCT_RULE_SHORT}
 
-Antes de gerar, confirme internamente: cinco arquivos separados; proporção ${format}; nenhum rosto incluído quando havia pessoa; produtos intactos; padronização preservada.
+Antes de gerar, confirme internamente: cinco arquivos separados; proporção ${format}; nenhum rosto incluído quando havia pessoa; nenhum tronco sem cabeça com fundo vazio acima; produtos intactos; padronização preservada.
 
 Entregue somente as cinco adaptações, na ordem CARD 01 a CARD 05.`;
 }
+
+/* Uma adaptação por mensagem, pelo mesmo motivo: pedido de cinco imagens não volta completo. */
+export function compileCreativeFormatSinglePrompt(format: OutputFormat, index: number, reference?: Reference) {
+  const item = String(index + 1).padStart(2, '0');
+  return `Usando exclusivamente o CRIATIVO ${item} — o mestre 4:5 já aprovado nesta conversa —, crie agora SOMENTE a adaptação ${item} para ${formatDimensions[format]}.
+
+ADAPTAÇÃO
+- Refaça a composição para o novo formato. Não faça apenas corte automático ou esticamento.
+- Preserve integralmente produto, variante, marca, logo, idioma, oferta, título, textos e direção visual do CRIATIVO ${item}.
+- Reorganize escala, respiro, posição dos elementos e hierarquia somente quando necessário para o novo formato.
+- Não adicione, remova ou reescreva conteúdo comercial.
+- Não use elementos, produtos ou direções dos outros quatro criativos.
+- Não entregue colagem, grade, miniaturas nem um arquivo com mais de uma peça.
+
+${FORMAT_PEOPLE_BLOCK}${referencePeopleBlock(reference)}
+
+${HOUSE_PRODUCT_RULE_SHORT}
+
+Antes de gerar, confira internamente: um único arquivo; proporção ${format}; corresponde ao CRIATIVO ${item}; textos completos e legíveis; nenhum produto ou fato alterado; nenhuma cabeça, rosto ou topo de cabeça cortado pela borda.
+
+Entregue somente a adaptação ${item}, sem explicações adicionais e sem gerar os outros criativos.`;
+}
+
+export function compileCarouselFormatSinglePrompt(format: OutputFormat, index: number) {
+  const card = String(index + 1).padStart(2, '0');
+  return `Usando exclusivamente o CARD ${card} do carrossel 4:5 já aprovado nesta conversa, adapte agora SOMENTE esse card para ${formatDimensions[format]}.
+
+- Reenquadre a imagem para o novo formato sem esticar, redesenhar ou alterar o produto.
+- Preserve exatamente corpo, pose, pele visível, corte sem rosto, produto, cor, textura, estampa, logo, fundo neutro, luz e acabamento.
+- O corte da pessoa é o mesmo do card aprovado: não revele rosto e não corte mais alto.
+- Mantenha o mesmo padrão visual dos outros cards do carrossel.
+
+SEM CABEÇA NO QUADRO ALTO
+- O card aprovado corta a pessoa no pescoço ou no queixo. Esse corte continua igual e fica exatamente na BORDA SUPERIOR do novo quadro.
+- Nunca deixe fundo vazio acima do corte. Um tronco sem cabeça flutuando no meio do quadro é entrega inválida, mesmo que o resto esteja correto.
+- A altura que sobra no formato mais alto é ganha para baixo: mais corpo, mais superfície, mais cenário abaixo, ou enquadramento mais fechado no produto. Nunca para cima.
+- Não invente cabeça, cabelo, pescoço inteiro, rosto nem sombra de rosto para preencher o topo.
+- Não adicione texto, oferta, acessórios, cenário ou elementos novos.
+- Não gere os outros cards, colagem, grade ou arquivo único.
+
+${HOUSE_PRODUCT_RULE_SHORT}
+
+Antes de gerar, confirme internamente: um único arquivo; proporção ${format}; corresponde ao CARD ${card}; nenhum rosto incluído quando havia pessoa; nenhum tronco sem cabeça com fundo vazio acima; produto intacto; padronização preservada.
+
+Entregue somente a adaptação do CARD ${card}, sem explicações adicionais.`;
+}
+
+/*
+ * Nove posts, nove stories, seis stories e três reviews eram quatro pedidos em bloco.
+ * O ChatGPT não devolve esse tanto de imagem numa resposta, então cada peça vira uma
+ * mensagem com o papel dela escrito. O bloco continua disponível como alternativa.
+ */
+const FEED_SCENES = [
+  'Produto em uso por um modelo, em cena interna e cotidiana.',
+  'Rotina do público SEM nenhum produto no quadro: a mesa, o trajeto, o ambiente, o momento que define quem compra da loja.',
+  'Close de detalhe do produto: textura, acabamento ou componente que o diferencia.',
+  'Cena de estilo de vida com pessoa e SEM produto: o mundo da marca, não a peça à venda.',
+  'Outro produto ou variante em uso, ao ar livre, aparecendo de passagem e não no centro do quadro.',
+  'Textura, material ou paleta da marca em close, SEM produto identificável.',
+  'Flat lay com um produto ainda não usado nos posts anteriores, entre objetos do dia a dia do público.',
+  'Ambiente da marca em enquadramento aberto, SEM produto: luz, cor e lugar que a loja evoca.',
+  'Outro produto ou variante em uso por outro modelo, em enquadramento fechado e diferente do Post 1.',
+];
+
+/*
+ * O feed segue o esqueleto dos criativos — amarração ao contexto, travas factuais, presença
+ * humana declarada, saída contada e autoconferência —, sem a regra da casa. O papel é outro:
+ * aqui a peça não vende, ela mostra que a loja existe e é real.
+ */
+const FEED_PURPOSE = `Estas peças não são anúncio. Elas existem para quem chegou pelo anúncio e foi conferir o perfil antes de comprar: a loja precisa parecer viva, coerente e real. Nenhuma delas leva oferta, preço ou chamada para ação.`;
+
+const SOCIAL_PRODUCT = `PRODUTO NAS PEÇAS
+- Nem toda peça mostra produto. Este é o perfil da loja, não uma campanha: ambiente, textura, rotina e universo da marca sustentam o feed tanto quanto as peças com produto.
+- Quando a peça mostrar produto, use um produto ou uma variante diferente das peças anteriores desta conversa. Só repita quando as fontes factuais tiverem menos itens do que peças.
+- Nas peças com produto, ele aparece como parte da cena, não como vitrine: sem pedestal, sem fundo de estúdio, sem recorte, sem holofote e sem ocupar o centro em todas elas.
+- O produto mostrado é sempre um dos que constam nas fontes factuais, com a mesma cor, material, textura, estampa, componentes e logo. Nunca invente variante, cor ou versão que não esteja confirmada.`;
+
+const FEED_CONTENT_LOCKS = `CONTEÚDO OBRIGATÓRIO
+- Use a marca, o idioma e o mercado exatamente como registrados no CONTEXTO CAPTURADO.
+- Não invente preço, oferta, benefício, avaliação, garantia, cupom, prazo, selo, embalagem, acessório ou condição comercial.
+- Sem texto de qualquer tipo na imagem: nada de headline, preço, desconto, selo, botão, legenda ou marca-d'água.
+- Se a estética conflitar com a fidelidade ao produto, a fidelidade vence.`;
+
+const FEED_FORMAT = `FORMATO
+- 1080 × 1350 px, proporção 4:5.
+- Qualidade fotográfica, alta nitidez, sem áreas borradas e sem aparência artificial de IA.
+- Estética lifestyle natural, premium e aspiracional: fotografia de gente e de ambiente, não de catálogo.`;
+
+const FEED_PEOPLE = `PRESENÇA HUMANA
+- As pessoas representam o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto. Não troque o gênero do público.
+- Rosto visível e expressão natural, em momento real de uso. Nada de pose de catálogo, e não repita olhar direto para a câmera em todas as peças.
+- Mãos, dedos e membros anatomicamente corretos.
+- Nas cenas sem pessoa, não invente mãos, corpo, manequim ou sombra humana.`;
+
+export function compileFeedPrompt() {
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, crie 9 posts de feed para o Instagram e o Facebook da loja.
+
+${FEED_PURPOSE}
+
+${FEED_CONTENT_LOCKS}
+
+${SOCIAL_PRODUCT}
+
+${FEED_FORMAT}
+
+${FEED_PEOPLE}
+
+AS NOVE CENAS
+Cada post tem uma cena própria. Não repita enquadramento, cenário nem modelo entre eles.
+${FEED_SCENES.map((scene, index) => `${String(index + 1).padStart(2, '0')}. ${scene}`).join('\n')}
+
+COERÊNCIA DO GRID
+- As nove peças precisam parecer da mesma marca: mesma paleta, mesma temperatura de luz e mesmo tratamento de imagem.
+- Variedade na composição, unidade na identidade. Um grid de nove fotos iguais não serve.
+
+SAÍDA
+- Entregue 9 imagens separadas e independentes, identificadas de "Post 1 de 9" até "Post 9 de 9".
+- Não entregue colagem, grade, mosaico, contact sheet, carrossel montado ou arquivo único.
+
+Antes de entregar, confirme internamente:
+1. São nove arquivos separados em 4:5.
+2. Nenhuma peça tem texto, preço, selo ou marca-d'água.
+3. Cada produto está idêntico à sua fonte factual.
+4. As nove cenas são diferentes entre si e coerentes como grid.
+5. Mãos, dedos e membros estão anatomicamente corretos.
+
+Entregue agora somente os nove posts, sem explicações adicionais.`;
+}
+
+function compileFeedPostPrompt(index: number) {
+  const post = index + 1;
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE o Post ${post} de 9 do feed.
+
+${FEED_PURPOSE}
+
+CENA DESTE POST
+- ${FEED_SCENES[index]}
+
+${FEED_CONTENT_LOCKS}
+
+${SOCIAL_PRODUCT}
+
+${FEED_FORMAT}
+
+${FEED_PEOPLE}
+
+COERÊNCIA COM O RESTO DO FEED
+- Esta peça entra num grid de nove. Mantenha a paleta, a temperatura de luz e o tratamento das peças já geradas nesta conversa.
+- Mude a composição: outro enquadramento, outro cenário e, quando houver pessoa, outro modelo.
+
+SAÍDA
+- Entregue exatamente UMA imagem em 4:5, correspondente ao Post ${post} de 9.
+- Não gere os outros posts nesta resposta. Não entregue colagem, grade, mosaico ou miniaturas.
+
+Antes de entregar, confirme internamente:
+1. É um único arquivo em 4:5.
+2. A peça não tem texto, preço, selo ou marca-d'água.
+3. O produto está idêntico à sua fonte factual.
+4. A cena é a pedida acima e não repete as anteriores.
+5. Mãos, dedos e membros estão anatomicamente corretos.
+
+Entregue agora somente o Post ${post}, sem explicações adicionais.`;
+}
+
+/*
+ * Destaques. Três grupos com três regimes de fato diferentes dentro do mesmo bloco:
+ * no de reviews o depoimento é composição da peça, como nas direções de depoimento do banco;
+ * no de história vale só o que a loja declara; no de informações não existe composição nenhuma,
+ * porque prazo, pagamento e garantia errados viram problema com cliente de verdade.
+ */
+const HIGHLIGHT_PIECES = [
+  ['REVIEWS', 'Capa chamando atenção para a satisfação dos clientes.'],
+  ['REVIEWS', 'Avaliação, depoimento ou benefício percebido.'],
+  ['REVIEWS', 'Reforço de confiança com CTA para realizar o pedido.'],
+  ['NOSSA HISTÓRIA', 'Quem somos e a inspiração da marca.'],
+  ['NOSSA HISTÓRIA', 'Propósito, missão e principais diferenciais.'],
+  ['NOSSA HISTÓRIA', 'Convite para fazer parte da história, com CTA.'],
+  ['INFORMAÇÕES', 'Como comprar, envio e prazo de entrega.'],
+  ['INFORMAÇÕES', 'Pagamentos, trocas, devoluções e garantia.'],
+  ['INFORMAÇÕES', 'Atendimento, canais de contato e CTA.'],
+] as const;
+
+const HIGHLIGHT_FACTS = `O QUE PODE SER ESCRITO EM CADA DESTAQUE
+- REVIEWS: o depoimento é texto publicitário da composição e deve ser escrito como a peça pedir, sempre limitado aos fatos confirmados sobre o produto. Se as fontes desta conversa trouxerem avaliação real da loja, ela tem prioridade e entra como está. Em qualquer caso, não escreva nota, número de estrelas, quantidade de vendas, nome de cliente real, prazo de entrega nem promessa de resultado.
+- NOSSA HISTÓRIA: use apenas o que a loja declara nas fontes desta conversa. Não invente ano de fundação, cidade, tamanho da equipe, número de clientes, prêmio ou parceria. Se a marca não contar sua história em lugar nenhum, fale do produto e de quem ele serve, sem atribuir fatos à empresa.
+- INFORMAÇÕES: aqui não existe composição. Prazo, forma de pagamento, política de troca, devolução, garantia e canal de atendimento saem literalmente das fontes desta conversa. Se algum desses dados não estiver confirmado, escreva a peça sem ele em vez de aproximar.`;
+
+const HIGHLIGHT_FORMAT = `FORMATO
+- 1080 × 1920 px, qualidade máxima, textos legíveis em tela de celular.
+- Escreva no idioma e para o mercado registrados no CONTEXTO CAPTURADO.
+- Preserve produto, cor, textura, estampa, componentes e logo exatamente como nas fontes factuais.`;
+
+const SOCIAL_PEOPLE = `PRESENÇA HUMANA
+- Quando houver pessoa, ela representa o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto.
+- Expressão natural, em situação real de uso. Mãos, dedos e membros anatomicamente corretos.
+- Não use foto de pessoa como se fosse cliente identificado: nada de nome, @ ou legenda atribuindo a fala a alguém real.`;
+
+const storyContract = (quantidade: string, total: number, vizinhos: string) => `CONTRATO DE ENTREGA — LEIA ANTES DE QUALQUER COISA
+Esta resposta precisa terminar com EXATAMENTE ${quantidade} arquivos de imagem anexados. Nem ${vizinhos}, nem um arquivo contendo ${quantidade.toLowerCase()} peças.
+- Cada arquivo contém UM ÚNICO story, inteiro, ocupando o quadro todo em 1080 × 1920.
+- É proibido entregar qualquer imagem que contenha mais de um story: nada de colagem, grade, mosaico, contact sheet, prancha de apresentação, mockup de celular, montagem lado a lado ou miniatura de outra peça dentro da imagem.
+- Faça ${quantidade.toLowerCase()} chamadas separadas da ferramenta de geração de imagem, uma por story, na ordem Story 1 a Story ${total}.
+- Se o sistema só permitir gerar uma imagem por vez, gere uma por vez, em sequência, até completar ${quantidade.toLowerCase()}. Preferir uma de cada vez é correto; juntar peças num arquivo para caber em menos gerações é errado.
+- Não substitua nenhuma imagem por descrição em texto e não peça confirmação entre elas.
+- A copy de cada story vem em texto DEPOIS das ${quantidade.toLowerCase()} imagens, nunca no lugar delas.
+- Antes de enviar a resposta, conte os arquivos anexados. Se não forem ${quantidade.toLowerCase()} arquivos, cada um com um story só, gere os que faltam antes de responder.`;
+
+export function compileHighlightsPrompt() {
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, crie 9 stories para os destaques do perfil da loja.
+
+Estes destaques respondem o que o cliente procura antes de comprar. Eles reduzem dúvida e evitam que prazo, pagamento, troca ou atendimento pareçam improvisados.
+
+${HIGHLIGHT_FORMAT}
+
+${SOCIAL_PRODUCT}
+
+${HIGHLIGHT_FACTS}
+
+OS NOVE STORIES, UM POR ARQUIVO
+Story 1 — destaque REVIEWS: capa chamando atenção para a satisfação dos clientes
+Story 2 — destaque REVIEWS: avaliação, depoimento ou benefício percebido
+Story 3 — destaque REVIEWS: reforço de confiança + CTA para realizar o pedido
+Story 4 — destaque NOSSA HISTÓRIA: quem somos e inspiração da marca
+Story 5 — destaque NOSSA HISTÓRIA: propósito, missão e principais diferenciais
+Story 6 — destaque NOSSA HISTÓRIA: convite para fazer parte da história + CTA
+Story 7 — destaque INFORMAÇÕES: como comprar, envio e prazo de entrega
+Story 8 — destaque INFORMAÇÕES: pagamentos, trocas, devoluções e garantia
+Story 9 — destaque INFORMAÇÕES: atendimento, canais de contato + CTA
+
+${HOUSE_DESIGN_RULE}
+
+${SOCIAL_PEOPLE}
+
+COERÊNCIA
+- Os três stories de cada destaque formam um conjunto: mesma paleta, mesma família de letra e mesmo tratamento.
+- Varie imagem, fundo, posição dos textos e composição entre eles.
+
+${storyContract('NOVE', 9, 'oito, nem dez')}
+
+DEPOIS DAS NOVE IMAGENS
+- Liste em texto a copy exata usada em cada story, de 1 a 9, e a tradução para português quando necessário.
+
+Antes de entregar, confirme internamente:
+1. São nove arquivos de imagem separados em 1080 × 1920, um story em cada.
+2. Nenhum dado de prazo, pagamento, troca, garantia ou atendimento foi aproximado.
+3. Nenhuma peça traz nota, número de vendas ou nome de cliente.
+4. Todo texto cabe no quadro, com contraste para leitura no celular.
+5. Os três stories de cada destaque parecem do mesmo conjunto.
+
+Entregue agora as nove imagens e, depois delas, a copy de cada uma.`;
+}
+
+function compileHighlightStoryPrompt(index: number) {
+  const [destaque, papel] = HIGHLIGHT_PIECES[index];
+  const posicao = (index % 3) + 1;
+  const grupo = Math.floor(index / 3) + 1;
+  const regime = HIGHLIGHT_FACTS.split('\n').find((linha) => linha.startsWith(`- ${destaque}:`)) ?? '';
+
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE o story ${posicao} de 3 do DESTAQUE ${grupo} — ${destaque}.
+
+PAPEL DESTE STORY
+- ${papel}
+
+O QUE PODE SER ESCRITO
+${regime}
+
+${HIGHLIGHT_FORMAT}
+
+${SOCIAL_PRODUCT}
+
+${HOUSE_DESIGN_RULE}
+
+${SOCIAL_PEOPLE}
+
+COERÊNCIA
+- Esta peça faz parte de um conjunto de três do mesmo destaque: mantenha a paleta, a família de letra e o tratamento das que já foram geradas nesta conversa, e mude imagem, fundo, posição do texto e composição.
+
+SAÍDA
+- Entregue exatamente UMA imagem em 1080 × 1920. Depois da imagem, escreva em texto a copy exata usada e a tradução para português, quando necessário.
+- Não gere os outros stories nesta resposta. Não entregue colagem, grade ou arquivo único.
+
+Antes de entregar, confirme internamente:
+1. É um único arquivo em 1080 × 1920.
+2. Nenhum dado operacional foi aproximado.
+3. A peça não traz nota, número de vendas nem nome de cliente.
+4. O texto cabe no quadro e tem contraste para leitura no celular.
+
+Entregue agora somente este story, sem explicações adicionais.`;
+}
+
+/*
+ * Rotina semanal. O cupom é o único número que a peça pode mostrar, e só o confirmado:
+ * o próprio playbook declara WELCOME10 como padrão quando não houver outro.
+ */
+const WEEKLY_PIECES = [
+  ['1', 'BOM DIA', 'desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja', 'Saudação de bom dia com imagem aspiracional e lifestyle da marca, sem produto no quadro.', 'acolhedor, sofisticado e leve'],
+  ['1', 'BOM DIA', 'desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja', 'Convite para descobrir produtos ou novidades da coleção.', 'acolhedor, sofisticado e leve'],
+  ['1', 'BOM DIA', 'desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja', 'CTA direto para acessar a coleção.', 'acolhedor, sofisticado e leve'],
+  ['2', 'CUPOM DE DESCONTO', 'apresentar uma oferta com modelo usando uma peça da loja e destacar o cupom', 'Abertura apresentando o benefício da oferta.', 'exclusivo, desejável e comercial'],
+  ['2', 'CUPOM DE DESCONTO', 'apresentar uma oferta com modelo usando uma peça da loja e destacar o cupom', 'Cupom em destaque, com leitura clara.', 'exclusivo, desejável e comercial'],
+  ['2', 'CUPOM DE DESCONTO', 'apresentar uma oferta com modelo usando uma peça da loja e destacar o cupom', 'Reforço do desconto e CTA para comprar.', 'exclusivo, desejável e comercial'],
+] as const;
+
+const WEEKLY_FACTS = `O QUE PODE SER ESCRITO
+- Use o cupom exatamente como confirmado nesta conversa. Se nenhum cupom tiver sido informado, use WELCOME10.
+- Não invente percentual, valor, validade, condição, frete grátis, brinde nem qualquer regra que não esteja confirmada.
+- Não invente preço, avaliação, prazo de entrega, garantia ou número de clientes.
+- Produto, cor, textura, estampa, componentes e logo ficam idênticos às fontes factuais desta conversa.`;
+
+const WEEKLY_GUIDELINES = `DIRETRIZES
+- Formato: 1080x1920px, 9:16
+- Texto aplicado diretamente na imagem, no idioma e para o mercado registrados no contexto
+- Design premium, elegante e profissional
+- Mesma paleta, tipografia e estilo visual da marca
+- Copy curta, legível e bem hierarquizada
+- Não utilizar imagens de referência externas; basear toda a criação na identidade da loja já apresentada`;
+
+export function compileWeeklyPrompt() {
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e a identidade visual já definida nesta conversa, crie 6 stories de Instagram, sendo 3 para cada tema.
+
+Estas peças mantêm o perfil vivo depois da montagem inicial: bom dia cria presença, cupom mantém a oferta à vista de quem chegou pelo anúncio.
+
+${WEEKLY_GUIDELINES}
+
+${WEEKLY_FACTS}
+
+${SOCIAL_PRODUCT}
+
+OS SEIS STORIES, UM POR ARQUIVO
+Tema 1 — BOM DIA. Objetivo: desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja. Tom acolhedor, sofisticado e leve.
+Story 1 — saudação de bom dia com imagem aspiracional e lifestyle da marca, sem produto no quadro
+Story 2 — convite para descobrir produtos ou novidades da coleção
+Story 3 — CTA direto para acessar a coleção
+
+Tema 2 — CUPOM DE DESCONTO. Objetivo: apresentar uma oferta com modelo usando uma peça da loja e destacar o cupom. Tom exclusivo, desejável e comercial.
+Story 4 — abertura apresentando o benefício da oferta
+Story 5 — cupom em destaque, com leitura clara
+Story 6 — reforço do desconto e CTA para comprar
+
+${HOUSE_DESIGN_RULE}
+
+${SOCIAL_PEOPLE}
+
+COERÊNCIA
+- Os 3 stories de cada tema formam uma sequência visual coerente.
+- Varie modelo, pose, enquadramento e posição dos elementos entre as peças; nenhuma pode repetir a outra.
+
+${storyContract('SEIS', 6, 'cinco, nem sete')}
+
+DEPOIS DAS SEIS IMAGENS
+- Liste em texto a copy exata usada em cada story, de 1 a 6.
+
+Antes de entregar, confirme internamente:
+1. São seis arquivos de imagem separados em 1080x1920, um story em cada.
+2. O cupom escrito é o confirmado, sem condição inventada.
+3. Todo texto cabe no quadro, com contraste para leitura no celular.
+4. As seis peças não se repetem visualmente.
+
+Entregue agora as seis imagens e, depois delas, a copy de cada uma.`;
+}
+
+function compileWeeklyStoryPrompt(index: number) {
+  const [tema, nome, objetivo, papel, tom] = WEEKLY_PIECES[index];
+  const posicao = (index % 3) + 1;
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e a identidade visual já definida nesta conversa, crie agora SOMENTE o story ${posicao} de 3 do TEMA ${tema} — ${nome}.
+
+OBJETIVO DO TEMA
+- ${objetivo.charAt(0).toUpperCase()}${objetivo.slice(1)}.
+
+PAPEL DESTE STORY
+- ${papel}
+- Tom: ${tom}.
+
+${WEEKLY_GUIDELINES}
+
+${WEEKLY_FACTS}
+
+${SOCIAL_PRODUCT}
+
+${HOUSE_DESIGN_RULE}
+
+${SOCIAL_PEOPLE}
+
+COERÊNCIA
+- Esta peça faz parte de uma sequência de três: mantenha a coerência visual com as outras já geradas nesta conversa e varie modelo, pose, enquadramento e posição dos elementos.
+
+FORMATO DE ENTREGA
+- Entregue exatamente UMA imagem em 1080x1920px, com o texto embutido.
+- Depois da imagem, escreva em texto a copy exata utilizada nela.
+
+Antes de entregar, confirme internamente:
+1. É um único arquivo em 1080x1920.
+2. O cupom escrito é o confirmado, sem condição inventada.
+3. O texto cabe no quadro e tem contraste para leitura no celular.
+
+Entregue exatamente UMA imagem. Não gere os outros stories nesta resposta. Não entregue colagem, grade ou arquivo único.`;
+}
+
+/*
+ * Review. A peça é um depoimento simulado por definição — o que não pode é passar por
+ * cliente identificado nem carregar número. E precisa parecer foto de celular, não anúncio.
+ */
+const REVIEW_LOOK = `COMO A PEÇA PRECISA PARECER
+- Foto tirada pelo próprio cliente com celular: luz do ambiente, enquadramento imperfeito, nada de iluminação de estúdio, fundo tratado ou simetria perfeita.
+- Sem a nossa logo, sem moldura, sem selo, sem acabamento de anúncio.
+- Se aparecer a marcação da loja, ela imita a marcação do Instagram: discreta, como num story de cliente.`;
+
+const REVIEW_FACTS = `O QUE PODE SER ESCRITO
+- O depoimento é texto da composição e deve soar como alguém falando do produto que comprou, limitado aos fatos confirmados nesta conversa.
+- Não escreva nota, estrelas, número de vendas, nome de cliente, prazo de entrega nem promessa de resultado.
+- O produto aparece com a mesma cor, textura, estampa, componentes e logo das fontes factuais.`;
+
+export function compileReviewsPrompt() {
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, me entregue 3 reviews de cliente, da forma mais natural possível, como se clientes tivessem comprado e marcado a loja no Instagram.
+
+${REVIEW_LOOK}
+
+${REVIEW_FACTS}
+
+VARIEDADE
+- Três pessoas diferentes, coerentes com o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto.
+- Um produto ou variante diferente em cada uma das três peças, além de ambientes e enquadramentos diferentes. Se as fontes factuais trouxerem menos itens do que peças, repita o mesmo produto e varie a pessoa, o ambiente e o enquadramento — nunca invente cor, versão ou produto para dar variedade.
+- Mãos, dedos e membros anatomicamente corretos.
+
+SAÍDA
+- Entregue 3 imagens separadas e independentes.
+- Não entregue colagem, grade ou arquivo único.
+
+Antes de entregar, confirme internamente:
+1. São três arquivos separados.
+2. Nenhuma peça tem logo, moldura, selo ou cara de anúncio.
+3. Nenhuma peça traz nota, número de vendas ou nome de cliente.
+4. As três parecem ter sido tiradas por pessoas diferentes.
+
+Entregue agora somente os três reviews, sem explicações adicionais.`;
+}
+
+function compileReviewPrompt(index: number) {
+  const review = index + 1;
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, me entregue SOMENTE o review ${review} de 3, da forma mais natural possível, como se um cliente tivesse comprado e marcado a loja no Instagram.
+
+${REVIEW_LOOK}
+
+${REVIEW_FACTS}
+
+VARIEDADE
+- A pessoa é coerente com o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto.
+- Use um produto, uma pessoa e um ambiente diferentes dos reviews já gerados nesta conversa. Se a loja tiver um produto só, repita o produto e mude a pessoa e o ambiente; não invente variante para diferenciar.
+- Mãos, dedos e membros anatomicamente corretos.
+
+SAÍDA
+- Entregue exatamente UMA imagem, correspondente ao review ${review} de 3.
+- Não gere os outros reviews nesta resposta. Não entregue colagem, grade ou arquivo único.
+
+Antes de entregar, confirme internamente:
+1. É um único arquivo.
+2. A peça não tem logo, moldura, selo ou cara de anúncio.
+3. A peça não traz nota, número de vendas nem nome de cliente.
+
+Entregue agora somente este review, sem explicações adicionais.`;
+}
+
+const feedPieces: SocialPiece[] = FEED_SCENES.map((_, index) => ({
+  label: `Post ${index + 1} de 9`,
+  prompt: compileFeedPostPrompt(index),
+}));
+
+const highlightPieces: SocialPiece[] = HIGHLIGHT_PIECES.map(([destaque], index) => ({
+  label: `${destaque} · story ${(index % 3) + 1} de 3`,
+  prompt: compileHighlightStoryPrompt(index),
+}));
+
+const weeklyPieces: SocialPiece[] = WEEKLY_PIECES.map(([, nome], index) => ({
+  label: `${nome} · story ${(index % 3) + 1} de 3`,
+  prompt: compileWeeklyStoryPrompt(index),
+}));
+
+const reviewPieces: SocialPiece[] = [0, 1, 2].map((index) => ({
+  label: `Review ${index + 1} de 3`,
+  prompt: compileReviewPrompt(index),
+}));
 
 export const socialPrompts: SocialPrompt[] = [
   {
@@ -121,35 +688,8 @@ export const socialPrompts: SocialPrompt[] = [
       'Confira variedade de modelos, poses, cenários e enquadramentos antes de publicar.',
     ],
     guardrail: 'Nove artes visualmente iguais deixam o feed sem ritmo. A identidade permanece; a composição precisa variar.',
-    prompt: `Você é um diretor de arte especializado em e-commerce e Instagram.
-
-Vou enviar o link da loja, prints dos produtos, logo e referências visuais. Analise o nicho, público, país, identidade visual, paleta de cores e estilo da marca.
-
-Crie 9 posts individuais para o Instagram, seguindo:
-- Formato: 1080 × 1350 px, proporção 4:5
-- Qualidade fotográfica máxima, alta nitidez e sem áreas borradas
-- Sem textos, preços, descontos, botões ou elementos comerciais
-- Estética lifestyle natural, premium e aspiracional
-- Produto inserido organicamente na rotina do público
-- Fidelidade total à cor, formato, textura, estampa, embalagem e logo do produto
-
-${HOUSE_PRODUCT_RULE}
-
-Varie entre:
-- Modelos diferentes
-- Poses e enquadramentos
-- Cenários internos e externos
-- Produto em uso
-- Close-up de detalhes
-- Flat lay
-- Momentos espontâneos
-- Produto integrado ao ambiente
-- Imagens conceituais alinhadas à marca
-
-Os posts devem ser diferentes entre si, mas formar um grid visualmente harmônico. Evite aparência artificial de IA.
-
-Entregue as 9 imagens separadamente, identificadas de "Post 1 de 9" até "Post 9 de 9".
-Nunca entregue em colagem ou grid único.`,
+    pieces: feedPieces,
+    prompt: compileFeedPrompt(),
   },
   {
     id: 'highlights',
@@ -164,34 +704,8 @@ Nunca entregue em colagem ou grid único.`,
       'Publique cada trio no destaque correto e confira a leitura em tela pequena.',
     ],
     guardrail: 'Prazo, política, garantia, avaliação e história da marca nunca podem ser aproximados ou inventados.',
-    prompt: `Você é um diretor de arte especializado em branding e Instagram.
-
-Vou enviar o link da loja, prints, produtos e logo. Analise o nicho, país, idioma, público e identidade visual da marca.
-
-Crie 9 stories individuais, em 1080 × 1920 px, com qualidade máxima, textos legíveis e no idioma nativo da loja.
-
-DESTAQUE 1 — REVIEWS
-1. Capa chamando atenção para a satisfação dos clientes
-2. Avaliação, depoimento ou benefício percebido
-3. Reforço de confiança + CTA para realizar o pedido
-
-DESTAQUE 2 — NOSSA HISTÓRIA
-1. Quem somos e inspiração da marca
-2. Propósito, missão e principais diferenciais
-3. Convite para fazer parte da história + CTA
-
-DESTAQUE 3 — INFORMAÇÕES
-1. Como comprar, envio e prazo de entrega
-2. Pagamentos, trocas, devoluções e garantia
-3. Atendimento, canais de contato + CTA
-
-Use apenas informações confirmadas no site. Não invente avaliações, prazos, políticas, garantias ou dados sobre a história da empresa.
-
-${HOUSE_PRODUCT_RULE_SHORT}
-
-Os três stories de cada destaque devem ter coerência visual, mas variar imagens, fundos, posição dos textos e composição.
-
-Entregue os 9 stories separadamente e informe também a copy exata usada em cada imagem e sua tradução para português, quando necessário.`,
+    pieces: highlightPieces,
+    prompt: compileHighlightsPrompt(),
   },
   {
     id: 'weekly',
@@ -206,46 +720,8 @@ Entregue os 9 stories separadamente e informe também a copy exata usada em cada
       'Varie modelo, pose, enquadramento e composição; não republique a mesma arte.',
     ],
     guardrail: 'Cupom precisa estar ativo e conferido. A rotina semanal troca coleção e oferta sem trocar a identidade da marca.',
-    prompt: `Com base na loja e na identidade visual já definida nesta conversa, crie 6 stories de Instagram, sendo 3 para cada tema.
-
-DIRETRIZES GERAIS
-- Formato: 1080x1920px, 9:16
-- Texto aplicado diretamente na imagem
-- Design premium, elegante e profissional
-- Mesma paleta, tipografia e estilo visual da marca
-- Copy curta, legível e bem hierarquizada
-- Os 3 stories de cada tema devem formar uma sequência visual coerente
-- Variar o modelo, as poses, os enquadramentos e o posicionamento dos elementos visuais e textuais em cada story, sem deixar todas as peças iguais
-- Manter consistência visual entre as peças, mas com composições diferentes
-- Não utilizar imagens de referência externas; basear toda a criação na identidade da loja já apresentada
-
-${HOUSE_PRODUCT_RULE_SHORT}
-
-TEMA 1 — BOM DIA
-Objetivo: desejar bom dia, fortalecer a conexão com o público e direcionar para uma coleção da loja.
-- Story 1: saudação de bom dia com imagem aspiracional e lifestyle da marca
-- Story 2: convite para descobrir produtos ou novidades da coleção
-- Story 3: CTA direto para acessar a coleção
-Tom: acolhedor, sofisticado e leve.
-
-TEMA 2 — CUPOM DE DESCONTO
-Objetivo: apresentar uma oferta com modelo usando uma peça da loja e destacar o cupom.
-- Story 1: abertura apresentando o benefício da oferta
-- Story 2: cupom em destaque, com leitura clara
-- Story 3: reforço do desconto e CTA para comprar
-Tom: exclusivo, desejável e comercial.
-
-Caso nenhum cupom tenha sido informado, use WELCOME10.
-
-FORMATO DE ENTREGA
-Para cada story, entregue:
-
-[Tema X – Story Y]
-Imagem: gerar em 1080x1920px com o texto embutido
-Copy: informar exatamente o texto utilizado na imagem
-
-REGRA FINAL
-Garanta que todas as peças tenham acabamento de marca premium, estejam prontas para publicação no Instagram e que não fiquem repetitivas visualmente, variando modelo, pose, composição e distribuição dos elementos.`,
+    pieces: weeklyPieces,
+    prompt: compileWeeklyPrompt(),
   },
   {
     id: 'reviews',
@@ -260,11 +736,8 @@ Garanta que todas as peças tenham acabamento de marca premium, estejam prontas 
       'Substitua a peça gerada sempre que existir foto, marcação ou avaliação real de cliente.',
     ],
     guardrail: 'Não invente nome de cliente, nota, número de vendas, prazo de entrega ou promessa de resultado.',
-    prompt: `Me entregue 3 reviews de cliente de forma mais natural possível, como se algum cliente comprasse nossas roupas e marcasse a loja no Instagram.
-
-Precisa parecer o mais realista possível, não coloque nossa logo, apenas como se o cliente tivesse tirado uma foto, e estivesse fazendo um review do produto marcando nossa loja.
-
-${HOUSE_PRODUCT_RULE_SHORT}`,
+    pieces: reviewPieces,
+    prompt: compileReviewsPrompt(),
     note: 'Não invente nota, número de vendas, nome de cliente real, prazo de entrega ou promessa de resultado.',
   },
 ];

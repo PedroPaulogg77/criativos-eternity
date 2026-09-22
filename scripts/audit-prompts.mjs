@@ -149,10 +149,12 @@ assert.ok(data.references.every(({ id, name, family, category, image, recipe }) 
   && new RegExp(`^/references/${id.toLowerCase()}\\.(png|jpg)$`).test(image)
   && recipe.length > 80
 ));
-assert.deepEqual(
-  data.references.filter(({ validated }) => validated).map(({ id }) => id),
-  ['REF-0001', 'REF-0003', 'REF-0005', 'REF-0007', 'REF-0008'],
-);
+/* O lote pronto parte apenas das direções que a campanha já considerou adequadas. */
+const readyLot = data.recommendedReferenceIds(data.references);
+assert.equal(readyLot.length, 5, 'o lote pronto não tem cinco direções');
+for (const id of readyLot) {
+  assert.ok(data.references.some((reference) => reference.id === id), `o lote pronto aponta para ${id}, que não existe no banco`);
+}
 assert.ok(pilotPrompt.includes('ANTES E DEPOIS DIRETO'));
 assert.ok(pilotPrompt.includes('Só pode ser usado com resultado visual e comparação comprovados.'));
 assert.equal((singlePilotBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
@@ -164,27 +166,194 @@ assert.ok(collectionPilotBatch.includes('FLAT LAY RADIAL DE COLEÇÃO'));
 assert.ok(collectionPilotBatch.includes('Limite operacional:'));
 
 const carousel = flow.compileCarouselPrompt();
-assert.ok(carousel.includes('EXATAMENTE CINCO produtos ou looks distintos'));
+assert.ok(carousel.includes('até CINCO produtos ou looks distintos'));
 assert.ok(carousel.includes('QUANDO HOUVER UMA PESSOA NA IMAGEM'));
 assert.ok(carousel.includes('QUANDO O PRODUTO ESTIVER SEM PESSOA'));
-assert.ok(carousel.includes('cinco imagens finais SEPARADAS e INDEPENDENTES, todas em 4:5'));
+assert.ok(carousel.includes('SEPARADAS e INDEPENDENTES, todas em 4:5'));
 assert.ok(carousel.includes('Não entregue colagem, grade, carrossel montado'));
 
-const squareCreatives = flow.compileCreativeFormatPrompt('1:1');
+const humanizada = data.references.find(({ people }) => people === 'humanizado');
+const corpoSuporte = data.references.find(({ people }) => people === 'corpo-suporte');
+const squareCreatives = flow.compileCreativeFormatPrompt('1:1', [humanizada, corpoSuporte]);
+
+/*
+ * A adaptação recompõe a cena inteira. Sem a regra de presença humana ela cortava a cabeça
+ * do modelo — era o erro mais frequente no 9:16. Cada adaptação carrega o regime do mestre.
+ */
+for (const [nome, prompt] of [
+  ['lote 1:1', squareCreatives],
+  ['lote 9:16', flow.compileCreativeFormatPrompt('9:16', [humanizada, corpoSuporte])],
+  ['peça humanizada em 9:16', flow.compileCreativeFormatSinglePrompt('9:16', 0, humanizada)],
+  ['peça corpo-suporte em 9:16', flow.compileCreativeFormatSinglePrompt('9:16', 1, corpoSuporte)],
+  ['peça sem direção conhecida', flow.compileCreativeFormatSinglePrompt('9:16', 2)],
+]) {
+  assert.ok(prompt.includes('PESSOA NO NOVO FORMATO'), `${nome} sem a regra de enquadramento da pessoa`);
+  assert.ok(/Nunca corte cabeça, topo da cabeça ou parte do rosto pela borda/.test(prompt), `${nome} deixa cortar a cabeça pela borda`);
+  assert.ok(/nenhuma cabeça, rosto ou topo de cabeça cortado pela borda/.test(prompt), `${nome} sem a conferência do corte`);
+}
+assert.ok(flow.compileCreativeFormatSinglePrompt('9:16', 0, humanizada).includes('PESSOA COMO PERSONAGEM'), 'a adaptação de uma direção humanizada não repete o regime dela');
+assert.ok(flow.compileCreativeFormatSinglePrompt('9:16', 1, corpoSuporte).includes('CORPO SEM IDENTIDADE'), 'a adaptação de uma direção desumanizada não repete o regime dela');
 const verticalCarousel = flow.compileCarouselFormatPrompt('9:16');
 assert.ok(squareCreatives.includes('cinco criativos mestres 4:5 aprovados'));
 assert.ok(squareCreatives.includes('1:1, preferencialmente 1080 × 1080 px'));
 assert.ok(verticalCarousel.includes('cinco cards 4:5 do carrossel já aprovados'));
 assert.ok(verticalCarousel.includes('9:16, preferencialmente 1080 × 1920 px'));
 
+/*
+ * O card do carrossel já vem cortado no pescoço. No quadro alto, a altura extra precisa ser
+ * ganha para baixo: sem isso o tronco sem cabeça flutua no meio do 9:16 e a peça parece quebrada.
+ */
+for (const [nome, prompt] of [
+  ['carrossel em lote 9:16', verticalCarousel],
+  ['card 03 em 9:16', flow.compileCarouselFormatSinglePrompt('9:16', 2)],
+]) {
+  assert.ok(prompt.includes('SEM CABEÇA NO QUADRO ALTO'), nome + ' sem a regra do corte na borda superior');
+  assert.ok(/fica exatamente na BORDA SUPERIOR/.test(prompt), nome + ' não fixa o corte na borda de cima');
+  assert.ok(/altura que sobra no formato mais alto é ganha para baixo/.test(prompt), nome + ' deixa a altura extra ir para cima');
+  assert.ok(/nenhum tronco sem cabeça com fundo vazio acima/.test(prompt), nome + ' sem a conferência do tronco flutuando');
+}
+
+/*
+ * O ChatGPT falha ao devolver cinco imagens num pedido só. Por isso todo prompt de lote
+ * tem um caminho de uma peça por mensagem, e cada um desses precisa pedir UMA imagem,
+ * recusar colagem e proibir que as outras peças venham junto.
+ */
+const carouselCards = [0, 1, 2, 3, 4].map((index) => flow.compileCarouselCardPrompt(index));
+assert.ok(carouselCards[0].includes('define o padrão visual'), 'card 01 não define o padrão do carrossel');
+assert.ok(carouselCards[4].includes('ainda NÃO tenha sido usado'), 'card 05 não impede repetir produto');
+const prompsUnitarios = [];
+for (const [index, prompt] of carouselCards.entries()) {
+  const card = String(index + 1).padStart(2, '0');
+  assert.ok(prompt.includes(`SOMENTE o CARD ${card}`), `card ${card} não pede uma peça só`);
+  assert.ok(prompt.includes('Entregue exatamente UMA imagem final em 4:5'), `card ${card} sem a contagem de arquivos`);
+  assert.ok(prompt.includes('Não gere os outros cards nesta resposta.'), `card ${card} deixa os outros virem junto`);
+  prompsUnitarios.push([`card ${card} do carrossel`, prompt]);
+}
+for (const formato of ['1:1', '9:16']) {
+  for (let index = 0; index < 5; index += 1) {
+    const item = String(index + 1).padStart(2, '0');
+    const criativo = flow.compileCreativeFormatSinglePrompt(formato, index);
+    const card = flow.compileCarouselFormatSinglePrompt(formato, index);
+    assert.ok(criativo.includes(`SOMENTE a adaptação ${item}`), `adaptação ${item} em ${formato} não pede uma peça só`);
+    assert.ok(criativo.includes('sem gerar os outros criativos'), `adaptação ${item} em ${formato} deixa os outros virem junto`);
+    assert.ok(card.includes(`SOMENTE esse card`), `card ${item} em ${formato} não pede uma peça só`);
+    assert.ok(card.includes('Não gere os outros cards'), `card ${item} em ${formato} deixa os outros virem junto`);
+    prompsUnitarios.push([`criativo ${item} em ${formato}`, criativo], [`card ${item} em ${formato}`, card]);
+  }
+}
+/*
+ * Redes sociais pedia 9, 9, 6 e 3 imagens por mensagem. Cada peça agora tem a sua.
+ *
+ * E a regra da casa NÃO entra aqui. Ela foi escrita para criativo de anúncio: produto maior,
+ * mais nítido e mais iluminado que tudo. Aplicada ao playbook de redes, transformava post de
+ * feed, story de destaque e review de cliente em peça de venda. O playbook já estava validado
+ * sem ela; o teste agora impede que ela volte.
+ */
+const pecasEsperadas = { feed: 9, highlights: 9, weekly: 6, reviews: 3 };
+for (const social of flow.socialPrompts) {
+  assert.equal(social.pieces.length, pecasEsperadas[social.id], `${social.id} não tem uma peça por mensagem`);
+  const rotulos = social.pieces.map(({ label }) => label);
+  assert.equal(new Set(rotulos).size, rotulos.length, `${social.id} repete rótulo de peça`);
+  assert.ok(
+    !social.prompt.includes('REGRA DA CASA'),
+    `o prompt de ${social.id} voltou a levar a regra da casa; ela é de criativo de anúncio e descaracteriza o playbook de redes`,
+  );
+  for (const { label, prompt } of social.pieces) {
+    assert.ok(/SOMENTE/.test(prompt), `${social.id} ${label} não pede uma peça só`);
+    assert.ok(prompt.includes('Entregue exatamente UMA imagem'), `${social.id} ${label} sem a contagem de arquivos`);
+    assert.ok(/Não gere os outros/.test(prompt), `${social.id} ${label} deixa as outras peças virem junto`);
+    assert.ok(
+      !prompt.includes('REGRA DA CASA'),
+      `${social.id} ${label} voltou a levar a regra da casa; ela é de criativo de anúncio e descaracteriza o playbook de redes`,
+    );
+    assert.ok(/colagem|grade/.test(prompt), `${social.id} ${label} sem a trava de colagem`);
+  }
+}
+/*
+ * Os prompts de story voltavam uma prancha 3x3 em vez de nove arquivos. Três causas:
+ * pediam imagem e copy na mesma resposta, descreviam três grupos de três e falavam em
+ * "stories" onde o feed fala em "imagens". Agora levam o mesmo contrato de entrega dos criativos.
+ */
+for (const [nome, prompt, quantidade] of [
+  ['destaques', flow.socialPrompts[1].prompt, 'NOVE'],
+  ['rotina semanal', flow.socialPrompts[2].prompt, 'SEIS'],
+]) {
+  assert.ok(
+    prompt.includes(`EXATAMENTE ${quantidade} arquivos de imagem anexados`),
+    `${nome} não declara a contagem de arquivos e volta como prancha`,
+  );
+  assert.ok(/conte os arquivos anexados/.test(prompt), `${nome} sem a conferência de contagem`);
+  assert.ok(/prancha de apresentação/.test(prompt) && /mockup de celular/.test(prompt), `${nome} não recusa prancha nem mockup`);
+  assert.ok(/vem em texto DEPOIS das/.test(prompt), `${nome} pede imagem e copy na mesma resposta`);
+  assert.ok(/Story 1 a Story/.test(prompt), `${nome} não numera os stories de forma corrida`);
+}
+assert.ok(flow.socialPrompts[1].prompt.includes('Story 9 —'), 'os destaques voltaram a ser descritos como três grupos de três');
+assert.ok(flow.socialPrompts[2].prompt.includes('Story 6 —'), 'a rotina voltou a ser descrita como dois grupos de três');
+
+/*
+ * Redes sociais é perfil, não campanha. Se toda peça mostrar produto, o feed vira catálogo —
+ * e se o prompt não mandar rodar produto e variante, as nove peças saem com o mesmo item.
+ */
+const cenasDoFeed = flow.socialPrompts.find(({ id }) => id === 'feed').pieces.map(({ prompt }) => prompt.split('CENA DESTE POST')[1].split('\n')[1]);
+const cenasSemProduto = cenasDoFeed.filter((cena) => /SEM (nenhum )?produto/.test(cena)).length;
+assert.ok(cenasSemProduto >= 3, `o feed só tem ${cenasSemProduto} cena(s) sem produto; assim ele vira catálogo`);
+for (const [nome, prompt] of [
+  ['feed em bloco', flow.socialPrompts[0].prompt],
+  ['destaques em bloco', flow.socialPrompts[1].prompt],
+  ['rotina em bloco', flow.socialPrompts[2].prompt],
+  ...flow.socialPrompts[0].pieces.map(({ label, prompt }) => [`feed · ${label}`, prompt]),
+]) {
+  assert.ok(/Nem toda peça mostra produto/.test(prompt), `${nome} exige produto em todas as peças`);
+  assert.ok(/produto ou uma variante diferente/.test(prompt), `${nome} não manda rodar o produto entre as peças`);
+}
+assert.ok(
+  /variante diferente em cada uma das três peças/.test(flow.socialPrompts[3].prompt),
+  'os três reviews podem sair com o mesmo produto',
+);
+
+/* As nove cenas do feed existem para o grid não sair com nove fotos iguais. */
+assert.equal(new Set(flow.socialPrompts.find(({ id }) => id === 'feed').pieces.map(({ prompt }) => prompt.split('CENA DESTE POST')[1].split('\n')[1])).size, 9, 'o feed repete cena entre os nove posts');
+
+for (const [nome, prompt] of prompsUnitarios) {
+  assert.ok(/colagem/.test(prompt), `${nome} sem a trava de colagem`);
+}
+
 assert.deepEqual(
   flow.socialPrompts.map(({ id }) => id),
   ['feed', 'highlights', 'weekly', 'reviews'],
 );
-assert.ok(flow.socialPrompts[0].prompt.includes('Crie 9 posts individuais'));
-assert.ok(flow.socialPrompts[1].prompt.includes('Crie 9 stories individuais'));
+assert.ok(flow.socialPrompts[0].prompt.includes('crie 9 posts de feed'));
+/* O feed herda o contexto capturado em vez de mandar reanalisar a loja do zero. */
+assert.ok(flow.socialPrompts[0].prompt.startsWith('Usando exclusivamente o CONTEXTO CAPTURADO'), 'o feed voltou a pedir uma nova análise da loja');
+assert.ok(flow.socialPrompts[0].prompt.includes('Antes de entregar, confirme internamente'), 'o feed perdeu a autoconferência');
+assert.ok(flow.socialPrompts[1].prompt.includes('crie 9 stories para os destaques'));
 assert.ok(flow.socialPrompts[2].prompt.includes('crie 6 stories de Instagram'));
-assert.ok(flow.socialPrompts[3].prompt.includes('Me entregue 3 reviews de cliente'));
+
+/*
+ * Cada destaque tem um regime de fato diferente, e é isso que faz o bloco funcionar:
+ * o depoimento é composição da peça, o dado operacional nunca é.
+ */
+for (const [nome, prompt] of [
+  ['destaques em bloco', flow.socialPrompts[1].prompt],
+  ...flow.socialPrompts[1].pieces.map(({ label, prompt }) => [`destaque · ${label}`, prompt]),
+]) {
+  if (!/REVIEWS/.test(prompt)) continue;
+  assert.ok(
+    /depoimento é texto publicitário da composição|depoimento é texto da composição/.test(prompt),
+    `${nome} proíbe o depoimento que a própria peça pede`,
+  );
+  assert.ok(/não escreva nota|Não escreva nota/.test(prompt), `${nome} deixa passar nota, número de vendas ou nome de cliente`);
+}
+for (const [nome, prompt] of [
+  ['destaques em bloco', flow.socialPrompts[1].prompt],
+  ...flow.socialPrompts[1].pieces.filter(({ label }) => label.startsWith('INFORMAÇÕES')).map(({ label, prompt }) => [`destaque · ${label}`, prompt]),
+]) {
+  assert.ok(/aqui não existe composição/.test(prompt), `${nome} permite aproximar prazo, pagamento ou garantia`);
+}
+assert.ok(flow.socialPrompts[2].prompt.includes('WELCOME10'), 'a rotina semanal perdeu o cupom padrão');
+assert.ok(/Não invente percentual/.test(flow.socialPrompts[2].prompt), 'a rotina semanal deixa inventar condição de oferta');
+assert.ok(flow.socialPrompts[3].prompt.includes('me entregue 3 reviews de cliente'));
+assert.ok(/foto tirada pelo próprio cliente|Foto tirada pelo próprio cliente/.test(flow.socialPrompts[3].prompt), 'o review perdeu a aparência de foto de cliente');
 
 const audio = flow.compileAudioPrompt(collection);
 assert.ok(audio.includes('Duração máxima de 30 segundos'));
@@ -222,7 +391,7 @@ const promptsQueGeramImagem = [
   ['formato 9:16 do carrossel', verticalCarousel],
   ['vídeo Kling', video],
   ['panfleto', flyer],
-  ...flow.socialPrompts.map(({ id, prompt }) => [`social ${id}`, prompt]),
+  ...prompsUnitarios,
 ];
 
 for (const [nome, prompt] of promptsQueGeramImagem) {
@@ -313,12 +482,130 @@ assert.deepEqual(
 );
 
 /*
- * Buraco de catálogo: cada combinação de modo e argumento precisa ter pelo menos
- * uma referência. Sem isso o aluno cai num modo sem nenhuma opção adequada.
+ * A galeria não pode tratar “produto único” como sinônimo de uma única unidade
+ * nem devolver demonstrações funcionais para uma peça que se vende pela estética.
+ */
+for (const reference of data.references) {
+  if (reference.offerMechanics) {
+    assert.ok(reference.offerMechanics.every((item) => ['percentual', 'leve-mais', 'progressivo'].includes(item)), `${reference.id} tem mecânica de oferta inválida`);
+  }
+  if (reference.fillsWithVariants) {
+    assert.ok(reference.modes.includes('collection'), `${reference.id} só pode abrir para produto único por ser uma direção de coleção de variações`);
+  }
+}
+
+/*
+ * Direcao de colecao usada num produto so: o limite nao pode exigir produtos distintos,
+ * senao ele contradiz a linha que manda mostrar as cores confirmadas do mesmo item.
+ * Foi assim que a REF-0029 e a REF-0063 sairam mandando o contrario do nucleo.
+ */
+for (const reference of data.references.filter(({ fillsWithVariants }) => fillsWithVariants)) {
+  const texto = `${reference.limits ?? ''}`.toLowerCase();
+  const exigeDistintos = /produtos? (ou looks )?(distintos|diferentes)|looks distintos/.test(texto);
+  const abreParaCores = /cores? confirmadas|mesmo modelo|mesmo conjunto|variantes|varia/.test(texto);
+  assert.ok(
+    !exigeDistintos || abreParaCores,
+    `${reference.id} serve a produto único mas o limite exige produtos distintos`,
+  );
+}
+
+const camisaLeveMais = { mode: 'single', salesDriver: 'estetica', offerMechanic: 'leve-mais' };
+const camisaLeveMaisReferences = data.sortForCampaign(
+  data.references.filter((reference) => data.isReferenceApplicable(reference, camisaLeveMais)),
+  camisaLeveMais,
+);
+assert.ok(camisaLeveMaisReferences.length >= 5, 'produto estético com compre-x-leve-y ficou sem cinco direções');
+assert.ok(camisaLeveMaisReferences.every((reference) => reference.drivers.includes('estetica')), 'uma referência de função apareceu para produto estético');
+/*
+ * Peça sem texto entra na galeria como qualquer outra. O que o teste cobra é que o
+ * prompt dela não receba a oferta: a regra de peça silenciosa substitui a linha da oferta.
+ */
+for (const reference of camisaLeveMaisReferences.filter(({ silent }) => silent)) {
+  const prompt = compiler.compileReferencePrompt({ ...single, offerMechanic: 'leve-mais' }, reference);
+  assert.ok(prompt.includes('PEÇA SEM TEXTO COMERCIAL'), `${reference.id} entrou na galeria sem a regra de peça sem texto`);
+  assert.ok(!prompt.includes(`Preserve exatamente a oferta recebida`), `${reference.id} recebeu a oferta mesmo sendo peça sem texto`);
+}
+for (const id of ['REF-0067', 'REF-0145', 'REF-0147']) {
+  assert.ok(camisaLeveMaisReferences.some((reference) => reference.id === id), `${id} deveria aparecer para compre-x-leve-y de produto estético`);
+}
+
+const camisaComVariacoes = { ...camisaLeveMais };
+const referenciasComVariacoes = data.references.filter((reference) => data.isReferenceApplicable(reference, camisaComVariacoes));
+for (const id of ['REF-0029', 'REF-0011', 'REF-0063']) {
+  assert.ok(referenciasComVariacoes.some((reference) => reference.id === id), `${id} não abriu para o mesmo produto com variações confirmadas`);
+}
+
+const colecaoProgressiva = { mode: 'collection', salesDriver: 'estetica', offerMechanic: 'progressivo' };
+const referenciasProgressivas = data.sortForCampaign(
+  data.references.filter((reference) => data.isReferenceApplicable(reference, colecaoProgressiva)),
+  colecaoProgressiva,
+);
+assert.ok(referenciasProgressivas.length >= 5, 'coleção com desconto progressivo ficou sem cinco direções');
+
+/*
+ * A galeria alterna tipos de composição, então o que o teste cobra é o que o Pedro pediu:
+ * as cinco primeiras de qualquer caminho saem diferentes entre si, e a primeira de todas
+ * é a que mais se aproxima da oferta e do nicho. Exigir que as cinco primeiras fossem
+ * todas da mesma mecânica devolvia cinco peças iguais, que é o erro oposto.
+ */
+for (const { rotulo, criterio, alvo } of [
+  { rotulo: 'coleção progressiva', criterio: colecaoProgressiva, alvo: 'Coleção de camisas' },
+  { rotulo: 'produto único com leve-mais', criterio: camisaLeveMais, alvo: 'Camisa xadrez' },
+]) {
+  const comNicho = { ...criterio, category: data.guessCategory(alvo) };
+  const ordenada = data.sortForCampaign(
+    data.references.filter((reference) => data.isReferenceApplicable(reference, comNicho)),
+    comNicho,
+  );
+  const cinco = ordenada.slice(0, 5);
+  assert.equal(new Set(cinco.map(data.compositionType)).size, 5, `as cinco primeiras de ${rotulo} repetem tipo de composição`);
+  assert.deepEqual(data.lotSameness(cinco), [], `o lote de abertura de ${rotulo} sai igual em algum eixo`);
+  if (criterio.offerMechanic) {
+    assert.ok(
+      data.offerFit(ordenada[0], criterio.offerMechanic) === 0,
+      `a primeira direção de ${rotulo} não é uma das que já nascem com essa oferta`,
+    );
+  }
+}
+
+/*
+ * Oferta é texto, e nenhuma peça comercial é excluída por causa dela. O relógio da REF-0001
+ * anuncia “compre 2, leve 1” e continua servindo a um desconto percentual.
+ */
+/*
+ * Desconto progressivo é oferta de catálogo — “2 artigos, 3 artigos, 4 ou mais” —
+ * e por isso só existe em coleção: a tela não oferece a opção em produto único.
+ */
+for (const mechanic of ['percentual', 'leve-mais']) {
+  const abertas = data.references.filter((reference) => data.isReferenceApplicable(reference, {
+    mode: 'single',
+    salesDriver: 'estetica',
+    offerMechanic: mechanic,
+  }));
+  assert.ok(abertas.some(({ id }) => id === 'REF-0001'), `REF-0001 sumiu da galeria por causa da mecânica ${mechanic}`);
+  assert.ok(abertas.length >= 5, `produto único estético ficou sem cinco direções em ${mechanic}`);
+}
+
+
+const promptComVariacoes = compiler.compileReferencePrompt({
+  ...single,
+  offerMechanic: 'leve-mais',
+}, data.references.find(({ id }) => id === 'REF-0029'));
+assert.ok(promptComVariacoes.includes('variações visuais confirmadas do MESMO produto'), 'direção de coleção não explica o uso de variações do mesmo produto');
+const promptComPilha = compiler.compileReferencePrompt({
+  ...single,
+  offerMechanic: 'leve-mais',
+}, data.references.find(({ id }) => id === 'REF-0067'));
+assert.ok(promptComPilha.includes('repetir unidades reais do mesmo produto'), 'oferta leve-mais não libera a pilha da mesma unidade');
+
+/*
+ * Buraco de catálogo: cada caminho que a trilha abre precisa ter pelo menos uma
+ * referência. Coleção só existe em estética — um conjunto de produtos se vende pela
+ * imagem —, então essa combinação não entra na conta.
  */
 for (const mode of ['single', 'collection']) {
   const doModo = data.references.filter(({ modes }) => modes.includes(mode));
-  for (const driver of ['funcao', 'estetica']) {
+  for (const driver of mode === 'collection' ? ['estetica'] : ['funcao', 'estetica']) {
     const servem = doModo.filter(({ drivers }) => drivers.includes(driver));
     assert.ok(servem.length, `nenhuma referência de ${mode} serve ao argumento ${driver}`);
     assert.ok(
@@ -333,6 +620,22 @@ for (const mode of ['single', 'collection']) {
  * pode receber a oferta injetada pelo nucleo. Era o que fazia a REF-0023 sair
  * com um bloco de texto que a peca original nunca teve.
  */
+/*
+ * A regra da peca sem texto proibia wordmark, e a REF-0024 vende justamente a caixa
+ * com a marca gravada na tampa. Proibir o que a referencia faz e um dos sete erros.
+ */
+{
+  const semTexto = data.references.find(({ silent }) => silent);
+  const prompt = compiler.compileReferencePrompt(
+    semTexto.modes.includes('single') ? single : collection,
+    semTexto,
+  );
+  assert.ok(
+    /marca gravada na tampa da caixa/.test(prompt),
+    'a regra da peça sem texto voltou a apagar a marca que está no próprio objeto',
+  );
+}
+
 const silenciosas = data.references.filter(({ silent }) => silent);
 assert.ok(silenciosas.length, 'nenhuma referência marcada como peça sem texto');
 for (const reference of silenciosas) {
@@ -465,6 +768,41 @@ if (fs.existsSync(pastaCuradoria)) {
 }
 
 /*
+ * Fundo sem ancora de claridade. A REF-0044 dizia "bege quente" e o modelo devolveu
+ * bege medio; as barras graficas precisaram saltar para aparecer e viraram adesivos
+ * dourados. Toda descricao de fundo, superficie, parede ou estudio diz se e clara ou
+ * escura. A REF-0020 fica de fora: o fundo dela e o ambiente real de uso, que varia.
+ */
+/*
+ * Peca de varios modulos usada com um produto so. Sem uma linha dizendo o que
+ * preencher, o modelo inventa cor ou enfia outro produto para fechar a conta.
+ * Cada receita precisa dizer qual das saidas cabe naquela composicao: menos
+ * modulos maiores, outras vistas reais do mesmo produto, ou unidades repetidas.
+ */
+const QUEDA = /(com|se) (menos|poucas?|apenas|somente|houver|uma?|duas|dois|tr[êe]s|quatro|cinco|seis)\b|menos (itens|m[óo]dulos|cores|conjuntos|cenas|pe[çc]as|diagonais|produtos)|s[óo] existe se|houver apenas|unidades reais do mesmo produto/i;
+const fonteDasReceitas = fs.readFileSync(new URL('../lib/prompt-compiler.ts', import.meta.url), 'utf8');
+for (const reference of data.references.filter(({ slots }) => (slots ?? 1) >= 2)) {
+  const inicio = fonteDasReceitas.indexOf(`'${reference.id}': {`);
+  assert.ok(inicio >= 0, `${reference.id} tem vários módulos e nenhuma receita própria`);
+  const bloco = fonteDasReceitas.slice(inicio, fonteDasReceitas.indexOf('\n  },', inicio));
+  assert.ok(QUEDA.test(bloco), `${reference.id} não diz o que fazer quando vem menos produto do que a composição comporta`);
+}
+
+const ABRE_FUNDO = /^- (Fundo|O fundo|A superfície|Superfície|A parede|Cenário|O cenário|Mesa|A mesa|Estúdio|O estúdio)\b/i;
+const ANCORA_DE_TOM = /\b(clar[oa]s?|escur[oa]s?|branc[oa]s?|pret[oa]s?|cinza|off-white|profund[oa]s?|quase branco|pálid[oa]|neutr[oa]s?|médio a escuro)\b/i;
+const FUNDO_VARIAVEL = new Set(['REF-0020']);
+for (const reference of data.references) {
+  if (FUNDO_VARIAVEL.has(reference.id)) continue;
+  const inicio = fonteDasReceitas.indexOf(`'${reference.id}': {`);
+  if (inicio < 0) continue;
+  const bloco = fonteDasReceitas.slice(inicio, fonteDasReceitas.indexOf('\n  },', inicio));
+  for (const linha of bloco.split('\n').map((texto) => texto.trim())) {
+    if (!ABRE_FUNDO.test(linha)) continue;
+    assert.ok(ANCORA_DE_TOM.test(linha), `${reference.id} descreve o fundo sem dizer se ele é claro ou escuro: ${linha.slice(0, 80)}`);
+  }
+}
+
+/*
  * Invencao de produto. A quantidade alta somada a uma ordem de nao mostrar menos
  * fazia o modelo inventar categoria nova -- chapeu e bolsa numa campanha de
  * vestidos -- so para fechar a conta de modulos.
@@ -476,6 +814,13 @@ for (const reference of data.references.filter(({ modes, slots }) => modes.inclu
   assert.ok(!/não mostre mais nem menos/.test(prompt), `${reference.id} ainda exige a quantidade exata`);
 }
 
+/*
+ * O carrossel cobrava cinco produtos fixos. Com colecao menor, o modelo inventava
+ * item para fechar a conta -- o mesmo erro que as receitas ja tinham resolvido.
+ */
+assert.ok(carousel.includes('não uma cota a cumprir'), 'o carrossel ainda trata a quantidade como cota');
+assert.ok(/proibido inventar produto/i.test(carousel), 'o carrossel não proíbe inventar produto para completar');
+
 console.log('Nenhum par de referências descreve a mesma peça, no teto de', Math.round(TETO_SIMILARIDADE * 100) + '%.');
 
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');
@@ -483,4 +828,4 @@ console.log('Argumento de venda declarado nas', data.references.length, 'referê
 console.log(
   'Prompts aprovados: contexto, lote 4:5, recuperação, carrossel, formatos, redes sociais, áudio, Kling e panfleto.',
 );
-console.log('Regra da casa presente nos 15 prompts que geram imagem.');
+console.log('Regra da casa presente nos', promptsQueGeramImagem.length, 'prompts que geram imagem, contando os caminhos de uma peça por vez.');
