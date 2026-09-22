@@ -164,7 +164,7 @@ function SameChatPill() {
 
 function AttachmentAlert({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`${compact ? 'border-x-0 px-4 py-3 sm:px-6' : 'p-5 sm:p-6'} border border-amber-300/45 bg-[linear-gradient(105deg,rgba(245,158,11,.16),rgba(126,45,255,.13))] text-amber-50 shadow-[0_12px_45px_rgba(245,158,11,.08)]`}>
+    <div className={`${compact ? 'border-x-0 px-4 py-3 sm:px-6' : 'p-5 sm:p-6'} border border-amber-300/35 bg-amber-400/[0.08] text-amber-50`}>
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center bg-amber-300 text-amber-950"><AlertTriangle className="size-5" /></span>
         <div>
@@ -261,7 +261,7 @@ function QuestionScreen({
       </div>
       <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-border pt-5">
         {back ? <Button type="button" variant="ghost" size="lg" className="h-11" onClick={back}><ArrowLeft data-icon="inline-start" /> Voltar</Button> : <span />}
-        <Button type="submit" size="lg" className="h-11 px-6 shadow-[0_10px_35px_rgba(126,45,255,.24)]" disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
+        <Button type="submit" size="lg" className="h-11 px-6" disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
       </div>
     </form>
   );
@@ -359,7 +359,7 @@ function PromptStep({
               return (
                 <div key={piece.copyKey} className="flex flex-wrap items-center justify-between gap-3 border border-border bg-background/45 p-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-violet-200">{String(index + 1).padStart(2, '0')}</span>
+                    <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-accent-foreground">{String(index + 1).padStart(2, '0')}</span>
                     <p className="truncate text-sm">{piece.label}</p>
                   </div>
                   <Button type="button" variant={pieceCopied ? 'ghost' : 'outline'} size="sm" className="h-8 shrink-0" onClick={() => onCopy(piece.prompt, piece.copyKey)}>
@@ -903,14 +903,14 @@ export default function Home() {
             <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-0.055em] sm:text-6xl">Como você quer trabalhar hoje?</h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">Na primeira campanha, recomendamos percorrer a metodologia inteira. Se você já tem o contexto no ChatGPT, também pode abrir somente a etapa de que precisa.</p>
             <div className="mt-9 grid gap-4 md:grid-cols-2">
-              <button type="button" onClick={startGuidedCampaign} className="group border border-primary/45 bg-primary/[0.09] p-6 text-left transition-all hover:-translate-y-0.5 hover:border-primary/75 hover:bg-primary/[0.13]">
-                <span className="grid size-12 place-items-center bg-primary text-white shadow-[0_12px_35px_rgba(126,45,255,.3)]"><Sparkles className="size-6" /></span>
+              <button type="button" onClick={startGuidedCampaign} className="group border border-primary/45 bg-primary/[0.08] p-6 text-left transition-all hover:-translate-y-0.5 hover:border-primary/75 hover:bg-primary/[0.12]">
+                <span className="grid size-12 place-items-center bg-primary text-primary-foreground"><Sparkles className="size-6" /></span>
                 <span className="mt-6 block text-xl font-semibold tracking-[-0.03em]">Fazer o processo completo</span>
                 <span className="mt-2 block text-sm leading-6 text-muted-foreground">Você será guiado com uma pergunta por vez, do contexto ao panfleto.</span>
-                <span className="mt-6 flex items-center gap-2 text-sm font-medium text-violet-200">Recomendado na primeira vez <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
+                <span className="mt-6 flex items-center gap-2 text-sm font-medium text-accent-foreground">Recomendado na primeira vez <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
               </button>
               <button type="button" onClick={() => openWorkspace()} className="group border border-border bg-card/55 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-card/80">
-                <span className="grid size-12 place-items-center bg-white/[0.07] text-violet-200"><LayoutDashboard className="size-6" /></span>
+                <span className="grid size-12 place-items-center bg-primary/[0.1] text-accent-foreground"><LayoutDashboard className="size-6" /></span>
                 <span className="mt-6 block text-xl font-semibold tracking-[-0.03em]">Abrir somente uma etapa</span>
                 <span className="mt-2 block text-sm leading-6 text-muted-foreground">Volte a um material específico sem precisar percorrer todo o processo.</span>
                 <span className="mt-6 flex items-center gap-2 text-sm font-medium text-foreground">Escolher etapa <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
@@ -939,7 +939,7 @@ export default function Home() {
         alert={linkAccess === 'protected' && hasContext ? <AttachmentAlert compact /> : null}
         actions={<SameChatPill />}
       >
-        {workspaceMessage ? <output className="mb-6 flex items-start gap-3 border border-violet-400/30 bg-violet-500/[0.09] p-5 text-sm leading-6 text-violet-100"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-violet-300" /><span>{workspaceMessage}</span></output> : null}
+        {workspaceMessage ? <output className="mb-6 flex items-start gap-3 border border-primary/30 bg-primary/[0.08] p-5 text-sm leading-6 text-foreground"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-accent-foreground" /><span>{workspaceMessage}</span></output> : null}
 
         <section className="border border-border bg-card/55 p-5">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -991,7 +991,7 @@ export default function Home() {
                 </div>
                 <span className="mt-5 block text-lg font-semibold tracking-[-0.025em]">{name}</span>
                 <span className="mt-2 block text-sm leading-6 text-muted-foreground">{lotProgress ?? phaseDescriptions[index]}</span>
-                <span className={`mt-auto pt-5 text-xs font-medium ${done ? 'text-emerald-300' : current ? 'text-violet-200' : 'text-muted-foreground'}`}>
+                <span className={`mt-auto pt-5 text-xs font-medium ${done ? 'text-emerald-300' : current ? 'text-accent-foreground' : 'text-muted-foreground'}`}>
                   {disabled ? (collectionOnly && hasContext ? 'Só existe em coleção' : 'Prepare o contexto primeiro')
                     : done ? 'Concluída · abrir de novo →'
                     : current ? 'Você parou aqui →'
@@ -1021,7 +1021,7 @@ export default function Home() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="truncate font-medium">{campaignLabel(record)}</p>
-                      {active ? <span className="shrink-0 bg-primary/20 px-2 py-0.5 text-[11px] font-medium text-violet-100">aberta</span> : null}
+                      {active ? <span className="shrink-0 bg-primary/20 px-2 py-0.5 text-[11px] font-medium text-accent-foreground">aberta</span> : null}
                     </div>
                     <p className="mt-1 truncate text-sm text-muted-foreground">
                       {record.mode === 'collection' ? 'Coleção' : 'Produto único'}{record.offer.trim() ? ` · ${record.offer}` : ''} · {recordDone} de {applicable} etapas · {formatDate(record.updatedAt)}
@@ -1293,7 +1293,7 @@ export default function Home() {
                 aria-label={`${selected ? 'Tirar' : 'Escolher'} ${item.name}`}
               >
                 <img src={item.image} alt={`Referência completa: ${item.name}`} loading="lazy" className="h-auto w-full" />
-                {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
+                {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center bg-primary text-xs font-medium text-primary-foreground shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
                 <span className="reference-hover-panel">
                   <span className="block">
                     <span>
@@ -1391,7 +1391,7 @@ export default function Home() {
       <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
         <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Uma mensagem leva as cinco receitas. Se alguma peça vier errada, você gera só aquela." />
         {lotSameness(selectedReferences).length >= 3 ? <p className="mb-4 flex items-start gap-2 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-sm leading-6 text-amber-100/85"><AlertTriangle className="mt-1 size-4 shrink-0 text-amber-300" />As cinco repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. O lote tende a voltar parecido: troque duas antes de gerar.</p> : null}
-        <div className="mb-5 flex items-center justify-between gap-4 border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
+        <div className="mb-5 flex items-center justify-between gap-4 border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center bg-primary text-[8px] text-primary-foreground">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
         <PromptStep
           title="Lote mestre 4:5"
           delivers="Uma mensagem gera os cinco criativos, na ordem do lote."
@@ -1437,7 +1437,7 @@ export default function Home() {
               <article key={item.id} className={`border ${status === 'correct' ? 'border-border bg-card/45' : 'border-amber-400/40 bg-amber-400/[0.05]'}`}>
                 <div className="flex flex-wrap items-center gap-3 p-3">
                   <img src={item.sample ?? item.image} alt="" className="size-12 shrink-0 object-cover" />
-                  <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-violet-200">{numero}</span>
+                  <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-accent-foreground">{numero}</span>
                   <p className="min-w-0 flex-1 truncate text-sm font-medium">{item.name}</p>
 
                   {status === 'correct' ? (
@@ -1536,7 +1536,7 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={4} detail="1:1 e 9:16 · opcionais">
         <PageHeading title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
-        <div className="mb-6 border border-violet-400/25 bg-violet-500/[0.07] p-5 text-sm leading-6 text-violet-100/80"><strong className="text-violet-100">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
+        <div className="mb-6 border border-primary/25 bg-primary/[0.06] p-5 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
         <div className="grid gap-4 xl:grid-cols-2">
           {campaignMode === 'collection' ? (
             <PromptStep
@@ -1605,9 +1605,9 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={5} detail="Entenda antes de gerar">
         <PageHeading title="A rede social sustenta a venda do anúncio" description="O objetivo principal do Instagram aqui não é vender sozinho. É eliminar dúvidas e dar credibilidade quando a pessoa que viu o anúncio visita o perfil antes de comprar." />
-        <div className="border border-primary/25 bg-[linear-gradient(135deg,rgba(126,45,255,.14),rgba(16,12,24,.65))] p-6 sm:p-8">
+        <div className="border border-primary/25 bg-[linear-gradient(135deg,rgba(91,133,255,.12),rgba(20,26,38,.85))] p-6 sm:p-8">
           <p className="max-w-2xl text-xl font-semibold leading-8 tracking-[-0.03em] sm:text-2xl">Um criativo pode trazer o clique. Um perfil vivo, coerente e confiável ajuda o cliente a decidir que a loja é real.</p>
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="border border-white/10 bg-black/15 p-4"><p className="text-xs font-semibold text-violet-300">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="border border-border bg-background/30 p-4"><p className="text-xs font-semibold text-accent-foreground">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Montagem inicial</p><p className="mt-3 text-lg font-semibold">9 posts + 9 stories de destaque</p><p className="mt-2 text-sm leading-6 text-muted-foreground">O visitante entende o que a loja vende, por que confiar e como comprar.</p></div><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Rotina semanal</p><p className="mt-3 text-lg font-semibold">Bom dia + cupom + review</p><p className="mt-2 text-sm leading-6 text-muted-foreground">A presença continua ativa sem parecer repetitiva ou abandonada.</p></div></div>
         <ChatInstruction>Os quatro blocos a seguir devem ser executados em sequência. Cada um herda a identidade construída pelos anteriores.</ChatInstruction>
@@ -1664,11 +1664,11 @@ export default function Home() {
       <PhaseShell {...shellProps} phase={6} detail="ElevenLabs · até 30 segundos">
         <PageHeading eyebrow="Áudio do vídeo" title="Crie o texto que dará voz ao anúncio" description="Este prompt não gera o áudio. Ele escreve uma narração comercial curta e factual para você transformar em voz no ElevenLabs." />
         <section className="border border-primary/25 bg-primary/[0.07] p-6 sm:p-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-violet-300">Por que isso importa</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Por que isso importa</p>
           <p className="mt-3 text-xl font-semibold leading-8 tracking-[-0.025em]">Nos primeiros segundos, a narração precisa explicar por que a pessoa deve parar.</p>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">Por isso o texto começa imediatamente pela oferta, apresenta o produto logo depois e termina com uma chamada para ação. A duração máxima de 30 segundos facilita a edição do criativo em vídeo.</p>
         </section>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">{[['1', 'Copie no ChatGPT', 'O mesmo chat usa oferta, produto, idioma e fatos já confirmados.'], ['2', 'Aprove o texto', 'Leia em voz alta e confira se oferta e produto aparecem imediatamente.'], ['3', 'Gere no ElevenLabs', 'Cole somente a narração aprovada para transformar o texto em voz.']].map(([number, title, text]) => <div key={number} className="border border-border bg-card/55 p-5"><span className="grid size-8 place-items-center bg-primary/14 text-xs font-semibold text-violet-200">{number}</span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">{[['1', 'Copie no ChatGPT', 'O mesmo chat usa oferta, produto, idioma e fatos já confirmados.'], ['2', 'Aprove o texto', 'Leia em voz alta e confira se oferta e produto aparecem imediatamente.'], ['3', 'Gere no ElevenLabs', 'Cole somente a narração aprovada para transformar o texto em voz.']].map(([number, title, text]) => <div key={number} className="border border-border bg-card/55 p-5"><span className="grid size-8 place-items-center bg-primary/14 text-xs font-semibold text-accent-foreground">{number}</span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
         <div className="mt-5"><PromptStep title="Narração de até 30 segundos" delivers="Começa pela oferta, usa só fatos confirmados e devolve o texto pronto para o ElevenLabs." batchPrompt={audioPrompt} batchKey="audio" copiedKey={copiedKey} onCopy={copyText} /></div>
         <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(5), setSocialIndex(socialPrompts.length - 1))} next={() => { markPhaseDone(6); if (journeyMode === 'stage') finishStandalone('Etapa de narração concluída.'); else { goPhase(7); setVideoStep(0); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver necessidade de vídeo'} />
       </PhaseShell>

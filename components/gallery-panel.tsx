@@ -82,7 +82,7 @@ export function GalleryPanel({
                 <span className="absolute inset-0 grid place-items-center bg-black/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
                   <X className="size-3.5 text-white" />
                 </span>
-                <span className="absolute bottom-0 left-0 bg-primary px-1 text-[9px] font-medium text-white">{index + 1}</span>
+                <span className="absolute bottom-0 left-0 bg-primary px-1 text-[9px] font-medium text-primary-foreground">{index + 1}</span>
               </button>
             ) : (
               <span
@@ -103,7 +103,7 @@ export function GalleryPanel({
           type="button"
           onClick={onSubmit}
           disabled={chosen !== slots.length}
-          className="mt-3 flex h-10 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-white transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-muted-foreground"
+          className="mt-3 flex h-10 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-muted-foreground"
         >
           Criar prompt <ArrowRight className="size-4" />
         </button>

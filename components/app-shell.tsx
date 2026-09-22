@@ -62,7 +62,7 @@ function NavItem({
       aria-current={active ? 'page' : undefined}
       className={`relative flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${collapsed ? 'justify-center px-0' : ''} ${
         active
-          ? 'bg-primary/14 font-medium text-violet-100'
+          ? 'bg-primary/12 font-medium text-accent-foreground'
           : 'text-muted-foreground hover:bg-white/[0.045] hover:text-foreground'
       } ${disabled ? 'cursor-not-allowed opacity-35 hover:bg-transparent hover:text-muted-foreground' : ''}`}
     >
@@ -98,7 +98,7 @@ function Sidebar({
     >
       <div className={`flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border ${collapsed ? 'justify-center px-2' : 'px-4'}`}>
         {collapsed ? (
-          <span className="grid size-9 place-items-center bg-primary text-sm font-semibold text-white">E</span>
+          <span className="grid size-9 place-items-center bg-primary text-sm font-semibold text-primary-foreground">E</span>
         ) : (
           <img src="/brand/eternity-academy.png" alt="Eternity Academy" className="h-7 w-auto" />
         )}
@@ -171,7 +171,7 @@ function Sidebar({
               onClick={nav.onNewCampaign}
               title="Nova campanha"
               aria-label="Nova campanha"
-              className="grid h-10 w-full place-items-center bg-primary text-white transition-colors hover:bg-primary/85"
+              className="grid h-10 w-full place-items-center bg-primary text-primary-foreground transition-colors hover:bg-primary/85"
             >
               <Sparkles className="size-4" />
             </button>
@@ -193,7 +193,7 @@ function Sidebar({
             <button
               type="button"
               onClick={nav.onNewCampaign}
-              className="flex h-10 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-white transition-colors hover:bg-primary/85"
+              className="flex h-10 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85"
             >
               <Sparkles className="size-4" /> Nova campanha
             </button>
@@ -293,7 +293,7 @@ export function AppShell({
             >
               {panel ? <SlidersHorizontal className="size-4" /> : <Menu className="size-4" />}
               {menuBadge ? (
-                <span className="absolute -top-1.5 -right-1.5 grid size-4 place-items-center bg-primary text-[10px] font-medium text-white">{menuBadge}</span>
+                <span className="absolute -top-1.5 -right-1.5 grid size-4 place-items-center bg-primary text-[10px] font-medium text-primary-foreground">{menuBadge}</span>
               ) : null}
             </button>
             <div className="min-w-0 flex-1">

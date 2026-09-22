@@ -118,14 +118,14 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 50% -14%, rgba(126, 45, 255, 0.2), transparent 34rem),
+      radial-gradient(circle at 50% -14%, rgba(91, 133, 255, 0.09), transparent 38rem),
       linear-gradient(180deg, rgba(255,255,255,.012), transparent 20rem);
     background-attachment: fixed;
     min-width: 320px;
     min-height: 100vh;
   }
   button, label { -webkit-tap-highlight-color: transparent; }
-  ::selection { background: rgba(139, 70, 255, 0.38); color: white; }
+  ::selection { background: rgba(91, 133, 255, 0.4); color: white; }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border: 3px solid transparent; background-clip: content-box; }
@@ -148,10 +148,10 @@
     @apply border-foreground/50 bg-foreground text-background;
   }
   .reference-card {
-    @apply overflow-hidden border border-border bg-card shadow-[0_8px_28px_rgba(18,24,38,0.05)] transition-all hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_16px_40px_rgba(18,24,38,0.09)];
+    @apply overflow-hidden border border-border bg-card shadow-[0_8px_28px_rgba(0,0,0,0.12)] transition-all hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)];
   }
   .reference-card-active {
-    @apply border-foreground/60 ring-2 ring-foreground/10;
+    @apply border-primary/70 ring-2 ring-primary/20;
   }
   .metric-card {
     @apply flex items-baseline justify-between border border-border bg-card/75 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)];
@@ -166,7 +166,7 @@
     @apply flex h-9 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap border border-border bg-card/55 px-3.5 text-sm text-muted-foreground transition-colors hover:border-white/25 hover:text-foreground;
   }
   .filter-chip-active {
-    @apply border-primary/70 bg-primary/[0.14] text-violet-100;
+    @apply border-primary/70 bg-primary/[0.14] text-accent-foreground;
   }
   .reference-masonry {
     columns: 2;
