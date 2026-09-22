@@ -86,7 +86,7 @@ function BubbleContent({
 }
 
 const bubbleReactionsVariants = cva(
-  'rounded-full ring-3 ring-card bg-muted shrink-0 gap-1 px-1.5 py-0.5 has-[button]:p-0 text-sm absolute z-10 flex w-fit items-center justify-center',
+  ' ring-3 ring-card bg-muted shrink-0 gap-1 px-1.5 py-0.5 has-[button]:p-0 text-sm absolute z-10 flex w-fit items-center justify-center',
   {
     variants: {
       side: {

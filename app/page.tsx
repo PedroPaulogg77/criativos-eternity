@@ -2,29 +2,27 @@
 
 /* oxlint-disable next/no-img-element -- imagens da biblioteca preservam a proporção original sem corte */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   Check,
   CheckCircle2,
   Clipboard,
   Copy,
   Film,
-  Filter,
   Globe2,
   KeyRound,
   Layers3,
   LayoutDashboard,
   Link2,
   ListChecks,
+  Maximize2,
   Megaphone,
   MessageSquareText,
   Package,
-  PanelTop,
   RefreshCcw,
   RotateCcw,
   Search,
@@ -33,8 +31,11 @@ import {
   Star,
   Ticket,
   Volume2,
+  X,
 } from 'lucide-react';
 
+import { AppShell, type ShellNav } from '@/components/app-shell';
+import { GalleryPanel, type LotSlot } from '@/components/gallery-panel';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -46,34 +47,45 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
   compileAudioPrompt,
+  compileCarouselCardPrompt,
   compileCarouselFormatPrompt,
+  compileCarouselFormatSinglePrompt,
   compileCarouselPrompt,
   compileCreativeFormatPrompt,
+  compileCreativeFormatSinglePrompt,
   compileFlyerPrompt,
   compileVideoPrompt,
   socialPrompts,
 } from '@/lib/flow-prompts';
 import type { SalesDriver } from '@/lib/mvp-data';
 import {
+  campaignLabel,
+  createCampaign,
+  emptyStore,
+  isBlank,
+  loadStore,
+  removeCampaign,
+  saveStore,
+  upsertCampaign,
+  type CampaignRecord,
+  type CampaignStore,
+} from '@/lib/campaign-store';
+import { phaseDescriptions, phaseNames, type Phase } from '@/lib/phases';
+import {
   executionErrorStatuses,
+  guessCategory,
+  guessOfferMechanic,
+  isReferenceApplicable,
+  offerMechanics,
   salesDrivers,
-  sortByDriver,
+  sortForCampaign,
   lotSameness,
   recommendedReferenceIds,
   references,
-  reviewOptions,
   type Reference,
   type ReviewStatus,
 } from '@/lib/mvp-data';
@@ -87,10 +99,8 @@ import {
   type CampaignInput,
 } from '@/lib/prompt-compiler';
 
-type Phase = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type AppSurface = 'welcome' | 'flow' | 'workspace' | 'stage';
 type CreativeView = 'library' | 'prompt' | 'review';
-type IndividualAction = { index: number; kind: 'content' | 'variation' } | null;
 type RequirementActionKind = 'select' | 'copy';
 type RequirementAction = { reference: Reference; kind: RequirementActionKind } | null;
 
@@ -107,28 +117,6 @@ type WebMcpContext = {
   registerTool(tool: WebMcpTool, options?: { signal?: AbortSignal }): void | Promise<void>;
 };
 
-const phaseNames = [
-  'Contexto',
-  'Carrossel',
-  '5 criativos',
-  'Formatos',
-  'Redes sociais',
-  'Narração',
-  'Vídeos',
-  'Panfleto',
-] as const;
-
-const phaseDescriptions = [
-  'Capture os fatos que guiam toda a campanha.',
-  'Padronize cinco produtos de uma coleção.',
-  'Escolha referências e gere os mestres 4:5.',
-  'Copie adaptações para 1:1 ou 9:16.',
-  'Monte a presença inicial e a rotina social.',
-  'Crie a narração de até 30 segundos.',
-  'Prepare takes no Kling quando necessário.',
-  'Gere o material impresso que acompanha o pedido.',
-] as const;
-
 const contextCheckItems = [
   'O alvo exato está correto',
   'A loja e a marca estão corretas',
@@ -137,56 +125,48 @@ const contextCheckItems = [
   'A resposta termina com PRONTO PARA GERAR: SIM',
 ] as const;
 
-const families = ['Todas as famílias', ...Array.from(new Set(references.map((item) => item.family)))];
-const categories = ['Todas as categorias', ...Array.from(new Set(references.map((item) => item.category)))];
-const URL_PATTERN = /^https?:\/\/.+/i;
-const CAMPAIGN_STORAGE_KEY = 'eternity:last-campaign';
-const WORKSPACE_STORAGE_KEY = 'eternity:workspace-unlocked';
+type FacetId = 'family' | 'people' | 'category';
 
-function statusTone(status: ReviewStatus) {
-  if (status === 'correct') return 'border-emerald-400/45 bg-emerald-400/[0.035]';
-  if (executionErrorStatuses.includes(status)) return 'border-amber-400/55 bg-amber-400/[0.04]';
-  if (status === 'content') return 'border-rose-400/50 bg-rose-400/[0.035]';
-  if (status === 'variation') return 'border-sky-400/50 bg-sky-400/[0.035]';
-  return 'border-border bg-card';
+const familyValues = Array.from(new Set(references.map((item) => item.family)));
+const categoryValues = Array.from(new Set(references.map((item) => item.category))).sort();
+const peopleValues = [
+  { value: 'sem-pessoa', label: 'Sem pessoa na cena' },
+  { value: 'corpo-suporte', label: 'Corpo como suporte' },
+  { value: 'humanizado', label: 'Pessoa em cena' },
+] as const;
+const URL_PATTERN = /^https?:\/\/.+/i;
+
+function peopleLabel(value: Reference['people']) {
+  if (value === 'humanizado') return 'Pessoa em cena';
+  if (value === 'corpo-suporte') return 'Corpo como suporte';
+  return 'Sem pessoa na cena';
 }
 
-type MenuConfig = {
-  active: Phase;
-  onSelect: (phase: Phase) => void;
-  isDisabled: (phase: Phase) => boolean;
-};
-
-function AppHeader({ onOpenMenu }: { onOpenMenu?: () => void }) {
+function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/92 backdrop-blur-xl">
-      <div className="mx-auto flex h-[4.5rem] max-w-[1700px] items-center justify-between gap-3 px-4 sm:px-7">
-        <div className="flex min-w-0 items-center gap-4">
-          <img src="/brand/eternity-academy.png" alt="Eternity Academy" className="h-7 w-auto sm:h-8" />
-          <span className="hidden h-6 w-px bg-border sm:block" />
-          <p className="hidden text-sm font-medium tracking-[-0.02em] sm:block">Creative Assistant</p>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3">
-          {onOpenMenu ? (
-            <Button type="button" variant="ghost" size="sm" className="rounded-xl text-muted-foreground" onClick={onOpenMenu}>
-              <LayoutDashboard data-icon="inline-start" /> <span className="hidden sm:inline">Etapas</span>
-            </Button>
-          ) : null}
-          <div className="flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.08] px-3 py-2 text-xs font-medium text-emerald-200 sm:px-4 sm:text-sm">
-            <span className="size-1.5 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,.75)]" />
-            Continue no mesmo chat.
-          </div>
-        </div>
-      </div>
-    </header>
+    <div className="flex items-baseline justify-between gap-4 border-b border-border/60 pb-2">
+      <dt className="shrink-0 text-xs text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 text-right text-[13px]">{value}</dd>
+    </div>
+  );
+}
+
+
+function SameChatPill() {
+  return (
+    <div className="flex items-center gap-2 border border-emerald-400/25 bg-emerald-400/[0.08] px-3 py-2 text-xs font-medium text-emerald-200">
+      <span className="size-1.5 shrink-0 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,.75)]" />
+      <span className="hidden sm:inline">Continue no mesmo chat.</span>
+      <span className="sm:hidden">Mesmo chat</span>
+    </div>
   );
 }
 
 function AttachmentAlert({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`${compact ? 'px-4 py-3 sm:px-7' : 'rounded-2xl p-5 sm:p-6'} border border-amber-300/45 bg-[linear-gradient(105deg,rgba(245,158,11,.16),rgba(126,45,255,.13))] text-amber-50 shadow-[0_12px_45px_rgba(245,158,11,.08)]`}>
-      <div className={`mx-auto flex items-start gap-3 ${compact ? 'max-w-[1500px]' : ''}`}>
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-300 text-amber-950"><AlertTriangle className="size-5" /></span>
+    <div className={`${compact ? 'border-x-0 px-4 py-3 sm:px-6' : 'p-5 sm:p-6'} border border-amber-300/45 bg-[linear-gradient(105deg,rgba(245,158,11,.16),rgba(126,45,255,.13))] text-amber-50 shadow-[0_12px_45px_rgba(245,158,11,.08)]`}>
+      <div className="flex items-start gap-3">
+        <span className="grid size-10 shrink-0 place-items-center bg-amber-300 text-amber-950"><AlertTriangle className="size-5" /></span>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-amber-200">Anexos obrigatórios no ChatGPT</p>
           <p className="mt-1 text-sm leading-6 text-amber-50/80"><strong className="text-white">Antes de copiar o prompt, anexe fotos reais e nítidas dos produtos e prints completos da página de vendas.</strong> Inclua oferta, variantes, benefícios, logo e identidade visual. Sem essas fontes, o processo pode falhar.</p>
@@ -198,68 +178,48 @@ function AttachmentAlert({ compact = false }: { compact?: boolean }) {
 
 function PhaseShell({
   phase,
+  title,
   detail,
   wide = false,
   children,
-  onOpenMenu,
-  menu,
+  nav,
+  panel,
+  menuLabel,
+  menuBadge,
+  actions,
+  toolbar,
   attachmentRequired = false,
 }: {
   phase: Phase;
+  title?: string;
   detail?: string;
   wide?: boolean;
   children: React.ReactNode;
-  onOpenMenu?: () => void;
-  menu?: MenuConfig;
+  nav: ShellNav;
+  panel?: React.ReactNode;
+  menuLabel?: string;
+  menuBadge?: number;
+  actions?: React.ReactNode;
+  toolbar?: React.ReactNode;
   attachmentRequired?: boolean;
 }) {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <AppHeader onOpenMenu={onOpenMenu} />
-      {attachmentRequired ? <AttachmentAlert compact /> : null}
-
-      <div className={menu ? 'mx-auto flex max-w-[1700px]' : ''}>
-        {menu ? (
-          <aside className="sticky top-[4.5rem] hidden h-[calc(100vh-4.5rem)] w-64 shrink-0 border-r border-border px-4 py-6 lg:block">
-            <p className="px-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Etapas da campanha</p>
-            <nav className="mt-4 space-y-1" aria-label="Etapas da campanha">
-              {phaseNames.map((name, index) => {
-                const itemPhase = (index + 1) as Phase;
-                const disabled = menu.isDisabled(itemPhase);
-                return (
-                  <button
-                    key={name}
-                    type="button"
-                    disabled={disabled}
-                    onClick={() => menu.onSelect(itemPhase)}
-                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition-colors ${menu.active === itemPhase ? 'bg-primary/14 text-violet-100' : 'text-muted-foreground hover:bg-white/[0.04] hover:text-foreground'} ${disabled ? 'cursor-not-allowed opacity-35' : ''}`}
-                  >
-                    <span className={`grid size-7 shrink-0 place-items-center rounded-lg text-xs font-semibold ${menu.active === itemPhase ? 'bg-primary text-white' : 'bg-card'}`}>{index + 1}</span>
-                    <span>{name}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
-        ) : null}
-
-        <div className="min-w-0 flex-1">
-          <div className="mx-auto max-w-[1500px] px-4 pt-5 sm:px-7 sm:pt-7">
-            <div className="mx-auto flex max-w-4xl items-center gap-3">
-              <p className="shrink-0 text-xs font-medium text-muted-foreground sm:text-sm">
-                {phaseNames[phase - 1]} · {phase} de 8
-              </p>
-              <Progress value={(phase / 8) * 100} className="h-1 flex-1 bg-white/[0.07]" aria-label={`Etapa ${phase} de 8`} />
-              {detail ? <p className="hidden shrink-0 text-xs text-muted-foreground md:block">{detail}</p> : null}
-            </div>
-          </div>
-
-          <section className="px-4 py-7 sm:px-7 sm:py-10">
-            <div className={`mx-auto ${wide ? 'max-w-7xl' : 'max-w-4xl'}`}>{children}</div>
-          </section>
-        </div>
-      </div>
-    </main>
+    <AppShell
+      nav={nav}
+      panel={panel}
+      menuLabel={menuLabel}
+      menuBadge={menuBadge}
+      eyebrow={`Etapa ${phase} de 8 · ${phaseNames[phase - 1]}`}
+      title={title ?? phaseNames[phase - 1]}
+      step={phase}
+      detail={detail}
+      bleed={wide}
+      actions={actions ?? <SameChatPill />}
+      toolbar={toolbar}
+      alert={attachmentRequired ? <AttachmentAlert compact /> : null}
+    >
+      {children}
+    </AppShell>
   );
 }
 
@@ -297,11 +257,11 @@ function QuestionScreen({
         <h1 className="text-3xl font-semibold leading-[1.08] tracking-[-0.045em] sm:text-5xl">{title}</h1>
         {description ? <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground">{description}</p> : null}
         <div className="mt-8 text-left">{children}</div>
-        {error ? <div role="alert" className="mt-4 flex items-start gap-2 rounded-xl border border-rose-400/25 bg-rose-400/[0.08] px-4 py-3 text-left text-sm text-rose-200"><AlertCircle className="mt-0.5 size-4 shrink-0" />{error}</div> : null}
+        {error ? <div role="alert" className="mt-4 flex items-start gap-2 border border-rose-400/25 bg-rose-400/[0.08] px-4 py-3 text-left text-sm text-rose-200"><AlertCircle className="mt-0.5 size-4 shrink-0" />{error}</div> : null}
       </div>
       <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-border pt-5">
-        {back ? <Button type="button" variant="ghost" size="lg" className="h-11 rounded-xl" onClick={back}><ArrowLeft data-icon="inline-start" /> Voltar</Button> : <span />}
-        <Button type="submit" size="lg" className="h-11 rounded-xl px-6 shadow-[0_10px_35px_rgba(126,45,255,.24)]" disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
+        {back ? <Button type="button" variant="ghost" size="lg" className="h-11" onClick={back}><ArrowLeft data-icon="inline-start" /> Voltar</Button> : <span />}
+        <Button type="submit" size="lg" className="h-11 px-6 shadow-[0_10px_35px_rgba(126,45,255,.24)]" disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
       </div>
     </form>
   );
@@ -320,74 +280,104 @@ function PageHeading({
     <div className="mb-7 border-b border-border pb-6">
       <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">{eyebrow}</p>
       <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">{title}</h1>
-      <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{description}</p>
+      <p className="mt-3 max-w-4xl text-base leading-7 text-muted-foreground">{description}</p>
     </div>
   );
 }
 
-function PromptPanel({
-  label,
-  text,
-  copyKey,
-  copiedKey,
-  onCopy,
-}: {
-  label: string;
-  text: string;
-  copyKey: string;
-  copiedKey: string;
-  onCopy: (text: string, key: string) => void;
-}) {
-  return (
-    <div className="overflow-hidden rounded-[1.45rem] border border-primary/20 bg-[#0b0911] shadow-[0_28px_100px_rgba(55,15,105,.28)]">
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5 sm:px-5">
-        <div className="flex items-center gap-2 text-sm font-medium text-violet-100"><Clipboard className="size-4 text-violet-400" /> {label}</div>
-        <Button type="button" variant="ghost" size="sm" className="text-slate-300 hover:bg-white/10 hover:text-white" onClick={() => onCopy(text, copyKey)}>
-          {copiedKey === copyKey ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar</>}
-        </Button>
-      </div>
-      <pre className="max-h-[58vh] overflow-auto whitespace-pre-wrap p-5 font-sans text-[13px] leading-6 text-slate-300 sm:p-6">{text}</pre>
-    </div>
-  );
-}
 
-function PromptActionCard({
-  icon,
+
+/*
+ * Cartão de prompt. O pedido completo vem primeiro, porque é o que resolve na maioria das vezes.
+ * A falha existe e está avisada em uma linha; quando acontece, "gerar uma por vez" abre as peças
+ * separadas ali mesmo. O texto do prompt fica fora do caminho: ninguém precisa lê-lo para colar.
+ */
+function PromptStep({
   title,
-  description,
-  prompt,
-  copyKey,
+  delivers,
+  batchPrompt,
+  batchKey,
+  pieces,
   copiedKey,
   onCopy,
-  buttonLabel = 'Copiar prompt',
 }: {
-  icon: React.ReactNode;
   title: string;
-  description: string;
-  prompt: string;
-  copyKey: string;
+  delivers: string;
+  batchPrompt: string;
+  batchKey: string;
+  /* Só os prompts que pedem várias imagens têm caminho de uma por vez. */
+  pieces?: Array<{ label: string; prompt: string; copyKey: string }>;
   copiedKey: string;
   onCopy: (text: string, key: string) => void;
-  buttonLabel?: string;
 }) {
-  const copied = copiedKey === copyKey;
+  const [showPieces, setShowPieces] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const copied = copiedKey === batchKey;
+  const hasPieces = Boolean(pieces?.length);
+
   return (
-    <article className="flex flex-col justify-between rounded-2xl border border-border bg-card/65 p-5 shadow-[0_16px_55px_rgba(0,0,0,.16)]">
-      <div>
-        <span className="grid size-11 place-items-center rounded-xl bg-primary/12 text-accent-foreground">{icon}</span>
-        <h2 className="mt-4 text-lg font-semibold tracking-[-0.025em]">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+    <section className="border border-border bg-card/55">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-5">
+        <div className="min-w-0">
+          <h2 className="font-semibold tracking-[-0.02em]">{title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{delivers}</p>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          <Button type="button" size="lg" className="h-11 px-5" onClick={() => onCopy(batchPrompt, batchKey)}>
+            {copied ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar prompt</>}
+          </Button>
+          <button type="button" onClick={() => setShowText((value) => !value)} className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+            {showText ? 'Esconder o texto' : 'Ver o texto do prompt'}
+          </button>
+        </div>
       </div>
-      <Button type="button" className="mt-5 h-11 w-full rounded-xl" variant={copied ? 'outline' : 'default'} onClick={() => onCopy(prompt, copyKey)}>
-        {copied ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> {buttonLabel}</>}
-      </Button>
-    </article>
+
+      {hasPieces ? (
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border bg-amber-400/[0.04] px-5 py-4">
+          <div className="flex min-w-60 flex-1 items-start gap-3">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-300" />
+            <p className="text-sm leading-6 text-amber-100/85">
+              <strong className="font-medium text-amber-100">Deu erro?</strong> Quando um pedido junta várias imagens, o ChatGPT às vezes devolve colagem, peça faltando ou repetida. Não é o prompt: é um limite dele. Nesse caso, peça uma peça por mensagem.
+            </p>
+          </div>
+          <Button type="button" variant="outline" className="h-10 shrink-0" onClick={() => setShowPieces((value) => !value)}>
+            {showPieces ? 'Fechar' : 'Gerar uma por vez'}
+          </Button>
+        </div>
+      ) : null}
+
+      {showText ? (
+        <pre className="max-h-72 overflow-auto border-t border-border p-5 font-sans text-[13px] leading-6 whitespace-pre-wrap text-slate-300">{batchPrompt}</pre>
+      ) : null}
+
+      {showPieces ? (
+        <div className="border-t border-border p-5">
+          <p className="mb-3 text-xs text-muted-foreground">Uma mensagem por peça. Cole, espere a imagem, cole a próxima.</p>
+          <div className="space-y-2">
+            {(pieces ?? []).map((piece, index) => {
+              const pieceCopied = copiedKey === piece.copyKey;
+              return (
+                <div key={piece.copyKey} className="flex flex-wrap items-center justify-between gap-3 border border-border bg-background/45 p-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-violet-200">{String(index + 1).padStart(2, '0')}</span>
+                    <p className="truncate text-sm">{piece.label}</p>
+                  </div>
+                  <Button type="button" variant={pieceCopied ? 'ghost' : 'outline'} size="sm" className="h-8 shrink-0" onClick={() => onCopy(piece.prompt, piece.copyKey)}>
+                    {pieceCopied ? <><Check data-icon="inline-start" /> Copiado</> : 'Copiar'}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </section>
   );
 }
 
 function ChatInstruction({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-5 flex items-start gap-3 rounded-2xl border border-border bg-card/65 p-4 text-sm leading-6 text-muted-foreground">
+    <div className="mt-5 flex items-start gap-3 border border-border bg-card/65 p-4 text-sm leading-6 text-muted-foreground">
       <MessageSquareText className="mt-1 size-4 shrink-0 text-accent-foreground" />
       <p><strong className="text-foreground">Continue no mesmo chat.</strong> {children}</p>
     </div>
@@ -407,8 +397,8 @@ function BottomActions({
 }) {
   return (
     <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
-      {back ? <Button type="button" variant="ghost" size="lg" className="h-11 rounded-xl" onClick={back}><ArrowLeft data-icon="inline-start" /> Voltar</Button> : <span />}
-      <Button type="button" size="lg" className="h-11 rounded-xl px-5" onClick={next} disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
+      {back ? <Button type="button" variant="ghost" size="lg" className="h-11" onClick={back}><ArrowLeft data-icon="inline-start" /> Voltar</Button> : <span />}
+      <Button type="button" size="lg" className="h-11 px-5" onClick={next} disabled={nextDisabled}>{nextLabel} <ArrowRight data-icon="inline-end" /></Button>
     </div>
   );
 }
@@ -438,7 +428,6 @@ function ChoiceCard({
 export default function Home() {
   const [surface, setSurface] = useState<AppSurface>('welcome');
   const [journeyMode, setJourneyMode] = useState<'flow' | 'stage'>('flow');
-  const [processStarted, setProcessStarted] = useState(false);
   const [workspaceMessage, setWorkspaceMessage] = useState('');
   const [phase, setPhase] = useState<Phase>(1);
   const [contextStep, setContextStep] = useState(0);
@@ -448,6 +437,8 @@ export default function Home() {
   const [linkAccess, setLinkAccess] = useState<CampaignInput['linkAccess']>('public');
   const [salesDriver, setSalesDriver] = useState<SalesDriver | null>(null);
   const [offer, setOffer] = useState('');
+  /* A mecânica da oferta é lida do texto que ele escreveu, não perguntada. Só ordena a galeria. */
+  const offerMechanic = useMemo(() => guessOfferMechanic(offer), [offer]);
   const [formError, setFormError] = useState('');
   const [contextChecks, setContextChecks] = useState<boolean[]>(() => contextCheckItems.map(() => false));
 
@@ -455,15 +446,16 @@ export default function Home() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmedRequirements, setConfirmedRequirements] = useState<Record<string, true>>({});
   const [requirementAction, setRequirementAction] = useState<RequirementAction>(null);
-  const [familyFilter, setFamilyFilter] = useState('Todas as famílias');
-  const [categoryFilter, setCategoryFilter] = useState('Todas as categorias');
+  const [familyFilters, setFamilyFilters] = useState<string[]>([]);
+  const [peopleFilters, setPeopleFilters] = useState<string[]>([]);
+  /* O palpite de nicho só ordena; quem quiser cortar por prateleira usa este filtro. */
+  const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [detailReference, setDetailReference] = useState<Reference | null>(null);
   const [reviewState, setReviewState] = useState<Record<string, ReviewStatus>>({});
-  const [recoveryOpen, setRecoveryOpen] = useState(false);
-  const [recoveryEscalated, setRecoveryEscalated] = useState(false);
   const [problemIndex, setProblemIndex] = useState<number | null>(null);
-  const [individualAction, setIndividualAction] = useState<IndividualAction>(null);
-  const [individualIssue, setIndividualIssue] = useState('');
+  const [fixTextFor, setFixTextFor] = useState<string | null>(null);
+  const [individualIssues, setIndividualIssues] = useState<Record<string, string>>({});
 
   const [socialIndex, setSocialIndex] = useState(-1);
   const [videoStep, setVideoStep] = useState(0);
@@ -475,13 +467,21 @@ export default function Home() {
   const [completed, setCompleted] = useState(false);
   const [copiedKey, setCopiedKey] = useState('');
 
+  const storeRef = useRef<CampaignStore>(emptyStore);
+  const [campaigns, setCampaigns] = useState<CampaignRecord[]>([]);
+  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [donePhases, setDonePhases] = useState<Phase[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState<CampaignRecord | null>(null);
+
   const campaign = useMemo<CampaignInput>(() => ({
     mode: campaignMode,
     exactTarget,
     sourceUrl,
     linkAccess,
     offer,
-  }), [campaignMode, exactTarget, sourceUrl, linkAccess, offer]);
+    offerMechanic,
+  }), [campaignMode, exactTarget, sourceUrl, linkAccess, offer, offerMechanic]);
 
   const selectedReferences = useMemo(
     () => selectedIds.map((id) => references.find((item) => item.id === id)).filter((item): item is Reference => Boolean(item)),
@@ -494,16 +494,38 @@ export default function Home() {
   const videoPrompt = useMemo(() => compileVideoPrompt(), []);
   const flyerPrompt = useMemo(() => compileFlyerPrompt({ prize, coupon, discount }), [prize, coupon, discount]);
 
-  const filteredReferences = references.filter((item) => {
-    const matchesMode = item.modes.includes(campaignMode);
-    const matchesFamily = familyFilter === 'Todas as famílias' || item.family === familyFilter;
-    const matchesCategory = categoryFilter === 'Todas as categorias' || item.category === categoryFilter;
-    const haystack = `${item.name} ${item.family} ${item.category} ${item.tags.join(' ')}`.toLowerCase();
-    return matchesMode && matchesFamily && matchesCategory && haystack.includes(searchTerm.trim().toLowerCase());
-  });
-  const orderedReferences = sortByDriver(filteredReferences, salesDriver);
-  const compatibleReferences = references.filter((item) => item.modes.includes(campaignMode));
-  const hiddenByModeCount = references.length - compatibleReferences.length;
+  /* Só o argumento de venda corta a biblioteca. Oferta e nicho apenas ordenam. */
+  /* O nicho sai do que ele escreveu no alvo; nunca é perguntado e nunca corta nada. */
+  const campaignCriteria = { mode: campaignMode, salesDriver, offerMechanic, category: guessCategory(exactTarget) } as const;
+  const compatibleReferences = references.filter((item) => isReferenceApplicable(item, campaignCriteria));
+
+  function matchesGalleryFilters(item: Reference, skip?: FacetId) {
+    const term = searchTerm.trim().toLowerCase();
+    if (term && !`${item.name} ${item.family} ${item.category} ${item.tags.join(' ')}`.toLowerCase().includes(term)) return false;
+    if (skip !== 'family' && familyFilters.length && !familyFilters.includes(item.family)) return false;
+    if (skip !== 'people' && peopleFilters.length && !peopleFilters.includes(item.people ?? 'sem-pessoa')) return false;
+    if (skip !== 'category' && categoryFilters.length && !categoryFilters.includes(item.category)) return false;
+    return true;
+  }
+
+  function facetCount(skip: FacetId, predicate: (item: Reference) => boolean) {
+    return compatibleReferences.filter((item) => predicate(item) && matchesGalleryFilters(item, skip)).length;
+  }
+
+  const filteredReferences = compatibleReferences.filter((item) => matchesGalleryFilters(item));
+  const orderedReferences = sortForCampaign(filteredReferences, campaignCriteria);
+  const galleryFilterCount = familyFilters.length + peopleFilters.length + categoryFilters.length + Number(Boolean(searchTerm.trim()));
+
+  function clearGalleryFilters() {
+    setFamilyFilters([]);
+    setPeopleFilters([]);
+    setCategoryFilters([]);
+    setSearchTerm('');
+  }
+
+  function toggleFacet(setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) {
+    setter((current) => current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
+  }
   const pendingIndexes = selectedReferences
     .map((item, index) => executionErrorStatuses.includes(reviewState[item.id] ?? 'correct') ? index : -1)
     .filter((index) => index >= 0);
@@ -512,32 +534,91 @@ export default function Home() {
     .filter((index) => index >= 0);
   const correctCount = selectedReferences.length - problemIndexes.length;
   const recoveryPrompt = compileRecoveryPrompt(selectedReferences, pendingIndexes);
-  const activeIndividualReference = individualAction ? selectedReferences[individualAction.index] : null;
-  const individualPrompt = activeIndividualReference && individualAction
-    ? compileIndividualPrompt(activeIndividualReference, individualAction.index, individualIssue, individualAction.kind)
-    : '';
+
+  function commitStore(next: CampaignStore) {
+    storeRef.current = next;
+    saveStore(next);
+    setCampaigns(next.items);
+  }
+
+  /* Devolve a campanha guardada para dentro da tela, campo por campo. */
+  function applyCampaign(record: CampaignRecord) {
+    setCampaignId(record.id);
+    setCampaignMode(record.mode);
+    setExactTarget(record.exactTarget);
+    setSourceUrl(record.sourceUrl);
+    setLinkAccess(record.linkAccess);
+    setOffer(record.offer);
+    setSalesDriver(record.salesDriver);
+    setContextChecks(record.contextChecks);
+    setSelectedIds(record.selectedIds);
+    setConfirmedRequirements(record.confirmedRequirements);
+    setReviewState(record.reviewState);
+    setPrize(record.prize);
+    setCoupon(record.coupon);
+    setDiscount(record.discount);
+    setDonePhases(record.donePhases);
+    setPhase(record.lastPhase);
+    setContextStep(record.donePhases.includes(1) ? 8 : 0);
+    setCreativeView('library');
+    setSocialIndex(-1);
+    setVideoStep(0);
+    setFlyerStep(0);
+    setCompleted(record.donePhases.length === 8);
+  }
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      try {
-        const saved = window.localStorage.getItem(CAMPAIGN_STORAGE_KEY);
-        if (saved) {
-          const value = JSON.parse(saved) as Partial<CampaignInput>;
-          if ((value.mode === 'single' || value.mode === 'collection') && typeof value.exactTarget === 'string' && typeof value.sourceUrl === 'string' && (value.linkAccess === 'public' || value.linkAccess === 'protected') && typeof value.offer === 'string') {
-            setCampaignMode(value.mode);
-            setExactTarget(value.exactTarget);
-            setSourceUrl(value.sourceUrl);
-            setLinkAccess(value.linkAccess);
-            setOffer(value.offer);
-          }
-        }
-        if (window.localStorage.getItem(WORKSPACE_STORAGE_KEY) === 'true') setSurface('workspace');
-      } catch {
-        // O armazenamento local é apenas conveniência; o fluxo continua sem ele.
+      const loaded = loadStore();
+      storeRef.current = loaded;
+      setCampaigns(loaded.items);
+      const active = loaded.items.find((item) => item.id === loaded.activeId) ?? loaded.items[0];
+      /* Quem já tem campanha salva volta para o painel, não para a tela de boas-vindas. */
+      if (active) {
+        applyCampaign(active);
+        setSurface('workspace');
       }
+      setHydrated(true);
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+
+  /* Cada mudança de conteúdo regrava a campanha ativa. Só depois de hidratar, para não apagar o que foi lido. */
+  useEffect(() => {
+    if (!hydrated || !campaignId) return;
+    const base = storeRef.current.items.find((item) => item.id === campaignId) ?? createCampaign({ id: campaignId });
+    const next = upsertCampaign(storeRef.current, {
+      ...base,
+      mode: campaignMode,
+      exactTarget,
+      sourceUrl,
+      linkAccess,
+      offer,
+      offerMechanic,
+      salesDriver,
+      contextChecks,
+      selectedIds,
+      confirmedRequirements,
+      reviewState,
+      prize,
+      coupon,
+      discount,
+      donePhases,
+      lastPhase: phase,
+    });
+    storeRef.current = next;
+    saveStore(next);
+    setCampaigns(next.items);
+  }, [hydrated, campaignId, campaignMode, exactTarget, sourceUrl, linkAccess, offer, offerMechanic, salesDriver, contextChecks, selectedIds, confirmedRequirements, reviewState, prize, coupon, discount, donePhases, phase]);
+
+  function markPhaseDone(target: Phase) {
+    setDonePhases((current) => current.includes(target) ? current : [...current, target]);
+  }
+
+  function startCampaign(record: CampaignRecord) {
+    commitStore(upsertCampaign(storeRef.current, record));
+    applyCampaign(record);
+  }
 
   useEffect(() => {
     const modelContext = (document as Document & { modelContext?: WebMcpContext }).modelContext;
@@ -566,24 +647,17 @@ export default function Home() {
         if ((value.mode !== 'single' && value.mode !== 'collection') || typeof value.exactTarget !== 'string' || !value.exactTarget.trim() || typeof value.sourceUrl !== 'string' || !value.sourceUrl.trim() || (value.linkAccess !== 'public' && value.linkAccess !== 'protected') || typeof value.offer !== 'string' || !value.offer.trim()) {
           throw new Error('Informe alvo, link, acesso e oferta.');
         }
-        setCampaignMode(value.mode);
-        setSelectedIds([]);
-        setExactTarget(value.exactTarget.trim());
-        setSourceUrl(value.sourceUrl.trim());
-        setLinkAccess(value.linkAccess);
-        setOffer(value.offer.trim());
-        setSurface('flow');
-        setJourneyMode('flow');
-        setProcessStarted(true);
-        setPhase(1);
-        setContextStep(5);
-        window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify({
+        startCampaign(createCampaign({
           mode: value.mode,
           exactTarget: value.exactTarget.trim(),
           sourceUrl: value.sourceUrl.trim(),
           linkAccess: value.linkAccess,
           offer: value.offer.trim(),
         }));
+        setSurface('flow');
+        setJourneyMode('flow');
+        setPhase(1);
+        setContextStep(5);
         return { status: 'context_prompt_ready', nextStep: 'copy_to_chatgpt' };
       },
     };
@@ -600,37 +674,47 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function persistCampaign() {
-    try {
-      window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(campaign));
-    } catch {
-      // O aluno ainda pode continuar quando o navegador bloquear armazenamento local.
-    }
-  }
-
   function openWorkspace(message = '') {
     setWorkspaceMessage(message);
     setSurface('workspace');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /* Rascunho sem alvo nem progresso é reaproveitado: começar de novo não enche a lista de campanhas vazias. */
   function startGuidedCampaign() {
+    const active = campaignId ? storeRef.current.items.find((item) => item.id === campaignId) : undefined;
+    startCampaign(active && isBlank(active) ? active : createCampaign());
     setJourneyMode('flow');
-    setProcessStarted(true);
     setSurface('flow');
     setPhase(1);
     setContextStep(0);
-    setContextChecks(contextCheckItems.map(() => false));
-    setCreativeView('library');
-    setSelectedIds([]);
-    setReviewState({});
-    setSocialIndex(-1);
-    setVideoStep(0);
     setHasGoodVideos(null);
-    setFlyerStep(0);
-    setCompleted(false);
     setWorkspaceMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function openCampaign(record: CampaignRecord) {
+    commitStore(upsertCampaign(storeRef.current, record));
+    applyCampaign(record);
+    setJourneyMode('stage');
+    setSurface('workspace');
+    setWorkspaceMessage(`Campanha aberta: ${campaignLabel(record)}.`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function deleteCampaign(record: CampaignRecord) {
+    const next = removeCampaign(storeRef.current, record.id);
+    commitStore(next);
+    setCampaignToDelete(null);
+    if (campaignId !== record.id) return;
+    const fallback = next.items[0];
+    if (fallback) {
+      applyCampaign(fallback);
+      setWorkspaceMessage(`Campanha apagada. Você está em ${campaignLabel(fallback)}.`);
+      return;
+    }
+    setCampaignId(null);
+    setSurface('welcome');
   }
 
   function stageIsDisabled(targetPhase: Phase) {
@@ -645,8 +729,9 @@ export default function Home() {
       setWorkspaceMessage(targetPhase === 2 ? 'O carrossel só fica disponível quando o contexto é de coleção.' : 'Prepare o Contexto primeiro. As outras etapas dependem dos fatos e anexos dessa conversa.');
       return;
     }
+    /* Quem entrou direto numa etapa, sem campanha aberta, precisa de um registro para o trabalho não se perder. */
+    if (!campaignId) startCampaign(createCampaign());
     setJourneyMode('stage');
-    setProcessStarted(true);
     setSurface('stage');
     setWorkspaceMessage('');
     setPhase(targetPhase);
@@ -663,7 +748,6 @@ export default function Home() {
   }
 
   function finishStandalone(message: string) {
-    setProcessStarted(false);
     openWorkspace(message);
   }
 
@@ -683,9 +767,13 @@ export default function Home() {
     if (contextStep === 2) return URL_PATTERN.test(sourceUrl.trim());
     if (contextStep === 3) return Boolean(linkAccess);
     if (contextStep === 4) return offer.trim().length > 1;
-    if (contextStep === 5) return Boolean(salesDriver);
+    if (contextStep === 6) return Boolean(salesDriver);
     return true;
   }
+
+  /* Coleção tem seis perguntas; produto único tem sete, porque só nele o argumento é escolha. */
+  const totalDePerguntas = campaignMode === 'collection' ? 5 : 6;
+  const rotuloDaPergunta = (numero: number) => `Pergunta ${numero} de ${totalDePerguntas}`;
 
   function advanceContext() {
     if (!contextAnswerReady()) {
@@ -693,19 +781,19 @@ export default function Home() {
       return;
     }
     setFormError('');
-    if (contextStep === 5) persistCampaign();
-    setContextStep((current) => Math.min(7, current + 1));
+    /* Em coleção o argumento já está decidido, então a pergunta 6 não existe. */
+    setContextStep((current) => Math.min(8, current === 4 ? (campaignMode === 'collection' ? 7 : 6) : current + 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function backContext() {
     setFormError('');
-    setContextStep((current) => Math.max(0, current - 1));
+    setContextStep((current) => Math.max(0, current === 6 || (current === 7 && campaignMode === 'collection') ? 4 : current - 1));
   }
 
   function finishContext() {
     if (!contextChecks.every(Boolean)) return;
-    persistCampaign();
+    markPhaseDone(1);
     if (journeyMode === 'stage') {
       finishStandalone('Contexto concluído. Continue usando este mesmo chat nas próximas etapas.');
       return;
@@ -727,7 +815,7 @@ export default function Home() {
       return;
     }
     if (kind === 'select') toggleReference(reference.id);
-    else copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
+    else void copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
   }
 
   function confirmRequirement() {
@@ -736,7 +824,7 @@ export default function Home() {
     setConfirmedRequirements((current) => ({ ...current, [reference.id]: true }));
     setRequirementAction(null);
     if (kind === 'select') toggleReference(reference.id);
-    else copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
+    else void copyText(compileReferencePrompt(campaign, reference), `library-single-${reference.id}`);
   }
 
   function updateReview(id: string, value: ReviewStatus) {
@@ -754,73 +842,75 @@ export default function Home() {
     });
   }
 
+  /* Campanha nova é um registro novo: a anterior continua salva na lista do painel. */
   function resetCampaign() {
-    setPhase(1);
-    setContextStep(0);
-    setCampaignMode('single');
-    setExactTarget('');
-    setSourceUrl('');
-    setLinkAccess('public');
-    setOffer('');
-    setContextChecks(contextCheckItems.map(() => false));
-    setCreativeView('library');
-    setSelectedIds([]);
-    setConfirmedRequirements({});
-    setReviewState({});
-    setSocialIndex(-1);
-    setVideoStep(0);
-    setHasGoodVideos(null);
-    setFlyerStep(0);
-    setPrize('');
-    setCoupon('');
-    setDiscount('');
-    setCompleted(false);
-    setJourneyMode('flow');
-    setProcessStarted(true);
-    setSurface('flow');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    startGuidedCampaign();
   }
 
   function completeCampaign() {
-    try {
-      window.localStorage.setItem(WORKSPACE_STORAGE_KEY, 'true');
-      window.localStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(campaign));
-    } catch {
-      // A conclusão não depende do armazenamento local.
-    }
+    markPhaseDone(8);
     setCompleted(true);
-    setProcessStarted(false);
     openWorkspace('Metodologia concluída. Agora você pode voltar a qualquer etapa sem refazer o processo inteiro.');
   }
 
+  function goToPhase(targetPhase: Phase) {
+    if (surface !== 'flow') {
+      openStage(targetPhase);
+      return;
+    }
+    if (stageIsDisabled(targetPhase)) {
+      openWorkspace(targetPhase === 2
+        ? 'O carrossel só fica disponível quando o contexto é de coleção.'
+        : 'Prepare o Contexto primeiro. As outras etapas dependem dos fatos e anexos dessa conversa.');
+      return;
+    }
+    if (targetPhase === 3) setCreativeView('library');
+    if (targetPhase === 5) setSocialIndex(-1);
+    if (targetPhase === 7) setVideoStep(0);
+    if (targetPhase === 8) setFlyerStep(0);
+    goPhase(targetPhase);
+  }
+
+  const nav: ShellNav = {
+    active: surface === 'workspace' ? 'workspace' : phase,
+    onSelect: goToPhase,
+    isDisabled: stageIsDisabled,
+    onWorkspace: () => openWorkspace(),
+    onNewCampaign: resetCampaign,
+    campaignLabel: exactTarget.trim() || 'Nenhuma campanha ativa',
+    campaignDetail: exactTarget.trim()
+      ? `${campaignMode === 'collection' ? 'Coleção' : 'Produto único'}${offer.trim() ? ` · ${offer.trim()}` : ''}`
+      : 'Comece pelo contexto',
+  };
+
   const shellProps = {
-    onOpenMenu: () => openWorkspace(),
+    nav,
     attachmentRequired: linkAccess === 'protected' && (phase > 1 || contextStep >= 3),
-    menu: surface === 'stage' ? {
-      active: phase,
-      onSelect: openStage,
-      isDisabled: stageIsDisabled,
-    } satisfies MenuConfig : undefined,
   };
 
   if (surface === 'welcome') {
     return (
       <main className="min-h-screen bg-background text-foreground">
-        <AppHeader />
-        <section className="mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-5xl items-center px-4 py-12 sm:px-7">
+        <header className="flex h-16 items-center gap-4 border-b border-border px-4 sm:px-7">
+          <img src="/brand/eternity-academy.png" alt="Eternity Academy" className="h-7 w-auto" />
+          <span className="hidden h-6 w-px bg-border sm:block" />
+          <p className="hidden text-sm font-medium tracking-[-0.02em] sm:block">Creative Assistant</p>
+          <div className="ml-auto"><SameChatPill /></div>
+        </header>
+        <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl items-center px-4 py-12 sm:px-7">
           <div className="w-full">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-foreground">Eternity Creative System</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-0.055em] sm:text-6xl">Como você quer trabalhar hoje?</h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">Na primeira campanha, recomendamos percorrer a metodologia inteira. Se você já tem o contexto no ChatGPT, também pode abrir somente a etapa de que precisa.</p>
             <div className="mt-9 grid gap-4 md:grid-cols-2">
-              <button type="button" onClick={startGuidedCampaign} className="group rounded-[1.5rem] border border-primary/45 bg-primary/[0.09] p-6 text-left transition-all hover:-translate-y-0.5 hover:border-primary/75 hover:bg-primary/[0.13]">
-                <span className="grid size-12 place-items-center rounded-2xl bg-primary text-white shadow-[0_12px_35px_rgba(126,45,255,.3)]"><Sparkles className="size-6" /></span>
+              <button type="button" onClick={startGuidedCampaign} className="group border border-primary/45 bg-primary/[0.09] p-6 text-left transition-all hover:-translate-y-0.5 hover:border-primary/75 hover:bg-primary/[0.13]">
+                <span className="grid size-12 place-items-center bg-primary text-white shadow-[0_12px_35px_rgba(126,45,255,.3)]"><Sparkles className="size-6" /></span>
                 <span className="mt-6 block text-xl font-semibold tracking-[-0.03em]">Fazer o processo completo</span>
                 <span className="mt-2 block text-sm leading-6 text-muted-foreground">Você será guiado com uma pergunta por vez, do contexto ao panfleto.</span>
                 <span className="mt-6 flex items-center gap-2 text-sm font-medium text-violet-200">Recomendado na primeira vez <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
               </button>
-              <button type="button" onClick={() => openWorkspace()} className="group rounded-[1.5rem] border border-border bg-card/55 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-card/80">
-                <span className="grid size-12 place-items-center rounded-2xl bg-white/[0.07] text-violet-200"><LayoutDashboard className="size-6" /></span>
+              <button type="button" onClick={() => openWorkspace()} className="group border border-border bg-card/55 p-6 text-left transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-card/80">
+                <span className="grid size-12 place-items-center bg-white/[0.07] text-violet-200"><LayoutDashboard className="size-6" /></span>
                 <span className="mt-6 block text-xl font-semibold tracking-[-0.03em]">Abrir somente uma etapa</span>
                 <span className="mt-2 block text-sm leading-6 text-muted-foreground">Volte a um material específico sem precisar percorrer todo o processo.</span>
                 <span className="mt-6 flex items-center gap-2 text-sm font-medium text-foreground">Escolher etapa <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
@@ -835,67 +925,140 @@ export default function Home() {
   if (surface === 'workspace') {
     const stageIcons = [ListChecks, Layers3, Sparkles, Square, Megaphone, Volume2, Film, Ticket];
     const hasContext = !stageIsDisabled(3);
+    /* Em produto único o carrossel não existe: ele não pode contar como etapa pendente. */
+    const applicablePhases = (campaignMode === 'collection' ? [1, 2, 3, 4, 5, 6, 7, 8] : [1, 3, 4, 5, 6, 7, 8]) as Phase[];
+    const doneCount = applicablePhases.filter((item) => donePhases.includes(item)).length;
+    const nextPhase = applicablePhases.find((item) => !donePhases.includes(item) && !stageIsDisabled(item)) ?? phase;
+    const formatDate = (value: number) => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
     return (
-      <main className="min-h-screen bg-background text-foreground">
-        <AppHeader />
-        {linkAccess === 'protected' && hasContext ? <AttachmentAlert compact /> : null}
-        <section className="mx-auto max-w-7xl px-4 py-9 sm:px-7 sm:py-12">
-          <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 md:flex-row md:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-foreground">Painel da campanha</p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-5xl">Escolha exatamente onde continuar</h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">Cada etapa abre separadamente. Os prompts continuam dependendo do contexto e dos anexos que já estão no mesmo chat do ChatGPT.</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {processStarted ? <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setSurface(journeyMode)}><ArrowRight data-icon="inline-end" /> Continuar {phaseNames[phase - 1]}</Button> : null}
-              <Button type="button" className="h-11 rounded-xl" onClick={resetCampaign}><Sparkles data-icon="inline-start" /> Nova campanha completa</Button>
-            </div>
-          </div>
+      <AppShell
+        nav={nav}
+        eyebrow="Painel da campanha"
+        title="Escolha onde continuar"
+        bleed
+        alert={linkAccess === 'protected' && hasContext ? <AttachmentAlert compact /> : null}
+        actions={<SameChatPill />}
+      >
+        {workspaceMessage ? <output className="mb-6 flex items-start gap-3 border border-violet-400/30 bg-violet-500/[0.09] p-5 text-sm leading-6 text-violet-100"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-violet-300" /><span>{workspaceMessage}</span></output> : null}
 
-          {workspaceMessage ? <output className="mt-6 flex items-start gap-3 rounded-2xl border border-violet-400/30 bg-violet-500/[0.09] p-5 text-sm leading-6 text-violet-100"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-violet-300" /><span>{workspaceMessage}</span></output> : null}
-
-          <div className={`mt-6 rounded-2xl border p-5 ${hasContext ? 'border-emerald-400/25 bg-emerald-400/[0.06]' : 'border-amber-400/30 bg-amber-400/[0.07]'}`}>
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <p className={`text-xs font-semibold uppercase tracking-[0.12em] ${hasContext ? 'text-emerald-300' : 'text-amber-300'}`}>{hasContext ? 'Contexto disponível' : 'Comece pelo contexto'}</p>
-                <p className="mt-2 font-medium">{hasContext ? exactTarget : 'As demais etapas permanecem protegidas para evitar prompts sem fatos.'}</p>
-                {hasContext ? <p className="mt-1 text-sm text-muted-foreground">{campaignMode === 'collection' ? 'Coleção' : 'Produto único'} · {offer}</p> : <p className="mt-1 text-sm text-muted-foreground">Leva poucos minutos e evita falhas em todo o processo.</p>}
+        <section className="border border-border bg-card/55 p-5">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-[0.12em] text-accent-foreground uppercase">Campanha ativa</p>
+              <h2 className="mt-2 truncate text-xl font-semibold tracking-[-0.03em] sm:text-2xl">{exactTarget.trim() || 'Campanha sem alvo'}</h2>
+              <p className="mt-1 truncate text-sm text-muted-foreground">{campaignMode === 'collection' ? 'Coleção' : 'Produto único'}{offer.trim() ? ` · ${offer}` : ''}</p>
+            </div>
+            <div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="w-full sm:w-44">
+                <p className="text-xs text-muted-foreground"><strong className="text-foreground">{doneCount}</strong> de {applicablePhases.length} etapas concluídas</p>
+                <div className="mt-2 h-1 w-full bg-white/[0.07]"><div className="h-full bg-primary transition-[width] duration-300" style={{ width: `${(doneCount / applicablePhases.length) * 100}%` }} /></div>
               </div>
-              <Button type="button" variant="outline" className="shrink-0 rounded-xl" onClick={() => openStage(1)}>{hasContext ? 'Atualizar contexto' : 'Preparar contexto'}</Button>
+              <Button type="button" className="h-11 shrink-0" onClick={() => openStage(nextPhase)}>
+                {doneCount === applicablePhases.length ? 'Revisar etapas' : doneCount ? `Continuar em ${phaseNames[nextPhase - 1]}` : 'Começar pelo contexto'} <ArrowRight data-icon="inline-end" />
+              </Button>
             </div>
           </div>
+          {hasContext ? null : <p className="mt-4 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-sm leading-6 text-amber-100/85">As outras etapas ficam bloqueadas até o contexto estar pronto. É o que impede um prompt sem fatos.</p>}
+        </section>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {phaseNames.map((name, index) => {
-              const targetPhase = (index + 1) as Phase;
-              const Icon = stageIcons[index];
-              const disabled = stageIsDisabled(targetPhase);
-              const collectionOnly = targetPhase === 2;
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {phaseNames.map((name, index) => {
+            const targetPhase = (index + 1) as Phase;
+            const Icon = stageIcons[index];
+            const disabled = stageIsDisabled(targetPhase);
+            const done = donePhases.includes(targetPhase);
+            const current = !done && !disabled && targetPhase === nextPhase;
+            const collectionOnly = targetPhase === 2;
+            const lotProgress = targetPhase === 3 && !done && selectedIds.length > 0 ? `${selectedIds.length} de 5 direções escolhidas` : null;
+            return (
+              <button
+                key={name}
+                type="button"
+                disabled={disabled}
+                onClick={() => openStage(targetPhase)}
+                className={`group flex min-h-52 flex-col border p-5 text-left transition-colors ${
+                  disabled ? 'cursor-not-allowed border-border bg-card/25 opacity-45'
+                  : done ? 'border-emerald-400/30 bg-emerald-400/[0.05] hover:bg-emerald-400/[0.09]'
+                  : current ? 'border-primary/60 bg-primary/[0.07] hover:bg-primary/[0.11]'
+                  : 'border-border bg-card/55 hover:border-primary/45 hover:bg-card/80'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`grid size-11 place-items-center ${done ? 'bg-emerald-400/15 text-emerald-300' : 'bg-primary/12 text-accent-foreground'}`}>
+                    {done ? <Check className="size-5" /> : <Icon className="size-5" />}
+                  </span>
+                  <span className="text-xs font-semibold text-muted-foreground">0{index + 1}</span>
+                </div>
+                <span className="mt-5 block text-lg font-semibold tracking-[-0.025em]">{name}</span>
+                <span className="mt-2 block text-sm leading-6 text-muted-foreground">{lotProgress ?? phaseDescriptions[index]}</span>
+                <span className={`mt-auto pt-5 text-xs font-medium ${done ? 'text-emerald-300' : current ? 'text-violet-200' : 'text-muted-foreground'}`}>
+                  {disabled ? (collectionOnly && hasContext ? 'Só existe em coleção' : 'Prepare o contexto primeiro')
+                    : done ? 'Concluída · abrir de novo →'
+                    : current ? 'Você parou aqui →'
+                    : 'Abrir esta etapa →'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <section className="mt-10 border-t border-border pt-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-semibold tracking-[-0.02em]">Suas campanhas</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Cada uma guarda contexto, lote e conferência separados.</p>
+            </div>
+            <Button type="button" variant="outline" className="h-10" onClick={resetCampaign}><Sparkles data-icon="inline-start" /> Nova campanha</Button>
+          </div>
+
+          <div className="mt-4 grid gap-2">
+            {campaigns.map((record) => {
+              const applicable = record.mode === 'collection' ? 8 : 7;
+              const recordDone = record.donePhases.filter((item) => record.mode === 'collection' || item !== 2).length;
+              const active = record.id === campaignId;
               return (
-                <button key={name} type="button" disabled={disabled} onClick={() => openStage(targetPhase)} className={`group flex min-h-56 flex-col rounded-[1.35rem] border p-5 text-left transition-all ${disabled ? 'cursor-not-allowed border-border bg-card/25 opacity-45' : 'border-border bg-card/55 hover:-translate-y-0.5 hover:border-primary/45 hover:bg-card/80'}`}>
-                  <div className="flex items-center justify-between">
-                    <span className="grid size-11 place-items-center rounded-xl bg-primary/12 text-accent-foreground"><Icon className="size-5" /></span>
-                    <span className="text-xs font-semibold text-muted-foreground">0{index + 1}</span>
+                <div key={record.id} className={`flex flex-wrap items-center gap-3 border p-4 ${active ? 'border-primary/50 bg-primary/[0.06]' : 'border-border bg-card/40'}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate font-medium">{campaignLabel(record)}</p>
+                      {active ? <span className="shrink-0 bg-primary/20 px-2 py-0.5 text-[11px] font-medium text-violet-100">aberta</span> : null}
+                    </div>
+                    <p className="mt-1 truncate text-sm text-muted-foreground">
+                      {record.mode === 'collection' ? 'Coleção' : 'Produto único'}{record.offer.trim() ? ` · ${record.offer}` : ''} · {recordDone} de {applicable} etapas · {formatDate(record.updatedAt)}
+                    </p>
                   </div>
-                  <span className="mt-5 block text-lg font-semibold tracking-[-0.025em]">{name}</span>
-                  <span className="mt-2 block text-sm leading-6 text-muted-foreground">{phaseDescriptions[index]}</span>
-                  <span className="mt-auto pt-5 text-xs font-medium text-violet-200">{disabled ? (collectionOnly && hasContext ? 'Disponível apenas para coleção' : 'Prepare o contexto primeiro') : 'Abrir esta etapa →'}</span>
-                </button>
+                  {active ? null : <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => openCampaign(record)}>Abrir</Button>}
+                  <Button type="button" variant="ghost" size="sm" className="h-9 shrink-0 text-muted-foreground" onClick={() => setCampaignToDelete(record)}>Apagar</Button>
+                </div>
               );
             })}
           </div>
         </section>
-      </main>
+
+        <Dialog open={campaignToDelete !== null} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
+          <DialogContent className="max-w-lg border border-primary/20 bg-popover sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Apagar esta campanha?</DialogTitle>
+              <DialogDescription>{campaignToDelete ? campaignLabel(campaignToDelete) : ''}</DialogDescription>
+            </DialogHeader>
+            <p className="text-sm leading-6 text-muted-foreground">O contexto, o lote de cinco e a conferência dessa campanha somem deste navegador. Não dá para desfazer.</p>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setCampaignToDelete(null)}>Manter</Button>
+              <Button type="button" variant="destructive" onClick={() => campaignToDelete && deleteCampaign(campaignToDelete)}>Apagar campanha</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </AppShell>
     );
   }
 
   if (phase === 1) {
     if (contextStep === 0) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 1 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(1)}>
           <QuestionScreen eyebrow="Vamos começar pelo essencial" title="O que você vai anunciar?" description="Essa escolha define o caminho da campanha. Coleções recebem automaticamente um carrossel com cinco produtos." next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
-            <RadioGroup value={campaignMode} onValueChange={(value) => { setCampaignMode(value as CampaignInput['mode']); setSelectedIds([]); }} className="grid gap-3 sm:grid-cols-2">
-              <ChoiceCard value="single" active={campaignMode === 'single'} icon={<Package className="size-5" />} title="Produto único" description="Um produto e uma variante factual." />
+            <RadioGroup value={campaignMode} onValueChange={(value) => { const mode = value as CampaignInput['mode']; setCampaignMode(mode); /* Coleção é sempre um conjunto de produtos que vendem pela estética. */ setSalesDriver(mode === 'collection' ? 'estetica' : null); setSelectedIds([]); }} className="grid gap-3 sm:grid-cols-2">
+              <ChoiceCard value="single" active={campaignMode === 'single'} icon={<Package className="size-5" />} title="Produto único" description="Um produto só, contando as cores e versões dele." />
               <ChoiceCard value="collection" active={campaignMode === 'collection'} icon={<Layers3 className="size-5" />} title="Coleção" description="Vários produtos e carrossel obrigatório." />
             </RadioGroup>
           </QuestionScreen>
@@ -905,10 +1068,10 @@ export default function Home() {
 
     if (contextStep === 1) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 2 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(2)}>
           <QuestionScreen eyebrow="Alvo exato" title={campaignMode === 'collection' ? 'Qual coleção será anunciada?' : 'Qual produto será anunciado?'} description="Descreva somente o que pode aparecer nesta campanha." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="exact-target" className="mb-2 block text-sm font-medium">Alvo da campanha</label>
-            <Input id="exact-target" value={exactTarget} onChange={(event) => setExactTarget(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder={campaignMode === 'collection' ? 'Ex.: coleção de óculos inspirada em marcas de carros' : 'Ex.: suporte Pocket preto para smartphone'} />
+            <Input id="exact-target" value={exactTarget} onChange={(event) => setExactTarget(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder={campaignMode === 'collection' ? 'Ex.: coleção de óculos inspirada em marcas de carros' : 'Ex.: suporte Pocket preto para smartphone'} />
           </QuestionScreen>
         </PhaseShell>
       );
@@ -916,10 +1079,10 @@ export default function Home() {
 
     if (contextStep === 2) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 3 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(3)}>
           <QuestionScreen eyebrow="Fonte factual" title="Qual é o link da página de vendas?" description="Pode ser o link direto do produto, da coleção ou da loja." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="source-url" className="mb-2 block text-sm font-medium">Link da loja</label>
-            <div className="relative"><Link2 className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" /><Input id="source-url" type="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} className="h-14 rounded-xl bg-card pr-4 pl-12 text-base" placeholder="https://sualoja.com/produto-ou-colecao" /></div>
+            <div className="relative"><Link2 className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" /><Input id="source-url" type="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} className="h-14 bg-card pr-4 pl-12 text-base" placeholder="https://sualoja.com/produto-ou-colecao" /></div>
           </QuestionScreen>
         </PhaseShell>
       );
@@ -927,7 +1090,7 @@ export default function Home() {
 
     if (contextStep === 3) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 4 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(4)}>
           <QuestionScreen eyebrow="Acesso ao link" title="O ChatGPT consegue abrir essa página?" description="Se a loja pedir senha, você usará os mesmos anexos durante todo o processo." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <RadioGroup value={linkAccess} onValueChange={(value) => setLinkAccess(value as CampaignInput['linkAccess'])} className="grid gap-3 sm:grid-cols-2">
               <ChoiceCard value="public" active={linkAccess === 'public'} icon={<Globe2 className="size-5" />} title="Sim, está pública" description="Abre sem login, senha ou bloqueio." />
@@ -941,18 +1104,18 @@ export default function Home() {
 
     if (contextStep === 4) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 5 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(5)}>
           <QuestionScreen eyebrow="Oferta" title="Qual é a oferta exata?" description="Escreva exatamente como deve aparecer, incluindo idioma e condições." back={backContext} next={advanceContext} nextDisabled={!contextAnswerReady()} error={formError}>
             <label htmlFor="offer" className="mb-2 block text-sm font-medium">Oferta da campanha</label>
-            <Input id="offer" value={offer} onChange={(event) => setOffer(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder="Ex.: Kaufen Sie 2 und erhalten Sie 1 gratis" />
+            <Input id="offer" value={offer} onChange={(event) => setOffer(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder="Ex.: Kaufen Sie 2 und erhalten Sie 1 gratis" />
           </QuestionScreen>
         </PhaseShell>
       );
     }
 
-    if (contextStep === 5) {
+    if (contextStep === 6) {
       return (
-        <PhaseShell {...shellProps} phase={1} detail="Pergunta 6 de 6">
+        <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(6)}>
           <QuestionScreen eyebrow="Argumento de venda" title="O que faz o cliente comprar isso?" description="A oferta agressiva vale nos dois casos. O que muda a peça é ter um diferencial para explicar ou não. Dois tênis na mesma prateleira podem cair em lados opostos." back={backContext} next={advanceContext} nextLabel="Preparar contexto" nextDisabled={!contextAnswerReady()} error={formError}>
             <RadioGroup value={salesDriver ?? ''} onValueChange={(value) => setSalesDriver(value as SalesDriver)} className="grid gap-3 sm:grid-cols-2">
               {salesDrivers.map((item) => <ChoiceCard key={item.value} value={item.value} active={salesDriver === item.value} icon={<Sparkles className="size-5" />} title={item.label} description={item.description} />)}
@@ -962,12 +1125,12 @@ export default function Home() {
       );
     }
 
-    if (contextStep === 6) {
+    if (contextStep === 7) {
       return (
         <PhaseShell {...shellProps} phase={1} detail="Mensagem inicial">
           <PageHeading eyebrow="Contexto pronto" title="Envie a primeira mensagem" description="Abra um novo chat no ChatGPT. Essa conversa acompanhará toda a campanha até o panfleto." />
           {linkAccess === 'protected' ? <div className="mb-6"><AttachmentAlert /></div> : null}
-          <PromptPanel label="Mensagem 1 · contexto inicial" text={contextPrompt} copyKey="context" copiedKey={copiedKey} onCopy={copyText} />
+          <PromptStep title="Mensagem 1 · contexto" delivers="O ChatGPT lê a loja e devolve os fatos da campanha para você conferir." batchPrompt={contextPrompt} batchKey="context" copiedKey={copiedKey} onCopy={copyText} />
           <ChatInstruction>{linkAccess === 'protected' ? 'Anexe primeiro as fotos e os prints. Depois cole a mensagem acima. ' : 'Cole a mensagem acima. '}Espere a resposta completa antes de continuar.</ChatInstruction>
           <BottomActions back={backContext} next={advanceContext} nextLabel="Já recebi o contexto" />
         </PhaseShell>
@@ -977,14 +1140,14 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={1} detail="Checklist">
         <PageHeading eyebrow="Conferência humana" title="O contexto está correto?" description="Confira somente estes cinco pontos na resposta do ChatGPT. Se algo estiver errado, corrija no mesmo chat antes de avançar." />
-        <div className="rounded-[1.5rem] border border-border bg-card/65 p-5 sm:p-6">
+        <div className="border border-border bg-card/65 p-5 sm:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
             <div><p className="font-medium">Checklist da resposta</p><p className="mt-1 text-sm text-muted-foreground">Marque os cinco itens ou use a seleção rápida.</p></div>
-            <Button type="button" variant="outline" className="rounded-xl" onClick={() => setContextChecks(contextCheckItems.map(() => !contextChecks.every(Boolean)))}><ListChecks data-icon="inline-start" /> {contextChecks.every(Boolean) ? 'Limpar seleção' : 'Selecionar tudo'}</Button>
+            <Button type="button" variant="outline" className="" onClick={() => setContextChecks(contextCheckItems.map(() => !contextChecks.every(Boolean)))}><ListChecks data-icon="inline-start" /> {contextChecks.every(Boolean) ? 'Limpar seleção' : 'Selecionar tudo'}</Button>
           </div>
           <div className="space-y-3">
             {contextCheckItems.map((item, index) => (
-              <label key={item} className="flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-background/45 p-4 text-sm sm:text-base">
+              <label key={item} className="flex cursor-pointer items-center gap-3 border border-border bg-background/45 p-4 text-sm sm:text-base">
                 <Checkbox checked={contextChecks[index]} onCheckedChange={(checked) => setContextChecks((current) => current.map((value, itemIndex) => itemIndex === index ? checked === true : value))} />
                 <span>{item}</span>
               </label>
@@ -999,68 +1162,203 @@ export default function Home() {
   if (phase === 2) {
     return (
       <PhaseShell {...shellProps} phase={2} detail="Somente coleções">
-        <PageHeading eyebrow="Carrossel obrigatório" title="Padronize cinco produtos da coleção" description="O ChatGPT escolherá cinco imagens elegíveis já anexadas e criará cinco cards 4:5 com fundo branco ou cinza consistente." />
-        <PromptPanel label="Mensagem 2 · carrossel com 5 cards" text={carouselPrompt} copyKey="carousel" copiedKey={copiedKey} onCopy={copyText} />
-        <ChatInstruction>Cole o prompt acima depois de aprovar o contexto. Não reenvie nem substitua as fontes factuais.</ChatInstruction>
+        <PageHeading eyebrow="Carrossel obrigatório" title="Padronize cinco produtos da coleção" description="Cinco cards 4:5 com o mesmo fundo, a mesma luz e a mesma escala." />
+        <PromptStep
+          title="Carrossel de cinco cards"
+          delivers="Uma mensagem gera os cinco cards padronizados em 4:5."
+          batchPrompt={carouselPrompt}
+          batchKey="carousel"
+          pieces={[0, 1, 2, 3, 4].map((index) => ({
+            label: `Card ${String(index + 1).padStart(2, '0')} de cinco`,
+            prompt: compileCarouselCardPrompt(index),
+            copyKey: `carousel-card-${index}`,
+          }))}
+          copiedKey={copiedKey}
+          onCopy={copyText}
+        />
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
-          {['5 arquivos separados', 'Fundo igual', 'Produto intacto', 'Sem rosto quando houver pessoa'].map((item) => <div key={item} className="flex items-center gap-2 rounded-xl border border-border bg-card/55 p-3 text-sm text-muted-foreground"><CheckCircle2 className="size-4 shrink-0 text-emerald-400" />{item}</div>)}
+          {['5 arquivos separados', 'Fundo igual', 'Produto intacto', 'Sem rosto quando houver pessoa'].map((item) => <div key={item} className="flex items-center gap-2 border border-border bg-card/55 p-3 text-sm text-muted-foreground"><CheckCircle2 className="size-4 shrink-0 text-emerald-400" />{item}</div>)}
         </div>
-        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(1), setContextStep(6))} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de carrossel concluída.') : goPhase(3)} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Já gerei os cinco cards'} />
+        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(1), setContextStep(6))} next={() => { markPhaseDone(2); if (journeyMode === 'stage') finishStandalone('Etapa de carrossel concluída.'); else goPhase(3); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Já gerei os cinco cards'} />
       </PhaseShell>
     );
   }
 
   if (phase === 3 && creativeView === 'library') {
-    const modeLabel = campaignMode === 'collection' ? 'colecao' : 'produto unico';
-    const filterCount = Number(Boolean(searchTerm.trim())) + Number(familyFilter !== 'Todas as famílias') + Number(categoryFilter !== 'Todas as categorias');
-    return (
-      <PhaseShell {...shellProps} phase={3} detail={`${selectedIds.length} de 5 escolhidas`} wide>
-        <div className="mb-5 flex flex-col justify-between gap-4 border-b border-border pb-5 lg:flex-row lg:items-end">
-          <div className="min-w-0">
-            <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-accent-foreground">Direções visuais</p>
-            <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Escolha pela imagem</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{compatibleReferences.length} compativeis de {references.length} no banco para {modeLabel}. {hiddenByModeCount} ocultas por formato.</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <div className="rounded-full border border-border bg-card/65 px-3 py-2 text-sm text-muted-foreground"><strong className="text-foreground">{selectedIds.length}</strong> de 5</div>
-            <Button type="button" variant="ghost" size="sm" className="h-10 rounded-xl text-accent-foreground" onClick={() => setSelectedIds(recommendedReferenceIds)}><Sparkles data-icon="inline-start" /> Lote validado</Button>
-            <Button type="button" size="sm" className="h-10 rounded-xl" disabled={selectedIds.length !== 5} onClick={() => { setCreativeView('prompt'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Criar prompt <ArrowRight data-icon="inline-end" /></Button>
-          </div>
-        </div>
-        <div className="relative z-20 mb-5 rounded-xl border border-border bg-background/80 p-2.5 shadow-[0_14px_45px_rgba(0,0,0,.2)] backdrop-blur-xl">
-          <div className="grid gap-2 lg:grid-cols-[1fr_13rem_13rem_auto] lg:items-center">
-            <div className="relative min-w-0"><Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className="h-10 rounded-lg bg-card pr-4 pl-9 text-sm" placeholder="Buscar referência" /></div>
-            <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value ?? 'Todas as categorias')}><SelectTrigger className="h-10 rounded-lg bg-card text-sm"><SelectValue /></SelectTrigger><SelectContent>{categories.map((category) => <SelectItem key={category} value={category}>{category === 'Todas as categorias' ? 'Todas' : category}</SelectItem>)}</SelectContent></Select>
-            <Select value={familyFilter} onValueChange={(value) => setFamilyFilter(value ?? 'Todas as famílias')}><SelectTrigger className="h-10 rounded-lg bg-card text-sm"><Filter className="size-4 text-muted-foreground" /><SelectValue /></SelectTrigger><SelectContent>{families.map((family) => <SelectItem key={family} value={family}>{family}</SelectItem>)}</SelectContent></Select>
-            {filterCount ? <Button type="button" variant="ghost" size="sm" className="h-10 rounded-lg text-muted-foreground" onClick={() => { setSearchTerm(''); setCategoryFilter('Todas as categorias'); setFamilyFilter('Todas as famílias'); }}>Limpar</Button> : <span className="hidden text-right text-xs text-muted-foreground lg:block">{filteredReferences.length} visiveis</span>}
-          </div>
-        </div>
+    const openPromptView = () => { setCreativeView('prompt'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    const goBackFromLibrary = () => journeyMode === 'stage' ? openWorkspace() : campaignMode === 'collection' ? goPhase(2) : (goPhase(1), setContextStep(6));
+    const sameness = lotSameness(selectedReferences);
+    /* Peça sem texto conta com a oferta aparecendo nas outras do lote. Se todas forem sem texto, a campanha fica sem oferta em lugar nenhum. */
+    const todasSemTexto = selectedReferences.length >= 3 && selectedReferences.every(({ silent }) => silent);
+    const lotWarning = todasSemTexto
+      ? 'Todas as escolhidas são peças sem texto. A oferta não vai aparecer em nenhuma delas: troque pelo menos uma por uma peça que anuncie.'
+      : selectedReferences.length >= 3 && sameness.length >= 3
+        ? `As escolhidas repetem ${sameness.map((axis) => axis.label).join(', ')}. Um lote assim volta com cinco peças parecidas: troque pelo menos duas.`
+        : null;
+    const lotSlots: LotSlot[] = Array.from({ length: 5 }, (_, index) => {
+      const item = selectedReferences[index];
+      return item ? { id: item.id, name: item.name, image: item.image } : null;
+    });
 
-        {orderedReferences.length ? <div className="reference-masonry" aria-label="Biblioteca de referências">{orderedReferences.map((item) => {
+    const galleryPanel = (
+      <GalleryPanel
+        stepLabel="Etapas da campanha"
+        onBackToSteps={() => openWorkspace()}
+        slots={lotSlots}
+        onRemove={toggleReference}
+        onUseRecommended={() => setSelectedIds(recommendedReferenceIds(orderedReferences))}
+        onSubmit={openPromptView}
+        warning={lotWarning}
+        filterCount={galleryFilterCount}
+        onClear={clearGalleryFilters}
+        groups={[
+          {
+            id: 'family',
+            label: 'Família visual',
+            options: familyValues.map((value) => ({ value, label: value, count: facetCount('family', (item) => item.family === value) })),
+            selected: familyFilters,
+            onToggle: (value) => toggleFacet(setFamilyFilters, value),
+          },
+          {
+            id: 'people',
+            label: 'Presença humana',
+            options: peopleValues.map(({ value, label }) => ({ value, label, count: facetCount('people', (item) => (item.people ?? 'sem-pessoa') === value) })),
+            selected: peopleFilters,
+            onToggle: (value) => toggleFacet(setPeopleFilters, value),
+          },
+          {
+            id: 'category',
+            label: 'Prateleira do produto',
+            options: categoryValues.map((value) => ({ value, label: value, count: facetCount('category', (item) => item.category === value) })),
+            selected: categoryFilters,
+            onToggle: (value) => toggleFacet(setCategoryFilters, value),
+          },
+        ]}
+        toggles={[]}
+      />
+    );
+
+    const libraryToolbar = (
+      <div className="flex items-center gap-3">
+        <div className="relative min-w-0 flex-1 sm:max-w-sm">
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} className="h-9 bg-card pr-4 pl-9 text-sm" placeholder="Buscar por nome ou tag" />
+        </div>
+        <p className="shrink-0 text-xs text-muted-foreground">
+          <strong className="text-foreground">{filteredReferences.length}</strong>
+          {galleryFilterCount ? ` de ${compatibleReferences.length}` : ''} direções adequadas
+        </p>
+        {galleryFilterCount ? (
+          <Button type="button" variant="ghost" size="sm" className="ml-auto h-9 shrink-0 text-muted-foreground" onClick={clearGalleryFilters}>
+            <RotateCcw data-icon="inline-start" /> <span className="hidden sm:inline">Limpar filtros</span>
+          </Button>
+        ) : null}
+      </div>
+    );
+
+    const libraryActions = (
+      <div className="hidden min-w-0 items-center gap-2 border border-border bg-card/55 px-3 py-1.5 text-xs md:flex">
+        <Package className="size-3.5 shrink-0 text-muted-foreground" />
+        <span className="max-w-[14rem] truncate">{exactTarget || 'Campanha sem alvo definido'}</span>
+        {offer ? <><span className="text-muted-foreground">·</span><span className="max-w-[12rem] truncate text-muted-foreground">{offer}</span></> : null}
+        {offerMechanic ? <><span className="text-muted-foreground">·</span><span className="text-muted-foreground">{offerMechanics.find((item) => item.value === offerMechanic)?.label}</span></> : null}
+      </div>
+    );
+
+    return (
+      <PhaseShell
+        {...shellProps}
+        phase={3}
+        title="Escolha pela imagem"
+        wide
+        panel={galleryPanel}
+        menuLabel="Abrir filtros e lote"
+        menuBadge={galleryFilterCount || undefined}
+        actions={libraryActions}
+        toolbar={libraryToolbar}
+      >
+        {orderedReferences.length ? <div className="reference-masonry pb-20 lg:pb-0" aria-label="Biblioteca de referências">{orderedReferences.map((item) => {
           const selectedIndex = selectedIds.indexOf(item.id);
           const selected = selectedIndex >= 0;
           const blocked = selectedIds.length >= 5 && !selected;
           return (
             <article key={item.id} className={`reference-pin group w-full text-left ${selected ? 'reference-pin-active' : ''}`}>
-              <button type="button" disabled={blocked} onClick={() => selected ? toggleReference(item.id) : runReferenceAction(item, 'select')} className={`reference-image-button ${blocked ? 'opacity-35' : ''}`} aria-pressed={selected} aria-label={`${selected ? 'Remover' : 'Adicionar'} ${item.name} ${selected ? 'do' : 'ao'} lote`}>
+              <button
+                type="button"
+                disabled={blocked}
+                title={blocked ? 'O lote já tem cinco direções. Tire uma para trocar.' : undefined}
+                onClick={() => selected ? toggleReference(item.id) : runReferenceAction(item, 'select')}
+                className={`reference-image-button ${blocked ? 'opacity-45' : ''}`}
+                aria-pressed={selected}
+                aria-label={`${selected ? 'Tirar' : 'Escolher'} ${item.name}`}
+              >
                 <img src={item.image} alt={`Referência completa: ${item.name}`} loading="lazy" className="h-auto w-full" />
-                {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center rounded-full bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
+                {selected ? <span className="absolute top-3 left-3 grid size-8 place-items-center bg-primary text-xs font-medium text-white shadow-lg">{String(selectedIndex + 1).padStart(2, '0')}</span> : null}
                 <span className="reference-hover-panel">
-                  <span className="flex items-start justify-between gap-3">
+                  <span className="block">
                     <span>
                       <span className="block font-medium tracking-[-0.02em] text-white">{item.name}</span>
-                      <span className="mt-1 block text-xs text-white/72">{item.family} · {item.category}</span>
+                      <span className="mt-1 block text-xs text-white/72">{item.family} · {peopleLabel(item.people)}</span>
                     </span>
-                    <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${item.validated ? 'bg-emerald-400/20 text-emerald-100' : 'bg-amber-400/20 text-amber-100'}`}>{item.validated ? 'Validada' : 'Piloto'}</span>
                   </span>
-                  <span className="mt-2 block text-xs leading-5 text-white/66">{item.modes.length === 2 ? 'Produto ou coleção' : item.modes[0] === 'collection' ? 'Coleção' : 'Produto único'}{item.limits ? ` · ${item.limits}` : ''}</span>
+                  {item.limits ? <span className="mt-2 line-clamp-2 block text-xs leading-5 text-white/66">{item.limits}</span> : null}
                 </span>
               </button>
+              {item.silent ? <div className="flex items-center gap-2 border-t border-border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground"><Sparkles className="size-3.5 shrink-0" />Peça sem texto: vende só pela imagem, e a oferta fica nas outras do lote</div> : null}
               {item.requirement ? <div className="flex items-center gap-2 border-t border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs leading-5 text-amber-100"><AlertTriangle className="size-3.5 shrink-0 text-amber-300" />Precisa de {item.requirement.label}</div> : null}
-              <Button type="button" variant="ghost" size="icon" title="Copiar so esta direcao" aria-label={`Copiar prompt da referencia ${item.name}`} className="reference-copy-button" onClick={() => runReferenceAction(item, 'copy')}>{copiedKey === `library-single-${item.id}` ? <Check className="size-4" /> : <Copy className="size-4" />}</Button>
+              <Button type="button" variant="ghost" size="icon" title="Ver em detalhe" aria-label={`Ver ${item.name} em detalhe`} className="reference-detail-button" onClick={() => setDetailReference(item)}><Maximize2 className="size-4" /></Button>
             </article>
           );
-        })}</div> : <div className="rounded-2xl border border-dashed border-border py-16 text-center"><Search className="mx-auto size-6 text-muted-foreground" /><p className="mt-3 font-medium">Nenhuma referência encontrada</p><p className="mt-1 text-sm text-muted-foreground">Remova um filtro ou busque outro termo.</p></div>}
+        })}</div> : (
+          <div className="border border-dashed border-border py-16 text-center">
+            <Search className="mx-auto size-6 text-muted-foreground" />
+            <p className="mt-3 font-medium">Nenhuma direção passa por esses filtros</p>
+            <Button type="button" variant="outline" className="mt-5 h-10" onClick={clearGalleryFilters}><RotateCcw data-icon="inline-start" /> Limpar filtros</Button>
+          </div>
+        )}
+
+        <Dialog open={detailReference !== null} onOpenChange={(open) => !open && setDetailReference(null)}>
+          <DialogContent className="max-w-[min(64rem,94vw)] border border-primary/20 bg-popover p-0 sm:max-w-[min(64rem,94vw)]">
+            {detailReference ? (
+              <div className="grid max-h-[86vh] overflow-y-auto md:grid-cols-[minmax(0,1fr)_20rem]">
+                <div className="grid place-items-center bg-black/45 p-4">
+                  <img src={detailReference.image} alt={`Referência completa: ${detailReference.name}`} className="max-h-[76vh] w-full object-contain" />
+                </div>
+                <div className="flex flex-col border-t border-border p-5 md:border-t-0 md:border-l">
+                  <DialogHeader>
+                    <DialogTitle className="text-left text-lg tracking-[-0.025em]">{detailReference.name}</DialogTitle>
+                    <DialogDescription className="text-left">{detailReference.id}</DialogDescription>
+                  </DialogHeader>
+                  <dl className="mt-5 space-y-2.5 text-sm">
+                    <DetailRow label="Família visual" value={detailReference.family} />
+                    <DetailRow label="Presença humana" value={peopleLabel(detailReference.people)} />
+                    <DetailRow label="Argumento" value={(detailReference.drivers ?? []).map((driver) => driver === 'estetica' ? 'a foto vende sozinha' : 'precisa explicar a função').join(' e ') || '—'} />
+                    <DetailRow label="Oferta" value={detailReference.offerMechanics?.map((mechanic) => offerMechanics.find((item) => item.value === mechanic)?.label).join(' · ') || 'desconto direto ou compre X, leve Y'} />
+                    <DetailRow label="Produto da foto" value={detailReference.category} />
+                    <DetailRow label="Serve para" value={detailReference.fillsWithVariants ? 'Coleção, ou um produto só nas cores e vistas confirmadas' : detailReference.modes.length === 2 ? 'Produto único ou coleção' : detailReference.modes[0] === 'collection' ? 'Coleção' : 'Produto único'} />
+                    {detailReference.slots ? <DetailRow label="Cabe" value={`${detailReference.slots} produtos na grade`} /> : null}
+                  </dl>
+                  <div className="mt-4 flex flex-wrap gap-1.5">{detailReference.tags.map((tag) => <span key={tag} className="border border-border bg-card/55 px-2 py-1 text-[11px] text-muted-foreground">{tag}</span>)}</div>
+                  {detailReference.limits ? <p className="mt-4 border border-border bg-card/55 p-3 text-xs leading-5 text-muted-foreground">{detailReference.limits}</p> : null}
+                  {detailReference.requirement ? <p className="mt-3 flex items-start gap-2 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-xs leading-5 text-amber-100"><AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-amber-300" />Precisa de {detailReference.requirement.label} confirmado no contexto.</p> : null}
+                  <div className="mt-auto grid gap-2 pt-6">
+                    {selectedIds.includes(detailReference.id) ? (
+                      <Button type="button" variant="outline" className="h-10 w-full" onClick={() => toggleReference(detailReference.id)}><X data-icon="inline-start" /> Tirar do lote</Button>
+                    ) : (
+                      <Button type="button" className="h-10 w-full" disabled={selectedIds.length >= 5} onClick={() => { runReferenceAction(detailReference, 'select'); setDetailReference(null); }}>
+                        {selectedIds.length >= 5 ? 'O lote já tem cinco' : 'Colocar no lote'}
+                      </Button>
+                    )}
+                    <Button type="button" variant="ghost" className="h-10 w-full text-muted-foreground" onClick={() => runReferenceAction(detailReference, 'copy')}>
+                      {copiedKey === `library-single-${detailReference.id}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar só esta direção</>}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+
         <Dialog open={requirementAction !== null} onOpenChange={(open) => !open && setRequirementAction(null)}>
           <DialogContent className="max-w-lg border border-primary/20 bg-popover sm:max-w-lg">
             <DialogHeader>
@@ -1074,7 +1372,16 @@ export default function Home() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <div className="mt-8 border-t border-border pt-6"><Button type="button" variant="ghost" size="lg" onClick={() => journeyMode === 'stage' ? openWorkspace() : campaignMode === 'collection' ? goPhase(2) : (goPhase(1), setContextStep(6))}><ArrowLeft data-icon="inline-start" /> Voltar</Button></div>
+
+        <div className="mt-8 hidden border-t border-border pt-6 lg:block">
+          <Button type="button" variant="ghost" size="lg" onClick={goBackFromLibrary}><ArrowLeft data-icon="inline-start" /> Voltar</Button>
+        </div>
+
+        <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-xl lg:hidden">
+          <Button type="button" variant="ghost" size="icon" aria-label="Voltar" className="shrink-0" onClick={goBackFromLibrary}><ArrowLeft className="size-4" /></Button>
+          <span className="text-sm text-muted-foreground"><strong className="text-foreground">{selectedIds.length}</strong> de 5</span>
+          <Button type="button" className="ml-auto h-10" disabled={selectedIds.length !== 5} onClick={openPromptView}>Criar prompt <ArrowRight data-icon="inline-end" /></Button>
+        </div>
       </PhaseShell>
     );
   }
@@ -1082,88 +1389,145 @@ export default function Home() {
   if (phase === 3 && creativeView === 'prompt') {
     return (
       <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
-        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Duas formas de pedir ao ChatGPT, com as mesmas receitas e as mesmas travas factuais. Muda só quantas mensagens você cola." />
-        {lotSameness(selectedReferences).length >= 3 ? <div className="mb-5 rounded-2xl border border-amber-400/30 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-100/85"><p className="font-medium text-amber-100">As cinco direções escolhidas são parecidas demais entre si.</p><p className="mt-1">Elas repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. Um lote assim tende a devolver cinco peças que se parecem, e o teste de criativo perde o sentido. Troque pelo menos duas por direções de outra família ou com outra quantidade de produtos.</p></div> : null}
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden rounded-xl border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center rounded-tl bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
-        <div className="grid items-start gap-4 lg:grid-cols-2">
-          <section className="flex flex-col rounded-2xl border border-border bg-card/55 p-4 sm:p-5">
-            <header className="mb-4 flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/14 text-violet-200"><Layers3 className="size-5" /></span>
-              <div>
-                <h2 className="font-semibold">Cinco de uma vez</h2>
-                <p className="mt-0.5 text-sm leading-5 text-muted-foreground">Uma mensagem só. Mais rápido, mas o ChatGPT às vezes falha na entrega.</p>
-              </div>
-            </header>
-            <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/[0.07] p-3.5 text-sm leading-6 text-amber-100/85">
-              <p className="font-medium text-amber-100">O ChatGPT não garante cinco imagens numa resposta.</p>
-              <p className="mt-1">O recurso de várias imagens dele foi feito para gerar variações de um mesmo pedido, não cinco pedidos diferentes. Quando falha, volta uma colagem com as cinco peças juntas ou cinco versões da primeira direção. Se isso acontecer, marque na conferência e o comando de correção aparece — ou use os cinco comandos ao lado.</p>
-            </div>
-            <PromptPanel label="Mensagem · gerar lote mestre" text={masterPrompt} copyKey="master" copiedKey={copiedKey} onCopy={copyText} />
-          </section>
+        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Uma mensagem leva as cinco receitas. Se alguma peça vier errada, você gera só aquela." />
+        {lotSameness(selectedReferences).length >= 3 ? <p className="mb-4 flex items-start gap-2 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-sm leading-6 text-amber-100/85"><AlertTriangle className="mt-1 size-4 shrink-0 text-amber-300" />As cinco repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. O lote tende a voltar parecido: troque duas antes de gerar.</p> : null}
+        <div className="mb-5 flex items-center justify-between gap-4 border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center bg-primary text-[8px] text-white">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
+        <PromptStep
+          title="Lote mestre 4:5"
+          delivers="Uma mensagem gera os cinco criativos, na ordem do lote."
+          batchPrompt={masterPrompt}
+          batchKey="master"
+          pieces={selectedReferences.map((item) => ({
+            label: item.name,
+            prompt: compileReferencePrompt(campaign, item),
+            copyKey: `selected-single-${item.id}`,
+          }))}
+          copiedKey={copiedKey}
+          onCopy={copyText}
+        />
 
-          <section className="flex flex-col rounded-2xl border border-border bg-card/55 p-4 sm:p-5">
-            <header className="mb-4 flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/14 text-violet-200"><Copy className="size-5" /></span>
-              <div>
-                <h2 className="font-semibold">Uma direção por vez</h2>
-                <p className="mt-0.5 text-sm leading-5 text-muted-foreground">Cinco mensagens curtas, coladas em sequência. Sempre entrega.</p>
-              </div>
-            </header>
-            <p className="mb-4 rounded-xl border border-border bg-background/45 p-3.5 text-sm leading-6 text-muted-foreground">Cole uma, espere a imagem, cole a próxima. Não precisa conferir entre elas: cada mensagem carrega a receita inteira e não depende das anteriores.</p>
-            <div className="space-y-2">{selectedReferences.map((item, index) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background/45 p-3"><div className="flex min-w-0 items-center gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/14 text-xs font-semibold text-violet-200">{String(index + 1).padStart(2, '0')}</span><p className="truncate text-sm font-medium">{item.name}</p></div><Button type="button" variant="outline" size="sm" className="h-9 shrink-0 rounded-xl" onClick={() => copyText(compileReferencePrompt(campaign, item), `selected-single-${item.id}`)}>{copiedKey === `selected-single-${item.id}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar</>}</Button></div>)}</div>
-          </section>
-        </div>
-
-        <ChatInstruction>Use um dos dois lados. Cole depois de conferir o contexto e, em coleções, depois de gerar o carrossel.</ChatInstruction>
         <BottomActions back={() => setCreativeView('library')} next={() => { setCreativeView('review'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} nextLabel="Já gerei. Conferir lote" />
       </PhaseShell>
     );
   }
 
   if (phase === 3) {
+    const problemChoices = [
+      { value: 'missing' as ReviewStatus, label: 'Não veio como pedi', hint: 'Faltou, veio dentro de uma colagem, repetiu outra peça ou saiu numa direção diferente.' },
+      { value: 'content' as ReviewStatus, label: 'O conteúdo saiu errado', hint: 'Produto, oferta, marca ou texto com erro na peça.' },
+      { value: 'variation' as ReviewStatus, label: 'Quero outra versão', hint: 'A peça está correta, mas você quer outra tentativa da mesma direção.' },
+    ];
+
+    function fixPrompt(item: Reference, index: number, status: ReviewStatus) {
+      if (status === 'content') return compileIndividualPrompt(item, index, individualIssues[item.id] ?? '', 'content');
+      if (status === 'variation') return compileIndividualPrompt(item, index, '', 'variation');
+      return compileSingleRecoveryPrompt(item, index);
+    }
+
     return (
       <PhaseShell {...shellProps} phase={3} detail={`${correctCount} de 5 aprovados`} wide>
-        <PageHeading eyebrow="Revisão humana" title="Confira os cinco criativos" description="Se uma imagem estiver correta, não faça nada: ela já está aprovada. Sinalize somente os cartões que realmente têm um problema." />
-        {correctCount === 5 ? <div className="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/[0.08] p-5 text-emerald-100"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-300" /><div><h2 className="font-medium">Tudo certo por padrão</h2><p className="mt-1 text-sm leading-5 text-emerald-200/75">Você pode avançar. Use “Sinalizar problema” somente se algo faltou, repetiu ou precisa de correção.</p></div></div> : <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/[0.08] p-5 text-amber-100"><AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-300" /><div><h2 className="font-medium">Resolva os cartões sinalizados</h2><p className="mt-1 text-sm leading-5 text-amber-200/75">O avanço volta a ser liberado assim que todos os problemas forem marcados como corrigidos.</p></div></div>}
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{selectedReferences.map((item, index) => {
-          const status = reviewState[item.id] ?? 'correct';
-          const needsIndividual = status === 'content' || status === 'variation';
-          const statusLabel = reviewOptions.find((option) => option.value === status)?.label ?? 'Correto';
-          return (
-            <article key={item.id} className={`overflow-hidden rounded-2xl border shadow-[0_14px_44px_rgba(0,0,0,.22)] transition-colors ${statusTone(status)}`}>
-              <div className="relative overflow-hidden bg-black/35"><img src={item.sample ?? item.image} alt={`Cartão ${String(index + 1).padStart(2, '0')}: ${item.name}`} className="h-auto w-full" /><div className="absolute inset-x-0 top-0 flex items-start justify-between bg-gradient-to-b from-black/65 to-transparent p-3 pb-10 text-white"><span className="grid size-9 place-items-center rounded-xl bg-white/92 text-xs font-medium text-slate-900">{String(index + 1).padStart(2, '0')}</span><span className="rounded-full bg-black/45 px-2.5 py-1 text-[11px] backdrop-blur">Mestre 4:5</span></div></div>
-              <div className="p-4"><p className="text-xs text-muted-foreground">{item.id}</p><h2 className="mt-1 font-medium tracking-[-0.02em]">{item.name}</h2><div className={`mt-4 flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm ${status === 'correct' ? 'border-emerald-400/25 bg-emerald-400/[0.07] text-emerald-200' : 'border-amber-400/30 bg-amber-400/[0.08] text-amber-100'}`}>{status === 'correct' ? <CheckCircle2 className="size-4 shrink-0" /> : <AlertCircle className="size-4 shrink-0" />}<span className="font-medium">{status === 'correct' ? 'Sem problema' : statusLabel}</span></div><div className="mt-3 grid gap-2"><Button type="button" variant={status === 'correct' ? 'outline' : 'ghost'} className="h-10 w-full rounded-xl" onClick={() => setProblemIndex(index)}>{status === 'correct' ? <><AlertCircle data-icon="inline-start" /> Sinalizar problema</> : 'Alterar problema'}</Button>{needsIndividual ? <Button type="button" variant={status === 'content' ? 'destructive' : 'outline'} className="h-10 w-full rounded-xl" onClick={() => { setIndividualAction({ index, kind: status === 'content' ? 'content' : 'variation' }); setIndividualIssue(''); }}>{status === 'content' ? <><RefreshCcw data-icon="inline-start" /> Corrigir este criativo</> : <><RotateCcw data-icon="inline-start" /> Gerar nova variação</>}</Button> : null}{status !== 'correct' ? <Button type="button" variant="ghost" className="h-9 w-full rounded-xl text-emerald-300" onClick={() => updateReview(item.id, 'correct')}><Check data-icon="inline-start" /> Já foi corrigido</Button> : null}</div></div>
-            </article>
-          );
-        })}</div>
-        {pendingIndexes.length ? <div className="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/[0.08] p-5 sm:flex sm:items-center sm:justify-between sm:gap-6"><div><h2 className="font-medium text-amber-100">{pendingIndexes.length} {pendingIndexes.length === 1 ? 'item precisa' : 'itens precisam'} ser recuperado{pendingIndexes.length === 1 ? '' : 's'}</h2><p className="mt-1 text-sm leading-5 text-amber-200/70">O comando incluirá apenas {pendingIndexes.map((index) => String(index + 1).padStart(2, '0')).join(', ')}.</p></div><Button type="button" className="mt-4 h-10 shrink-0 rounded-xl sm:mt-0" onClick={() => setRecoveryOpen(true)}><RefreshCcw data-icon="inline-start" /> Corrigir marcados</Button></div> : null}
-        {recoveryEscalated && pendingIndexes.length ? <section className="mt-6 rounded-2xl border border-border bg-card p-5"><div className="mb-4 flex items-start gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-white"><Layers3 className="size-4" /></span><div><h2 className="font-medium">Fila segura: um por vez</h2><p className="mt-1 text-sm text-muted-foreground">Cole cada comando separadamente no mesmo chat.</p></div></div><div className="space-y-3">{pendingIndexes.map((index) => { const command = compileSingleRecoveryPrompt(selectedReferences[index], index); return <div key={selectedReferences[index].id} className="flex flex-col gap-3 rounded-xl border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs text-muted-foreground">CRIATIVO {String(index + 1).padStart(2, '0')}</p><p className="mt-1 text-sm font-medium">{selectedReferences[index].name}</p></div><Button type="button" variant="outline" className="h-9 rounded-xl" onClick={() => copyText(command, `single-${index}`)}>{copiedKey === `single-${index}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar comando</>}</Button></div>; })}</div></section> : null}
-        <BottomActions back={() => setCreativeView('prompt')} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de cinco criativos concluída.') : goPhase(4)} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver adaptações de formato'} nextDisabled={problemIndexes.length > 0} />
+        <PageHeading eyebrow="Conferência" title="Confira os cinco criativos" description="Marque só o que deu errado. O que você não marcar segue aprovado." />
 
-        <Dialog open={problemIndex !== null} onOpenChange={(open) => !open && setProblemIndex(null)}>
-          <DialogContent className="max-w-xl border border-primary/20 bg-popover sm:max-w-xl">
-            <DialogHeader><DialogTitle>Qual problema apareceu?</DialogTitle><DialogDescription>Escolha somente o que aconteceu com o CRIATIVO {problemIndex === null ? '' : String(problemIndex + 1).padStart(2, '0')}. Se está certo, não é necessário marcar nada.</DialogDescription></DialogHeader>
-            <div className="grid gap-2 py-2 sm:grid-cols-2">{reviewOptions.filter((option) => option.value !== 'unreviewed' && option.value !== 'correct').map((option) => <Button key={option.value} type="button" variant={problemIndex !== null && reviewState[selectedReferences[problemIndex]?.id] === option.value ? 'default' : 'outline'} className="h-auto min-h-12 justify-start whitespace-normal rounded-xl py-3 text-left" onClick={() => { if (problemIndex !== null) updateReview(selectedReferences[problemIndex].id, option.value); setProblemIndex(null); }}>{option.label}</Button>)}</div>
-            <DialogFooter><Button type="button" variant="ghost" className="text-emerald-300" onClick={() => { if (problemIndex !== null) updateReview(selectedReferences[problemIndex].id, 'correct'); setProblemIndex(null); }}><Check data-icon="inline-start" /> Na verdade está correto</Button></DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <div className="space-y-2">
+          {selectedReferences.map((item, index) => {
+            const status = reviewState[item.id] ?? 'correct';
+            const open = problemIndex === index;
+            const numero = String(index + 1).padStart(2, '0');
+            return (
+              <article key={item.id} className={`border ${status === 'correct' ? 'border-border bg-card/45' : 'border-amber-400/40 bg-amber-400/[0.05]'}`}>
+                <div className="flex flex-wrap items-center gap-3 p-3">
+                  <img src={item.sample ?? item.image} alt="" className="size-12 shrink-0 object-cover" />
+                  <span className="grid size-7 shrink-0 place-items-center bg-primary/14 text-[11px] font-semibold text-violet-200">{numero}</span>
+                  <p className="min-w-0 flex-1 truncate text-sm font-medium">{item.name}</p>
 
-        <Dialog open={recoveryOpen} onOpenChange={setRecoveryOpen}>
-          <DialogContent className="max-h-[88vh] max-w-2xl overflow-auto border border-primary/20 bg-popover p-0 sm:max-w-2xl">
-            <DialogHeader className="p-5 pb-0"><DialogTitle>Recuperar somente os pendentes</DialogTitle><DialogDescription>Cole este comando no mesmo chat. Os criativos corretos não serão regenerados.</DialogDescription></DialogHeader>
-            <pre className="mx-5 max-h-[46vh] overflow-auto whitespace-pre-wrap rounded-xl bg-[#09070e] p-4 font-sans text-[13px] leading-6 text-slate-300">{recoveryPrompt}</pre>
-            <DialogFooter className="mx-0 mb-0 border-border bg-muted/50 px-5"><Button type="button" variant="ghost" onClick={() => { markIndexesCorrect(pendingIndexes); setRecoveryOpen(false); }}>Os itens foram corrigidos</Button><Button type="button" variant="outline" onClick={() => { setRecoveryEscalated(true); setRecoveryOpen(false); }}>Ainda falhou</Button><Button type="button" onClick={() => copyText(recoveryPrompt, 'recovery')}>{copiedKey === 'recovery' ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar recuperação</>}</Button></DialogFooter>
-          </DialogContent>
-        </Dialog>
+                  {status === 'correct' ? (
+                    <>
+                      <span className="flex items-center gap-1.5 text-xs text-emerald-300"><CheckCircle2 className="size-3.5" /> Aprovado</span>
+                      <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => setProblemIndex(open ? null : index)}>
+                        {open ? 'Fechar' : 'Deu problema'}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex items-center gap-1.5 text-xs text-amber-200"><AlertCircle className="size-3.5" /> {problemChoices.find((choice) => choice.value === status)?.label}</span>
+                      <Button type="button" variant="ghost" size="sm" className="h-9 shrink-0 text-emerald-300" onClick={() => { updateReview(item.id, 'correct'); setProblemIndex(null); }}>
+                        <Check data-icon="inline-start" /> Já corrigi
+                      </Button>
+                    </>
+                  )}
+                </div>
 
-        <Dialog open={Boolean(individualAction)} onOpenChange={(open) => !open && setIndividualAction(null)}>
-          <DialogContent className="max-h-[88vh] max-w-2xl overflow-auto border border-primary/20 bg-popover p-0 sm:max-w-2xl">
-            <DialogHeader className="p-5 pb-0"><DialogTitle>{individualAction?.kind === 'content' ? 'Corrigir um criativo' : 'Gerar nova variação'}</DialogTitle><DialogDescription>Os outros quatro cartões serão preservados.</DialogDescription></DialogHeader>
-            {individualAction?.kind === 'content' ? <div className="px-5"><label htmlFor="individual-issue" className="mb-2 block text-sm font-medium">O que precisa ser corrigido?</label><Textarea id="individual-issue" value={individualIssue} onChange={(event) => setIndividualIssue(event.target.value)} className="min-h-24 rounded-xl bg-background" placeholder="Ex.: a oferta saiu incompleta e a cor da armação mudou." /></div> : null}
-            <pre className="mx-5 max-h-[38vh] overflow-auto whitespace-pre-wrap rounded-xl bg-[#09070e] p-4 font-sans text-[13px] leading-6 text-slate-300">{individualPrompt}</pre>
-            <DialogFooter className="mx-0 mb-0 border-border bg-muted/50 px-5"><Button type="button" variant="ghost" className="text-emerald-300" onClick={() => { if (individualAction) markIndexesCorrect([individualAction.index]); setIndividualAction(null); }}>Já foi corrigido</Button><Button type="button" onClick={() => copyText(individualPrompt, 'individual')}>{copiedKey === 'individual' ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar correção</>}</Button></DialogFooter>
-          </DialogContent>
-        </Dialog>
+                {open && status === 'correct' ? (
+                  <div className="border-t border-border p-3">
+                    <p className="mb-2 text-xs text-muted-foreground">O que aconteceu com o criativo {numero}?</p>
+                    <div className="grid gap-2 md:grid-cols-3">
+                      {problemChoices.map((choice) => (
+                        <button
+                          key={choice.value}
+                          type="button"
+                          onClick={() => { updateReview(item.id, choice.value); setProblemIndex(null); }}
+                          className="border border-border bg-background/45 p-3 text-left transition-colors hover:border-primary/50 hover:bg-primary/[0.06]"
+                        >
+                          <span className="block text-sm font-medium">{choice.label}</span>
+                          <span className="mt-1 block text-xs leading-4 text-muted-foreground">{choice.hint}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {status !== 'correct' ? (
+                  <div className="border-t border-amber-400/25 p-3">
+                    {status === 'content' ? (
+                      <div className="mb-3">
+                        <label htmlFor={`erro-${item.id}`} className="mb-1.5 block text-xs text-muted-foreground">O que está errado na peça?</label>
+                        <Textarea
+                          id={`erro-${item.id}`}
+                          value={individualIssues[item.id] ?? ''}
+                          onChange={(event) => setIndividualIssues((current) => ({ ...current, [item.id]: event.target.value }))}
+                          placeholder="Ex.: a oferta saiu em português, o produto mudou de cor"
+                          className="min-h-20 bg-background/45 text-sm"
+                        />
+                      </div>
+                    ) : null}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-xs text-muted-foreground">Cole o comando no mesmo chat. Quando a peça voltar certa, marque “já corrigi”.</p>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <button type="button" onClick={() => setFixTextFor((current) => current === item.id ? null : item.id)} className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+                          {fixTextFor === item.id ? 'Esconder o texto' : 'Ver o texto'}
+                        </button>
+                        <Button type="button" size="sm" className="h-9" onClick={() => copyText(fixPrompt(item, index, status), `fix-${item.id}`)}>
+                          {copiedKey === `fix-${item.id}` ? <><Check data-icon="inline-start" /> Copiado</> : <><Copy data-icon="inline-start" /> Copiar correção</>}
+                        </Button>
+                      </div>
+                    </div>
+                    {fixTextFor === item.id ? (
+                      <pre className="mt-3 max-h-60 overflow-auto border border-border bg-background/45 p-3 font-sans text-[13px] leading-6 whitespace-pre-wrap text-slate-300">{fixPrompt(item, index, status)}</pre>
+                    ) : null}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+
+        {pendingIndexes.length > 1 ? (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-border bg-card/45 p-3">
+            <p className="text-sm text-muted-foreground">
+              {pendingIndexes.length} peças não vieram. Dá para pedir todas numa mensagem só.
+            </p>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button type="button" variant="outline" size="sm" className="h-9" onClick={() => copyText(recoveryPrompt, 'recovery')}>
+                {copiedKey === 'recovery' ? <><Check data-icon="inline-start" /> Copiado</> : <><RefreshCcw data-icon="inline-start" /> Copiar recuperação</>}
+              </Button>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-emerald-300" onClick={() => markIndexesCorrect(pendingIndexes)}>
+                <Check data-icon="inline-start" /> Já vieram
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        <BottomActions back={() => setCreativeView('prompt')} next={() => { markPhaseDone(3); if (journeyMode === 'stage') finishStandalone('Etapa de cinco criativos concluída.'); else goPhase(4); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver adaptações de formato'} nextDisabled={problemIndexes.length > 0} />
       </PhaseShell>
     );
   }
@@ -1171,16 +1535,68 @@ export default function Home() {
   if (phase === 4) {
     return (
       <PhaseShell {...shellProps} phase={4} detail="1:1 e 9:16 · opcionais">
-        <PageHeading eyebrow="Adaptação de formatos" title="Copie somente o formato de que precisa" description="Não é necessário responder perguntas nem ler o prompt. Escolha uma ação abaixo e cole o comando no mesmo chat, depois de aprovar os mestres 4:5." />
-        <div className="mb-6 rounded-2xl border border-violet-400/25 bg-violet-500/[0.07] p-5 text-sm leading-6 text-violet-100/80"><strong className="text-violet-100">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {campaignMode === 'collection' ? <PromptActionCard icon={<Square className="size-5" />} title="Carrossel em 1:1" description="Adapta os cinco cards do carrossel, mantendo produtos, fundo e corte sem rosto." prompt={compileCarouselFormatPrompt('1:1')} copyKey="carousel-1:1" copiedKey={copiedKey} onCopy={copyText} /> : null}
-          <PromptActionCard icon={<Square className="size-5" />} title="Cinco criativos em 1:1" description="Cria cinco versões quadradas, uma para cada mestre aprovado." prompt={compileCreativeFormatPrompt('1:1')} copyKey="creative-1:1" copiedKey={copiedKey} onCopy={copyText} />
-          {campaignMode === 'collection' ? <PromptActionCard icon={<PanelTop className="size-5" />} title="Carrossel em 9:16" description="Adapta os cinco cards para story sem alterar os produtos ou a padronização." prompt={compileCarouselFormatPrompt('9:16')} copyKey="carousel-9:16" copiedKey={copiedKey} onCopy={copyText} /> : null}
-          <PromptActionCard icon={<PanelTop className="size-5" />} title="Cinco criativos em 9:16" description="Cria cinco versões verticais prontas para posicionamentos de story e reel." prompt={compileCreativeFormatPrompt('9:16')} copyKey="creative-9:16" copiedKey={copiedKey} onCopy={copyText} />
+        <PageHeading eyebrow="Adaptação de formatos" title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
+        <div className="mb-6 border border-violet-400/25 bg-violet-500/[0.07] p-5 text-sm leading-6 text-violet-100/80"><strong className="text-violet-100">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
+        <div className="grid gap-4 xl:grid-cols-2">
+          {campaignMode === 'collection' ? (
+            <PromptStep
+              title="Carrossel em 1:1"
+              delivers="Uma mensagem adapta os cinco cards do carrossel."
+              batchPrompt={compileCarouselFormatPrompt('1:1')}
+              batchKey="carousel-1:1"
+              pieces={[0, 1, 2, 3, 4].map((index) => ({
+                label: `Card ${String(index + 1).padStart(2, '0')} em 1:1`,
+                prompt: compileCarouselFormatSinglePrompt('1:1', index),
+                copyKey: `carousel-1:1-${index}`,
+              }))}
+              copiedKey={copiedKey}
+              onCopy={copyText}
+            />
+          ) : null}
+            <PromptStep
+              title="Cinco criativos em 1:1"
+              delivers="Uma mensagem adapta os cinco mestres aprovados."
+              batchPrompt={compileCreativeFormatPrompt('1:1', selectedReferences)}
+              batchKey="creative-1:1"
+              pieces={[0, 1, 2, 3, 4].map((index) => ({
+                label: `Criativo ${String(index + 1).padStart(2, '0')} em 1:1`,
+                prompt: compileCreativeFormatSinglePrompt('1:1', index, selectedReferences[index]),
+                copyKey: `creative-1:1-${index}`,
+              }))}
+              copiedKey={copiedKey}
+              onCopy={copyText}
+            />
+
+          {campaignMode === 'collection' ? (
+            <PromptStep
+              title="Carrossel em 9:16"
+              delivers="Uma mensagem adapta os cinco cards para story."
+              batchPrompt={compileCarouselFormatPrompt('9:16')}
+              batchKey="carousel-9:16"
+              pieces={[0, 1, 2, 3, 4].map((index) => ({
+                label: `Card ${String(index + 1).padStart(2, '0')} em 9:16`,
+                prompt: compileCarouselFormatSinglePrompt('9:16', index),
+                copyKey: `carousel-9:16-${index}`,
+              }))}
+              copiedKey={copiedKey}
+              onCopy={copyText}
+            />
+          ) : null}
+            <PromptStep
+              title="Cinco criativos em 9:16"
+              delivers="Uma mensagem adapta os cinco mestres para story e reel."
+              batchPrompt={compileCreativeFormatPrompt('9:16', selectedReferences)}
+              batchKey="creative-9:16"
+              pieces={[0, 1, 2, 3, 4].map((index) => ({
+                label: `Criativo ${String(index + 1).padStart(2, '0')} em 9:16`,
+                prompt: compileCreativeFormatSinglePrompt('9:16', index, selectedReferences[index]),
+                copyKey: `creative-9:16-${index}`,
+              }))}
+              copiedKey={copiedKey}
+              onCopy={copyText}
+            />
         </div>
-        <ChatInstruction>Copie apenas o que vai utilizar. Execute um comando por vez e confira as cinco saídas antes de copiar outro.</ChatInstruction>
-        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(3), setCreativeView('review'))} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de formatos concluída.') : (setSocialIndex(-1), goPhase(5))} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Entender as redes sociais'} />
+        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(3), setCreativeView('review'))} next={() => { markPhaseDone(4); if (journeyMode === 'stage') finishStandalone('Etapa de formatos concluída.'); else { setSocialIndex(-1); goPhase(5); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Entender as redes sociais'} />
       </PhaseShell>
     );
   }
@@ -1189,11 +1605,11 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={5} detail="Entenda antes de gerar">
         <PageHeading eyebrow="Playbook de redes sociais" title="A rede social sustenta a venda do anúncio" description="O objetivo principal do Instagram aqui não é vender sozinho. É eliminar dúvidas e dar credibilidade quando a pessoa que viu o anúncio visita o perfil antes de comprar." />
-        <div className="rounded-[1.5rem] border border-primary/25 bg-[linear-gradient(135deg,rgba(126,45,255,.14),rgba(16,12,24,.65))] p-6 sm:p-8">
+        <div className="border border-primary/25 bg-[linear-gradient(135deg,rgba(126,45,255,.14),rgba(16,12,24,.65))] p-6 sm:p-8">
           <p className="max-w-2xl text-xl font-semibold leading-8 tracking-[-0.03em] sm:text-2xl">Um criativo pode trazer o clique. Um perfil vivo, coerente e confiável ajuda o cliente a decidir que a loja é real.</p>
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="rounded-2xl border border-white/10 bg-black/15 p-4"><p className="text-xs font-semibold text-violet-300">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="border border-white/10 bg-black/15 p-4"><p className="text-xs font-semibold text-violet-300">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Montagem inicial</p><p className="mt-3 text-lg font-semibold">9 posts + 9 stories de destaque</p><p className="mt-2 text-sm leading-6 text-muted-foreground">O visitante entende o que a loja vende, por que confiar e como comprar.</p></div><div className="rounded-2xl border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Rotina semanal</p><p className="mt-3 text-lg font-semibold">Bom dia + cupom + review</p><p className="mt-2 text-sm leading-6 text-muted-foreground">A presença continua ativa sem parecer repetitiva ou abandonada.</p></div></div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Montagem inicial</p><p className="mt-3 text-lg font-semibold">9 posts + 9 stories de destaque</p><p className="mt-2 text-sm leading-6 text-muted-foreground">O visitante entende o que a loja vende, por que confiar e como comprar.</p></div><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Rotina semanal</p><p className="mt-3 text-lg font-semibold">Bom dia + cupom + review</p><p className="mt-2 text-sm leading-6 text-muted-foreground">A presença continua ativa sem parecer repetitiva ou abandonada.</p></div></div>
         <ChatInstruction>Os quatro blocos a seguir devem ser executados em sequência. Cada um herda a identidade construída pelos anteriores.</ChatInstruction>
         <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(4)} next={() => setSocialIndex(0)} nextLabel="Começar pelos 9 posts" />
       </PhaseShell>
@@ -1205,14 +1621,40 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={5} detail={`${socialIndex + 1} de ${socialPrompts.length}`}>
         <PageHeading eyebrow={`Playbook · bloco ${socialIndex + 1} de ${socialPrompts.length}`} title={social.title} description={social.purpose} />
-        <section className="rounded-[1.5rem] border border-primary/25 bg-primary/[0.07] p-5 sm:p-6"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-violet-300">Por que esta etapa existe</p><p className="mt-3 text-lg font-medium leading-8 text-violet-50">{social.importance}</p></section>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Antes de rodar</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{social.before}</p></div><div className="rounded-2xl border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">O que você recebe</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{social.output}</p></div></div>
-        <section className="mt-4 rounded-2xl border border-border bg-card/45 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Como usar sem se perder</p><div className="mt-4 space-y-3">{social.howToUse.map((instruction, index) => <div key={instruction} className="flex items-start gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/14 text-xs font-semibold text-violet-200">{index + 1}</span><p className="pt-0.5 text-sm leading-6 text-muted-foreground">{instruction}</p></div>)}</div></section>
-        <div className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-400/25 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-100/80"><AlertTriangle className="mt-1 size-4 shrink-0 text-amber-300" /><p><strong className="text-amber-100">Atenção:</strong> {social.guardrail}</p></div>
-        <div className="mt-5"><PromptActionCard icon={<BookOpen className="size-5" />} title={`Prompt pronto · ${social.title}`} description="O texto aprovado está guardado dentro do sistema. Clique para copiar e cole no mesmo chat; você não precisa editar o prompt." prompt={social.prompt} copyKey={`social-${social.id}`} copiedKey={copiedKey} onCopy={copyText} /></div>
-        {social.note ? <div className="mt-4 flex items-start gap-3 rounded-2xl border border-border bg-card/50 p-4 text-sm leading-6 text-muted-foreground"><Star className="mt-1 size-4 shrink-0 text-amber-300" /><p>{social.note}</p></div> : null}
-        <ChatInstruction>Copie o prompt somente depois de aprovar o bloco anterior. Se uma peça sair errada, corrija nesta conversa.</ChatInstruction>
-        <BottomActions back={() => socialIndex === 0 ? setSocialIndex(-1) : setSocialIndex((current) => current - 1)} next={() => socialIndex < socialPrompts.length - 1 ? setSocialIndex((current) => current + 1) : journeyMode === 'stage' ? finishStandalone('Etapa de redes sociais concluída.') : goPhase(6)} nextLabel={socialIndex < socialPrompts.length - 1 ? 'Próximo bloco' : journeyMode === 'stage' ? 'Concluir esta etapa' : 'Criar narração'} />
+        <PromptStep
+          title={social.title}
+          delivers={social.output}
+          batchPrompt={social.prompt}
+          batchKey={`social-${social.id}`}
+          pieces={social.pieces.map((piece, index) => ({
+            label: piece.label,
+            prompt: piece.prompt,
+            copyKey: `social-${social.id}-${index}`,
+          }))}
+          copiedKey={copiedKey}
+          onCopy={copyText}
+        />
+        <div className="mt-6 grid gap-x-8 gap-y-5 border-t border-border pt-6 md:grid-cols-3">
+          {[
+            ['Por que existe', social.importance],
+            ['Antes de rodar', social.before],
+            ['Cuidado', social.guardrail],
+          ].map(([label, text]) => (
+            <div key={label}>
+              <p className="text-[11px] font-medium tracking-[0.12em] text-accent-foreground uppercase">{label}</p>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">{text}</p>
+            </div>
+          ))}
+        </div>
+        <ol className="mt-5 grid gap-2 text-xs leading-5 text-muted-foreground sm:grid-cols-3">
+          {social.howToUse.map((instruction, index) => (
+            <li key={instruction} className="flex gap-2">
+              <span className="text-accent-foreground">{index + 1}.</span>{instruction}
+            </li>
+          ))}
+        </ol>
+        {social.note ? <p className="mt-4 text-xs leading-5 text-amber-100/70">{social.note}</p> : null}
+        <BottomActions back={() => socialIndex === 0 ? setSocialIndex(-1) : setSocialIndex((current) => current - 1)} next={() => { if (socialIndex < socialPrompts.length - 1) { setSocialIndex((current) => current + 1); return; } markPhaseDone(5); if (journeyMode === 'stage') finishStandalone('Etapa de redes sociais concluída.'); else goPhase(6); }} nextLabel={socialIndex < socialPrompts.length - 1 ? 'Próximo bloco' : journeyMode === 'stage' ? 'Concluir esta etapa' : 'Criar narração'} />
       </PhaseShell>
     );
   }
@@ -1221,15 +1663,14 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={6} detail="ElevenLabs · até 30 segundos">
         <PageHeading eyebrow="Áudio do vídeo" title="Crie o texto que dará voz ao anúncio" description="Este prompt não gera o áudio. Ele escreve uma narração comercial curta e factual para você transformar em voz no ElevenLabs." />
-        <section className="rounded-[1.5rem] border border-primary/25 bg-primary/[0.07] p-6 sm:p-7">
+        <section className="border border-primary/25 bg-primary/[0.07] p-6 sm:p-7">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-violet-300">Por que isso importa</p>
           <p className="mt-3 text-xl font-semibold leading-8 tracking-[-0.025em]">Nos primeiros segundos, a narração precisa explicar por que a pessoa deve parar.</p>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">Por isso o texto começa imediatamente pela oferta, apresenta o produto logo depois e termina com uma chamada para ação. A duração máxima de 30 segundos facilita a edição do criativo em vídeo.</p>
         </section>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">{[['1', 'Copie no ChatGPT', 'O mesmo chat usa oferta, produto, idioma e fatos já confirmados.'], ['2', 'Aprove o texto', 'Leia em voz alta e confira se oferta e produto aparecem imediatamente.'], ['3', 'Gere no ElevenLabs', 'Cole somente a narração aprovada para transformar o texto em voz.']].map(([number, title, text]) => <div key={number} className="rounded-2xl border border-border bg-card/55 p-5"><span className="grid size-8 place-items-center rounded-lg bg-primary/14 text-xs font-semibold text-violet-200">{number}</span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
-        <div className="mt-5"><PromptActionCard icon={<Volume2 className="size-5" />} title="Preparar narração de até 30 segundos" description="Copia o prompt completo sem exibi-lo. Ele começa pela oferta, preserva somente fatos confirmados e entrega apenas o texto final da locução." prompt={audioPrompt} copyKey="audio" copiedKey={copiedKey} onCopy={copyText} /></div>
-        <ChatInstruction>Aprove essa narração aqui. Caso precise de takes no Kling, o próximo prompt reutilizará exatamente o mesmo texto.</ChatInstruction>
-        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(5), setSocialIndex(socialPrompts.length - 1))} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de narração concluída.') : (goPhase(7), setVideoStep(0))} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver necessidade de vídeo'} />
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">{[['1', 'Copie no ChatGPT', 'O mesmo chat usa oferta, produto, idioma e fatos já confirmados.'], ['2', 'Aprove o texto', 'Leia em voz alta e confira se oferta e produto aparecem imediatamente.'], ['3', 'Gere no ElevenLabs', 'Cole somente a narração aprovada para transformar o texto em voz.']].map(([number, title, text]) => <div key={number} className="border border-border bg-card/55 p-5"><span className="grid size-8 place-items-center bg-primary/14 text-xs font-semibold text-violet-200">{number}</span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
+        <div className="mt-5"><PromptStep title="Narração de até 30 segundos" delivers="Começa pela oferta, usa só fatos confirmados e devolve o texto pronto para o ElevenLabs." batchPrompt={audioPrompt} batchKey="audio" copiedKey={copiedKey} onCopy={copyText} /></div>
+        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(5), setSocialIndex(socialPrompts.length - 1))} next={() => { markPhaseDone(6); if (journeyMode === 'stage') finishStandalone('Etapa de narração concluída.'); else { goPhase(7); setVideoStep(0); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver necessidade de vídeo'} />
       </PhaseShell>
     );
   }
@@ -1237,7 +1678,7 @@ export default function Home() {
   if (phase === 7 && videoStep === 0) {
     return (
       <PhaseShell {...shellProps} phase={7} detail="Etapa condicional">
-        <QuestionScreen eyebrow="Takes de vídeo" title="Você encontrou bons vídeos reais do produto?" description="O Kling só entra quando não existem vídeos utilizáveis. As imagens originais do produto continuam sendo a fonte." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(6)} next={() => { if (hasGoodVideos) { if (journeyMode === 'stage') finishStandalone('Vídeos reais confirmados. Não foi necessário usar o Kling.'); else goPhase(8); } else setVideoStep(1); }} nextLabel={hasGoodVideos ? (journeyMode === 'stage' ? 'Concluir esta etapa' : 'Pular Kling') : 'Preparar prompts Kling'} nextDisabled={hasGoodVideos === null}>
+        <QuestionScreen eyebrow="Takes de vídeo" title="Você encontrou bons vídeos reais do produto?" description="O Kling só entra quando não existem vídeos utilizáveis. As imagens originais do produto continuam sendo a fonte." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(6)} next={() => { if (hasGoodVideos) { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Vídeos reais confirmados. Não foi necessário usar o Kling.'); else goPhase(8); } else setVideoStep(1); }} nextLabel={hasGoodVideos ? (journeyMode === 'stage' ? 'Concluir esta etapa' : 'Pular Kling') : 'Preparar prompts Kling'} nextDisabled={hasGoodVideos === null}>
           <RadioGroup value={hasGoodVideos === null ? '' : hasGoodVideos ? 'yes' : 'no'} onValueChange={(value) => setHasGoodVideos(value === 'yes')} className="grid gap-3 sm:grid-cols-2"><ChoiceCard value="yes" active={hasGoodVideos === true} icon={<CheckCircle2 className="size-5" />} title="Sim, encontrei" description="Usarei os vídeos reais e seguirei para o panfleto." /><ChoiceCard value="no" active={hasGoodVideos === false} icon={<Film className="size-5" />} title="Não encontrei" description="Preparar três prompts detalhados para Kling." /></RadioGroup>
         </QuestionScreen>
       </PhaseShell>
@@ -1248,9 +1689,8 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={7} detail="3 vídeos · Kling">
         <PageHeading eyebrow="Vídeo com IA" title="Crie três roteiros visuais para o Kling" description="Os prompts usam as fotos originais, preservam somente cores confirmadas e reutilizam a narração já aprovada." />
-        <PromptPanel label="Três prompts para Kling" text={videoPrompt} copyKey="video" copiedKey={copiedKey} onCopy={copyText} />
-        <ChatInstruction>Use as fotos originais do produto. O prompt não pede uma nova narração.</ChatInstruction>
-        <BottomActions back={() => setVideoStep(0)} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de vídeos com IA concluída.') : goPhase(8)} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Preparar panfleto'} />
+        <PromptStep title="Três roteiros para o Kling" delivers="Texto, não imagem: volta um prompt completo para cada um dos três vídeos." batchPrompt={videoPrompt} batchKey="video" copiedKey={copiedKey} onCopy={copyText} />
+        <BottomActions back={() => setVideoStep(0)} next={() => { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Etapa de vídeos com IA concluída.'); else goPhase(8); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Preparar panfleto'} />
       </PhaseShell>
     );
   }
@@ -1259,7 +1699,7 @@ export default function Home() {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 1 de 3">
         <QuestionScreen eyebrow="Panfleto impresso" title="Qual é o prêmio do sorteio?" description="Essa será a única imagem de produto permitida no panfleto." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(7)} next={() => setFlyerStep(1)} nextDisabled={prize.trim().length < 2}>
-          <label htmlFor="prize" className="mb-2 block text-sm font-medium">Prêmio</label><Input id="prize" value={prize} onChange={(event) => setPrize(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder="Ex.: iPhone 17" />
+          <label htmlFor="prize" className="mb-2 block text-sm font-medium">Prêmio</label><Input id="prize" value={prize} onChange={(event) => setPrize(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder="Ex.: iPhone 17" />
         </QuestionScreen>
       </PhaseShell>
     );
@@ -1269,7 +1709,7 @@ export default function Home() {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 2 de 3">
         <QuestionScreen eyebrow="Panfleto impresso" title="Qual cupom o cliente receberá?" description="Digite exatamente como o código deve aparecer dentro do voucher." back={() => setFlyerStep(0)} next={() => setFlyerStep(2)} nextDisabled={coupon.trim().length < 2}>
-          <label htmlFor="coupon" className="mb-2 block text-sm font-medium">Código do cupom</label><Input id="coupon" value={coupon} onChange={(event) => setCoupon(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base uppercase" placeholder="Ex.: NOMEDALOJA20" />
+          <label htmlFor="coupon" className="mb-2 block text-sm font-medium">Código do cupom</label><Input id="coupon" value={coupon} onChange={(event) => setCoupon(event.target.value)} className="h-14 bg-card px-4 text-base uppercase" placeholder="Ex.: NOMEDALOJA20" />
         </QuestionScreen>
       </PhaseShell>
     );
@@ -1279,7 +1719,7 @@ export default function Home() {
     return (
         <PhaseShell {...shellProps} phase={8} detail="Pergunta 3 de 3">
         <QuestionScreen eyebrow="Panfleto impresso" title="Qual é o desconto da próxima compra?" description="Informe o valor completo, incluindo símbolo ou condição necessária." back={() => setFlyerStep(1)} next={() => setFlyerStep(3)} nextLabel="Preparar panfleto" nextDisabled={discount.trim().length < 1}>
-          <label htmlFor="discount" className="mb-2 block text-sm font-medium">Valor do desconto</label><Input id="discount" value={discount} onChange={(event) => setDiscount(event.target.value)} className="h-14 rounded-xl bg-card px-4 text-base" placeholder="Ex.: 20%" />
+          <label htmlFor="discount" className="mb-2 block text-sm font-medium">Valor do desconto</label><Input id="discount" value={discount} onChange={(event) => setDiscount(event.target.value)} className="h-14 bg-card px-4 text-base" placeholder="Ex.: 20%" />
         </QuestionScreen>
       </PhaseShell>
     );
@@ -1289,10 +1729,9 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={8} detail="A6 · 105 × 148 mm">
         <PageHeading eyebrow="Última entrega" title="Gere o panfleto impresso" description="O prompt utiliza a identidade já capturada, mantém a regra fixa de dez participantes e proíbe produtos da loja na arte." />
-        <div className="mb-5 grid gap-3 sm:grid-cols-3">{[[Ticket, 'Prêmio', prize], [Clipboard, 'Cupom', coupon], [Star, 'Desconto', discount]].map(([Icon, label, value]) => { const ItemIcon = Icon as typeof Ticket; return <div key={String(label)} className="rounded-2xl border border-border bg-card/60 p-4"><ItemIcon className="size-4 text-accent-foreground" /><p className="mt-3 text-xs text-muted-foreground">{String(label)}</p><p className="mt-1 font-medium">{String(value)}</p></div>; })}</div>
-        <PromptPanel label="Panfleto promocional A6" text={flyerPrompt} copyKey="flyer" copiedKey={copiedKey} onCopy={copyText} />
-        <ChatInstruction>Cole o prompt no mesmo chat para preservar logo, cores, idioma e identidade visual.</ChatInstruction>
-        <BottomActions back={() => setFlyerStep(2)} next={() => journeyMode === 'stage' ? finishStandalone('Etapa de panfleto concluída.') : completeCampaign()} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Finalizar e abrir painel'} />
+        <div className="mb-5 grid gap-3 sm:grid-cols-3">{[[Ticket, 'Prêmio', prize], [Clipboard, 'Cupom', coupon], [Star, 'Desconto', discount]].map(([Icon, label, value]) => { const ItemIcon = Icon as typeof Ticket; return <div key={String(label)} className="border border-border bg-card/60 p-4"><ItemIcon className="size-4 text-accent-foreground" /><p className="mt-3 text-xs text-muted-foreground">{String(label)}</p><p className="mt-1 font-medium">{String(value)}</p></div>; })}</div>
+        <PromptStep title="Panfleto A6" delivers="Uma peça impressa com prêmio, cupom e desconto que você acabou de informar." batchPrompt={flyerPrompt} batchKey="flyer" copiedKey={copiedKey} onCopy={copyText} />
+        <BottomActions back={() => setFlyerStep(2)} next={() => { markPhaseDone(8); if (journeyMode === 'stage') finishStandalone('Etapa de panfleto concluída.'); else completeCampaign(); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Finalizar e abrir painel'} />
       </PhaseShell>
     );
   }
@@ -1300,11 +1739,11 @@ export default function Home() {
   return (
     <PhaseShell {...shellProps} phase={8} detail="Processo concluído">
       <div className="flex min-h-[calc(100vh-12rem)] flex-col items-center justify-center text-center">
-        <span className="grid size-16 place-items-center rounded-2xl bg-emerald-400/12 text-emerald-300"><CheckCircle2 className="size-8" /></span>
+        <span className="grid size-16 place-items-center bg-emerald-400/12 text-emerald-300"><CheckCircle2 className="size-8" /></span>
         <p className="mt-6 text-xs font-medium uppercase tracking-[0.16em] text-emerald-300">Campanha concluída</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Todo o processo foi percorrido</h1>
         <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">Contexto, imagens, formatos, redes sociais, narração, vídeo quando necessário e panfleto foram organizados no mesmo chat.</p>
-        <Button type="button" size="lg" className="mt-8 h-12 rounded-xl px-6" onClick={resetCampaign}><Sparkles data-icon="inline-start" /> Iniciar nova campanha</Button>
+        <Button type="button" size="lg" className="mt-8 h-12 px-6" onClick={resetCampaign}><Sparkles data-icon="inline-start" /> Iniciar nova campanha</Button>
       </div>
     </PhaseShell>
   );

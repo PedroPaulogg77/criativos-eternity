@@ -72,7 +72,7 @@
   --chart-3: oklch(0.79 0.08 330);
   --chart-4: oklch(0.76 0.12 70);
   --chart-5: oklch(0.66 0.1 155);
-  --radius: 0.9rem;
+  --radius: 0rem;
   --sidebar: oklch(0.075 0.016 295);
   --sidebar-foreground: oklch(0.965 0.006 300);
   --sidebar-primary: oklch(0.62 0.245 300);
@@ -128,33 +128,33 @@
   ::selection { background: rgba(139, 70, 255, 0.38); color: white; }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border: 3px solid transparent; background-clip: content-box; }
 }
 
 @layer components {
   .choice-card {
-    @apply relative grid cursor-pointer grid-cols-[auto_auto_1fr] items-start gap-3 rounded-2xl border border-border bg-background/45 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/45 hover:bg-primary/[0.045];
+    @apply relative grid cursor-pointer grid-cols-[auto_auto_1fr] items-start gap-3 border border-border bg-background/45 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/45 hover:bg-primary/[0.045];
   }
   .choice-card-active {
     @apply border-primary/70 bg-primary/[0.085] ring-1 ring-primary/20;
   }
   .choice-icon {
-    @apply grid size-10 place-items-center rounded-xl bg-primary/10 text-accent-foreground;
+    @apply grid size-10 place-items-center bg-primary/10 text-accent-foreground;
   }
   .source-pill {
-    @apply flex cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors;
+    @apply flex cursor-pointer items-center gap-2 border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors;
   }
   .source-pill-active {
     @apply border-foreground/50 bg-foreground text-background;
   }
   .reference-card {
-    @apply overflow-hidden rounded-2xl border border-border bg-card shadow-[0_8px_28px_rgba(18,24,38,0.05)] transition-all hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_16px_40px_rgba(18,24,38,0.09)];
+    @apply overflow-hidden border border-border bg-card shadow-[0_8px_28px_rgba(18,24,38,0.05)] transition-all hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_16px_40px_rgba(18,24,38,0.09)];
   }
   .reference-card-active {
     @apply border-foreground/60 ring-2 ring-foreground/10;
   }
   .metric-card {
-    @apply flex items-baseline justify-between rounded-2xl border border-border bg-card/75 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)];
+    @apply flex items-baseline justify-between border border-border bg-card/75 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.16)];
   }
   .metric-value {
     @apply text-xl font-semibold tracking-[-0.04em];
@@ -162,20 +162,26 @@
   .metric-label {
     @apply text-xs text-muted-foreground;
   }
+  .filter-chip {
+    @apply flex h-9 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap border border-border bg-card/55 px-3.5 text-sm text-muted-foreground transition-colors hover:border-white/25 hover:text-foreground;
+  }
+  .filter-chip-active {
+    @apply border-primary/70 bg-primary/[0.14] text-violet-100;
+  }
   .reference-masonry {
     columns: 2;
-    column-gap: 1rem;
+    column-gap: 0.65rem;
   }
   .reference-pin {
     break-inside: avoid;
-    margin-bottom: 1rem;
-    @apply relative overflow-hidden rounded-2xl border border-transparent bg-card/25 p-0 outline-none transition-all hover:-translate-y-0.5 hover:border-white/18 hover:bg-card/35 focus-within:border-primary focus-within:ring-3 focus-within:ring-primary/25;
+    margin-bottom: 0.65rem;
+    @apply relative overflow-hidden border border-transparent bg-card/25 p-0 outline-none transition-colors hover:border-white/20 hover:bg-card/35 focus-within:border-primary focus-within:ring-3 focus-within:ring-primary/25;
   }
   .reference-pin-active {
     @apply border-primary/75 bg-primary/[0.05] ring-2 ring-primary/30;
   }
   .reference-image-button {
-    @apply relative block w-full overflow-hidden rounded-2xl bg-muted text-left;
+    @apply relative block w-full overflow-hidden bg-muted text-left;
   }
   .reference-image-button img {
     @apply transition-transform duration-300 group-hover:scale-[1.015];
@@ -183,15 +189,37 @@
   .reference-hover-panel {
     @apply pointer-events-none absolute inset-x-0 bottom-0 block translate-y-2 bg-gradient-to-t from-black/88 via-black/68 to-transparent px-4 pt-14 pb-4 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100;
   }
-  .reference-copy-button {
-    @apply absolute top-3 right-3 z-10 size-9 rounded-full border border-white/15 bg-black/55 text-white opacity-0 shadow-lg backdrop-blur transition-all hover:bg-white hover:text-black group-hover:opacity-100 group-focus-within:opacity-100;
+  .reference-detail-button {
+    @apply absolute top-3 right-3 z-10 size-9 border border-white/15 bg-black/55 text-white shadow-lg backdrop-blur transition-all hover:bg-white hover:text-black;
   }
 }
 
-@media (min-width: 720px) {
+@media (min-width: 640px) {
   .reference-masonry { columns: 3; }
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1024px) {
   .reference-masonry { columns: 4; }
+
+  /* No celular não existe hover: lá o botão de detalhe fica sempre visível. */
+  .reference-detail-button { opacity: 0; }
+  .reference-pin:hover .reference-detail-button,
+  .reference-pin:focus-within .reference-detail-button { opacity: 1; }
 }
+
+@media (min-width: 1440px) {
+  .reference-masonry { columns: 5; }
+}
+
+@media (min-width: 1800px) {
+  .reference-masonry { columns: 6; }
+}
+
+@media (min-width: 2200px) {
+  .reference-masonry { columns: 7; }
+}
+
+/* Fila de filtros rola na horizontal no celular sem mostrar barra. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+

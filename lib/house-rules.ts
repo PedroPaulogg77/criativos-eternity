@@ -36,7 +36,8 @@ export const HOUSE_DESIGN_RULE = `DESIGN E TIPOGRAFIA
  * no produto, é desumanizada.
  */
 export const SILENT_RULE = `PEÇA SEM TEXTO COMERCIAL
-- Esta direção não leva oferta, headline, preço, selo, CTA, wordmark nem qualquer bloco de texto. A peça vende só pela imagem.
+- Esta direção não recebe nenhum texto aplicado por cima da imagem: nada de oferta, headline, preço, selo, CTA, wordmark solto ou bloco de texto. A peça vende só pela imagem.
+- O que já está escrito nos objetos fotografados continua: logo bordado no produto, marca gravada na tampa da caixa, rótulo da embalagem, mostrador do relógio. Isso é parte da coisa, não é texto da peça, e apagar seria descaracterizar o produto.
 - Não crie cartão, etiqueta, faixa ou painel para acomodar texto. Se sobrar espaço, ele fica vazio.
 - A oferta desta campanha aparece nas outras peças do lote. Nesta, não aparece de forma alguma.`;
 
