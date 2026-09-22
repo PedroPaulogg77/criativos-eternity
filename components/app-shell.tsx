@@ -2,7 +2,7 @@
 
 /* oxlint-disable next/no-img-element -- o logo é um PNG estático servido da pasta public */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Film,
   Layers3,
@@ -12,6 +12,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
   SlidersHorizontal,
   Sparkles,
   Square,
@@ -32,8 +33,9 @@ export type ShellNav = {
   isDisabled: (phase: Phase) => boolean;
   onWorkspace: () => void;
   onNewCampaign: () => void;
-  campaignLabel: string;
-  campaignDetail: string;
+  campaigns: Array<{ id: string; label: string; detail: string }>;
+  activeCampaignId: string | null;
+  onSwitchCampaign: (id: string) => void;
 };
 
 function NavItem({
@@ -154,52 +156,17 @@ function Sidebar({
       </nav>
       )}
 
-      <div className={`shrink-0 border-t border-sidebar-border p-3 ${panel ? 'hidden' : ''}`}>
-        {collapsed ? (
-          <div className="grid gap-2">
-            <button
-              type="button"
-              onClick={onToggleCollapsed}
-              title="Expandir menu"
-              aria-label="Expandir menu"
-              className="grid h-10 w-full place-items-center border border-sidebar-border text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <PanelLeftOpen className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={nav.onNewCampaign}
-              title="Nova campanha"
-              aria-label="Nova campanha"
-              className="grid h-10 w-full place-items-center bg-primary text-primary-foreground transition-colors hover:bg-primary/85"
-            >
-              <Sparkles className="size-4" />
-            </button>
-          </div>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={nav.onWorkspace}
-              title="Ver todas as campanhas"
-              className="mb-3 block w-full border border-sidebar-border bg-white/[0.02] p-3 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05]"
-            >
-              <span className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium">{nav.campaignLabel}</span>
-                <span className="shrink-0 text-[10px] tracking-[0.1em] text-muted-foreground uppercase">trocar</span>
-              </span>
-              <span className="mt-1 block truncate text-xs text-muted-foreground">{nav.campaignDetail}</span>
-            </button>
-            <button
-              type="button"
-              onClick={nav.onNewCampaign}
-              className="flex h-10 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85"
-            >
-              <Sparkles className="size-4" /> Nova campanha
-            </button>
-          </>
-        )}
-      </div>
+      {collapsed && !panel ? (
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          title="Expandir menu"
+          aria-label="Expandir menu"
+          className="m-3 grid h-10 shrink-0 place-items-center border border-sidebar-border text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <PanelLeftOpen className="size-4" />
+        </button>
+      ) : null}
     </aside>
   );
 }
@@ -236,6 +203,7 @@ export function AppShell({
 }) {
   const [storedCollapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const campaignTabsRef = useRef<HTMLDivElement>(null);
   /* Um painel de ferramentas não cabe em faixa de ícones: nessa tela o menu fica sempre aberto. */
   const collapsed = panel ? false : storedCollapsed;
 
@@ -249,6 +217,15 @@ export function AppShell({
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const list = campaignTabsRef.current;
+    const active = list?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!list || !active) return;
+    const listBounds = list.getBoundingClientRect();
+    const activeBounds = active.getBoundingClientRect();
+    list.scrollTo({ left: list.scrollLeft + activeBounds.left - listBounds.left - (listBounds.width - activeBounds.width) / 2 });
+  }, [nav.activeCampaignId]);
 
   function toggleCollapsed() {
     setCollapsed((current) => {
@@ -307,6 +284,38 @@ export function AppShell({
               {actions}
             </div>
           </div>
+
+          <nav aria-label="Trocar produto ou campanha" className="flex min-w-0 items-stretch border-t border-border/70">
+            <div ref={campaignTabsRef} className="no-scrollbar flex min-w-0 flex-1 items-stretch overflow-x-auto px-2 sm:px-4">
+              {nav.campaigns.map((campaign) => {
+                const active = campaign.id === nav.activeCampaignId;
+                return (
+                  <button
+                    key={campaign.id}
+                    type="button"
+                    title={`${campaign.label}${campaign.detail ? ` · ${campaign.detail}` : ''}`}
+                    aria-current={active ? 'page' : undefined}
+                    onClick={() => nav.onSwitchCampaign(campaign.id)}
+                    className={`relative max-w-56 shrink-0 truncate border-b-2 px-4 py-3 text-sm transition-colors ${active
+                      ? 'border-primary bg-primary/[0.08] font-medium text-foreground'
+                      : 'border-transparent text-muted-foreground hover:bg-white/[0.04] hover:text-foreground'}`}
+                  >
+                    {campaign.label}
+                  </button>
+                );
+              })}
+              {nav.campaigns.length === 0 ? <span className="px-4 py-3 text-sm text-muted-foreground">Nenhum produto ainda</span> : null}
+            </div>
+            <button
+              type="button"
+              onClick={nav.onNewCampaign}
+              className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-primary/[0.08] sm:px-5"
+              aria-label="Nova campanha"
+              title="Nova campanha"
+            >
+              <Plus className="size-4" /> <span className="hidden sm:inline">Nova campanha</span>
+            </button>
+          </nav>
 
           {step ? (
             <div className="h-0.5 w-full bg-white/[0.06]">

@@ -169,7 +169,7 @@ function AttachmentAlert({ compact = false }: { compact?: boolean }) {
         <span className="grid size-10 shrink-0 place-items-center bg-amber-300 text-amber-950"><AlertTriangle className="size-5" /></span>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-amber-200">Anexos obrigatórios no ChatGPT</p>
-          <p className="mt-1 text-sm leading-6 text-amber-50/80"><strong className="text-white">Antes de copiar o prompt, anexe fotos reais e nítidas dos produtos e prints completos da página de vendas.</strong> Inclua oferta, variantes, benefícios, logo e identidade visual. Sem essas fontes, o processo pode falhar.</p>
+          <p className="mt-1 text-sm leading-6 text-amber-50/80">Antes de copiar, anexe fotos reais dos produtos e prints da página de vendas com oferta, variantes, benefícios, logo e identidade visual.</p>
         </div>
       </div>
     </div>
@@ -333,16 +333,11 @@ function PromptStep({
       </div>
 
       {hasPieces ? (
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border bg-amber-400/[0.04] px-5 py-4">
-          <div className="flex min-w-60 flex-1 items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-300" />
-            <p className="text-sm leading-6 text-amber-100/85">
-              Veio colagem, peça faltando ou repetida? É limite do ChatGPT com várias imagens de uma vez, não do prompt.
-            </p>
-          </div>
-          <Button type="button" variant="outline" className="h-10 shrink-0" onClick={() => setShowPieces((value) => !value)}>
-            {showPieces ? 'Fechar' : 'Gerar uma por vez'}
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3 text-xs text-muted-foreground">
+          <p>Se vier colagem ou faltar uma peça, gere separadamente.</p>
+          <button type="button" className="font-medium text-accent-foreground hover:text-foreground" onClick={() => setShowPieces((value) => !value)}>
+            {showPieces ? 'Fechar peças' : 'Gerar uma por vez →'}
+          </button>
         </div>
       ) : null}
 
@@ -561,9 +556,21 @@ export default function Home() {
     setPhase(record.lastPhase);
     setContextStep(record.donePhases.includes(1) ? 8 : 0);
     setCreativeView('library');
+    setFamilyFilters([]);
+    setPeopleFilters([]);
+    setCategoryFilters([]);
+    setSearchTerm('');
+    setDetailReference(null);
+    setRequirementAction(null);
+    setProblemIndex(null);
+    setFixTextFor(null);
+    setIndividualIssues({});
+    setFormError('');
     setSocialIndex(-1);
     setVideoStep(0);
+    setHasGoodVideos(null);
     setFlyerStep(0);
+    setCopiedKey('');
     setCompleted(record.donePhases.length === 8);
   }
 
@@ -693,12 +700,15 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function openCampaign(record: CampaignRecord) {
-    commitStore(upsertCampaign(storeRef.current, record));
+  function switchCampaign(id: string) {
+    if (id === campaignId) return;
+    const record = storeRef.current.items.find((item) => item.id === id);
+    if (!record) return;
+    commitStore({ ...storeRef.current, activeId: id });
     applyCampaign(record);
     setJourneyMode('stage');
+    setWorkspaceMessage('');
     setSurface('workspace');
-    setWorkspaceMessage(`Campanha aberta: ${campaignLabel(record)}.`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -877,10 +887,13 @@ export default function Home() {
     isDisabled: stageIsDisabled,
     onWorkspace: () => openWorkspace(),
     onNewCampaign: resetCampaign,
-    campaignLabel: exactTarget.trim() || 'Nenhuma campanha ativa',
-    campaignDetail: exactTarget.trim()
-      ? `${campaignMode === 'collection' ? 'Coleção' : 'Produto único'}${offer.trim() ? ` · ${offer.trim()}` : ''}`
-      : 'Comece pelo contexto',
+    campaigns: campaigns.filter((record) => !isBlank(record) || record.id === campaignId).map((record) => ({
+      id: record.id,
+      label: record.exactTarget.trim() || 'Novo produto',
+      detail: `${record.mode === 'collection' ? 'Coleção' : 'Produto único'}${record.offer.trim() ? ` · ${record.offer.trim()}` : ''}`,
+    })),
+    activeCampaignId: campaignId,
+    onSwitchCampaign: switchCampaign,
   };
 
   const shellProps = {
@@ -1002,15 +1015,9 @@ export default function Home() {
           })}
         </div>
 
-        <section className="mt-10 border-t border-border pt-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-semibold tracking-[-0.02em]">Suas campanhas</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Cada uma guarda contexto, lote e conferência separados.</p>
-            </div>
-            <Button type="button" variant="outline" className="h-10" onClick={resetCampaign}><Sparkles data-icon="inline-start" /> Nova campanha</Button>
-          </div>
-
+        <details className="mt-10 border-t border-border pt-5">
+          <summary className="cursor-pointer text-sm font-medium text-accent-foreground">Gerenciar campanhas salvas</summary>
+          <p className="mt-3 text-sm text-muted-foreground">Cada campanha guarda seu próprio contexto, lote e conferência neste navegador.</p>
           <div className="mt-4 grid gap-2">
             {campaigns.map((record) => {
               const applicable = record.mode === 'collection' ? 8 : 7;
@@ -1027,13 +1034,13 @@ export default function Home() {
                       {record.mode === 'collection' ? 'Coleção' : 'Produto único'}{record.offer.trim() ? ` · ${record.offer}` : ''} · {recordDone} de {applicable} etapas · {formatDate(record.updatedAt)}
                     </p>
                   </div>
-                  {active ? null : <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => openCampaign(record)}>Abrir</Button>}
+                  {active ? null : <Button type="button" variant="outline" size="sm" className="h-9 shrink-0" onClick={() => switchCampaign(record.id)}>Abrir</Button>}
                   <Button type="button" variant="ghost" size="sm" className="h-9 shrink-0 text-muted-foreground" onClick={() => setCampaignToDelete(record)}>Apagar</Button>
                 </div>
               );
             })}
           </div>
-        </section>
+        </details>
 
         <Dialog open={campaignToDelete !== null} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
           <DialogContent className="max-w-lg border border-primary/20 bg-popover sm:max-w-lg">
@@ -1603,14 +1610,25 @@ export default function Home() {
 
   if (phase === 5 && socialIndex === -1) {
     return (
-      <PhaseShell {...shellProps} phase={5} detail="Entenda antes de gerar">
-        <PageHeading title="A rede social sustenta a venda do anúncio" description="O objetivo principal do Instagram aqui não é vender sozinho. É eliminar dúvidas e dar credibilidade quando a pessoa que viu o anúncio visita o perfil antes de comprar." />
-        <div className="border border-primary/25 bg-[linear-gradient(135deg,rgba(91,133,255,.12),rgba(20,26,38,.85))] p-6 sm:p-8">
-          <p className="max-w-2xl text-xl font-semibold leading-8 tracking-[-0.03em] sm:text-2xl">Um criativo pode trazer o clique. Um perfil vivo, coerente e confiável ajuda o cliente a decidir que a loja é real.</p>
-          <div className="mt-7 grid gap-3 sm:grid-cols-3">{[['01', 'Crescimento proporcional', 'O perfil precisa acompanhar o ritmo da operação de tráfego.'], ['02', 'Fim da “loja fantasma”', 'Perfil vazio ou parado gera desconfiança imediata.'], ['03', 'Mais credibilidade', 'Feed, destaques e avaliações sustentam a decisão de compra.']].map(([number, title, text]) => <div key={number} className="border border-border bg-background/30 p-4"><p className="text-xs font-semibold text-accent-foreground">{number}</p><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
+      <PhaseShell {...shellProps} phase={5}>
+        <PageHeading title="Prepare o perfil para quem veio do anúncio" description="Um perfil claro e ativo ajuda o visitante a confiar na loja antes da compra." />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="border border-border bg-card/60 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Primeiro · base do perfil</p>
+            <h2 className="mt-3 text-lg font-semibold">9 posts + 9 stories de destaque</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Mostre os produtos e responda às dúvidas de compra.</p>
+          </div>
+          <div className="border border-border bg-card/60 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Depois · rotina</p>
+            <h2 className="mt-3 text-lg font-semibold">Bom dia, cupom e reviews</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Mantenha o perfil vivo com conteúdo novo a cada semana.</p>
+          </div>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Montagem inicial</p><p className="mt-3 text-lg font-semibold">9 posts + 9 stories de destaque</p><p className="mt-2 text-sm leading-6 text-muted-foreground">O visitante entende o que a loja vende, por que confiar e como comprar.</p></div><div className="border border-border bg-card/60 p-5"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Rotina semanal</p><p className="mt-3 text-lg font-semibold">Bom dia + cupom + review</p><p className="mt-2 text-sm leading-6 text-muted-foreground">A presença continua ativa sem parecer repetitiva ou abandonada.</p></div></div>
-        <ChatInstruction>Os quatro blocos a seguir devem ser executados em sequência. Cada um herda a identidade construída pelos anteriores.</ChatInstruction>
+        <p className="mt-5 text-sm text-muted-foreground">Faça os quatro blocos em ordem, no mesmo chat.</p>
+        <details className="mt-4 border-t border-border pt-4 text-sm text-muted-foreground">
+          <summary className="cursor-pointer font-medium text-accent-foreground">Por que isso ajuda na venda?</summary>
+          <p className="mt-3 leading-6">Quem chega pelo anúncio costuma conferir o perfil. Posts mostram a loja, destaques organizam informações e a rotina evita a sensação de perfil abandonado.</p>
+        </details>
         <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(4)} next={() => setSocialIndex(0)} nextLabel="Começar pelos 9 posts" />
       </PhaseShell>
     );
@@ -1619,10 +1637,14 @@ export default function Home() {
   if (phase === 5) {
     const social = socialPrompts[socialIndex];
     return (
-      <PhaseShell {...shellProps} phase={5} detail={`${socialIndex + 1} de ${socialPrompts.length}`}>
-        <PageHeading eyebrow={`Playbook · bloco ${socialIndex + 1} de ${socialPrompts.length}`} title={social.title} description={social.purpose} />
+      <PhaseShell {...shellProps} phase={5}>
+        <PageHeading eyebrow={`Bloco ${socialIndex + 1} de ${socialPrompts.length}`} title={social.title} description={social.purpose} />
+        <div className="mb-5 border-l-2 border-primary bg-primary/[0.05] px-4 py-3 text-sm leading-6">
+          <p><strong className="text-foreground">Antes de copiar:</strong> <span className="text-muted-foreground">{social.before}</span></p>
+          <p className="mt-1 text-muted-foreground">{social.guardrail}</p>
+        </div>
         <PromptStep
-          title={social.title}
+          title="Gerar este bloco"
           delivers={social.output}
           batchPrompt={social.prompt}
           batchKey={`social-${social.id}`}
@@ -1634,26 +1656,13 @@ export default function Home() {
           copiedKey={copiedKey}
           onCopy={copyText}
         />
-        <div className="mt-6 grid gap-x-8 gap-y-5 border-t border-border pt-6 md:grid-cols-3">
-          {[
-            ['Por que existe', social.importance],
-            ['Antes de rodar', social.before],
-            ['Cuidado', social.guardrail],
-          ].map(([label, text]) => (
-            <div key={label}>
-              <p className="text-[11px] font-medium tracking-[0.12em] text-accent-foreground uppercase">{label}</p>
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">{text}</p>
-            </div>
-          ))}
-        </div>
-        <ol className="mt-5 grid gap-2 text-xs leading-5 text-muted-foreground sm:grid-cols-3">
-          {social.howToUse.map((instruction, index) => (
-            <li key={instruction} className="flex gap-2">
-              <span className="text-accent-foreground">{index + 1}.</span>{instruction}
-            </li>
-          ))}
-        </ol>
-        {social.note ? <p className="mt-4 text-xs leading-5 text-amber-100/70">{social.note}</p> : null}
+        <details className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
+          <summary className="cursor-pointer font-medium text-accent-foreground">Por que este bloco existe e como usar</summary>
+          <p className="mt-3 leading-6">{social.importance}</p>
+          <ol className="mt-3 list-inside list-decimal space-y-1 leading-6">
+            {social.howToUse.map((instruction) => <li key={instruction}>{instruction}</li>)}
+          </ol>
+        </details>
         <BottomActions back={() => socialIndex === 0 ? setSocialIndex(-1) : setSocialIndex((current) => current - 1)} next={() => { if (socialIndex < socialPrompts.length - 1) { setSocialIndex((current) => current + 1); return; } markPhaseDone(5); if (journeyMode === 'stage') finishStandalone('Etapa de redes sociais concluída.'); else goPhase(6); }} nextLabel={socialIndex < socialPrompts.length - 1 ? 'Próximo bloco' : journeyMode === 'stage' ? 'Concluir esta etapa' : 'Criar narração'} />
       </PhaseShell>
     );
@@ -1662,14 +1671,16 @@ export default function Home() {
   if (phase === 6) {
     return (
       <PhaseShell {...shellProps} phase={6} detail="ElevenLabs · até 30 segundos">
-        <PageHeading eyebrow="Áudio do vídeo" title="Crie o texto que dará voz ao anúncio" description="Este prompt não gera o áudio. Ele escreve uma narração comercial curta e factual para você transformar em voz no ElevenLabs." />
-        <section className="border border-primary/25 bg-primary/[0.07] p-6 sm:p-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-foreground">Por que isso importa</p>
-          <p className="mt-3 text-xl font-semibold leading-8 tracking-[-0.025em]">Nos primeiros segundos, a narração precisa explicar por que a pessoa deve parar.</p>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">Por isso o texto começa imediatamente pela oferta, apresenta o produto logo depois e termina com uma chamada para ação. A duração máxima de 30 segundos facilita a edição do criativo em vídeo.</p>
-        </section>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">{[['1', 'Copie no ChatGPT', 'O mesmo chat usa oferta, produto, idioma e fatos já confirmados.'], ['2', 'Aprove o texto', 'Leia em voz alta e confira se oferta e produto aparecem imediatamente.'], ['3', 'Gere no ElevenLabs', 'Cole somente a narração aprovada para transformar o texto em voz.']].map(([number, title, text]) => <div key={number} className="border border-border bg-card/55 p-5"><span className="grid size-8 place-items-center bg-primary/14 text-xs font-semibold text-accent-foreground">{number}</span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div>
-        <div className="mt-5"><PromptStep title="Narração de até 30 segundos" delivers="Começa pela oferta, usa só fatos confirmados e devolve o texto pronto para o ElevenLabs." batchPrompt={audioPrompt} batchKey="audio" copiedKey={copiedKey} onCopy={copyText} /></div>
+        <PageHeading eyebrow="Áudio do vídeo" title="Crie o texto que dará voz ao anúncio" description="Copie o prompt, aprove uma narração de até 30 segundos e transforme o texto em voz no ElevenLabs." />
+        <PromptStep title="Narração de até 30 segundos" delivers="Começa pela oferta e usa somente fatos confirmados." batchPrompt={audioPrompt} batchKey="audio" copiedKey={copiedKey} onCopy={copyText} />
+        <details className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
+          <summary className="cursor-pointer font-medium text-accent-foreground">Como aprovar a narração</summary>
+          <ol className="mt-3 list-inside list-decimal space-y-1 leading-6">
+            <li>Confira se a oferta e o produto aparecem logo no começo.</li>
+            <li>Leia em voz alta e ajuste o texto se passar de 30 segundos.</li>
+            <li>Cole somente a versão aprovada no ElevenLabs.</li>
+          </ol>
+        </details>
         <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(5), setSocialIndex(socialPrompts.length - 1))} next={() => { markPhaseDone(6); if (journeyMode === 'stage') finishStandalone('Etapa de narração concluída.'); else { goPhase(7); setVideoStep(0); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Ver necessidade de vídeo'} />
       </PhaseShell>
     );
