@@ -2,7 +2,8 @@
 
 /* oxlint-disable next/no-img-element -- as miniaturas são as próprias referências da pasta public */
 
-import { ArrowLeft, ArrowRight, Sparkles, X } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight, ChevronDown, Sparkles, X } from 'lucide-react';
 
 export type FacetOption = { value: string; label: string; count: number };
 
@@ -52,6 +53,10 @@ export function GalleryPanel({
 }) {
   const chosen = slots.filter(Boolean).length;
   const missing = slots.length - chosen;
+  const [openGroupId, setOpenGroupId] = useState<string | null>(() => groups.find((group) => group.selected.length)?.id ?? groups[0]?.id ?? null);
+  const activeOptions = groups.flatMap((group) => group.options
+    .filter((option) => group.selected.includes(option.value))
+    .map((option) => ({ ...option, groupId: group.id, onToggle: group.onToggle })));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -126,34 +131,63 @@ export function GalleryPanel({
           ) : null}
         </div>
 
+        {activeOptions.length ? (
+          <div className="flex flex-wrap gap-1.5 border-b border-sidebar-border px-4 py-3">
+            {activeOptions.map((option) => (
+              <button
+                key={`${option.groupId}-${option.value}`}
+                type="button"
+                onClick={() => option.onToggle(option.value)}
+                className="flex items-center gap-1.5 border border-primary/35 bg-primary/[0.09] px-2 py-1 text-[11px] text-accent-foreground transition-colors hover:bg-primary/[0.16]"
+                aria-label={`Remover filtro ${option.label}`}
+              >
+                <span className="max-w-36 truncate">{option.label}</span><X className="size-3" />
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         {groups.map((group) => (
-          <div key={group.id} className="border-b border-sidebar-border px-4 py-3">
-            <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">{group.label}</p>
-            {group.hint ? <p className="mt-1 text-[11px] leading-4 text-muted-foreground/70">{group.hint}</p> : null}
-            <div className="mt-2 space-y-0.5">
-              {group.options.map((option) => {
-                const active = group.selected.includes(option.value);
-                const empty = option.count === 0 && !active;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    disabled={empty}
-                    aria-pressed={active}
-                    onClick={() => group.onToggle(option.value)}
-                    className={`flex w-full items-center gap-2.5 px-1 py-1.5 text-left text-[13px] transition-colors ${
-                      active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-                    } ${empty ? 'cursor-not-allowed opacity-35 hover:text-muted-foreground' : ''}`}
-                  >
-                    <span className={`grid size-4 shrink-0 place-items-center border ${active ? 'border-primary bg-primary' : 'border-muted-foreground/40'}`}>
-                      {active ? <span className="size-1.5 bg-white" /> : null}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                    <span className="shrink-0 text-[11px] text-muted-foreground">{option.count}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div key={group.id} className="border-b border-sidebar-border">
+            <button
+              type="button"
+              aria-expanded={openGroupId === group.id}
+              onClick={() => setOpenGroupId((current) => current === group.id ? null : group.id)}
+              className="flex w-full items-center gap-2 px-4 py-3 text-left transition-colors hover:bg-white/[0.035]"
+            >
+              <span className="min-w-0 flex-1 text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">{group.label}</span>
+              {group.selected.length ? <span className="grid size-5 shrink-0 place-items-center bg-primary/20 text-[10px] font-semibold text-accent-foreground">{group.selected.length}</span> : null}
+              <ChevronDown className={`size-3.5 shrink-0 text-muted-foreground transition-transform ${openGroupId === group.id ? 'rotate-180' : ''}`} />
+            </button>
+            {openGroupId === group.id ? (
+              <div className="px-4 pb-3">
+                {group.hint ? <p className="mb-2 text-[11px] leading-4 text-muted-foreground/70">{group.hint}</p> : null}
+                <div className="space-y-0.5">
+                  {group.options.map((option) => {
+                    const active = group.selected.includes(option.value);
+                    const empty = option.count === 0 && !active;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        disabled={empty}
+                        aria-pressed={active}
+                        onClick={() => group.onToggle(option.value)}
+                        className={`flex w-full items-center gap-2.5 px-1 py-1.5 text-left text-[13px] transition-colors ${
+                          active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                        } ${empty ? 'cursor-not-allowed opacity-35 hover:text-muted-foreground' : ''}`}
+                      >
+                        <span className={`grid size-4 shrink-0 place-items-center border ${active ? 'border-primary bg-primary' : 'border-muted-foreground/40'}`}>
+                          {active ? <span className="size-1.5 bg-white" /> : null}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                        <span className="shrink-0 text-[11px] text-muted-foreground">{option.count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
           </div>
         ))}
 

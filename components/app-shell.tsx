@@ -313,7 +313,7 @@ export function AppShell({
                         title={`${campaign.label}${campaign.detail ? ` · ${campaign.detail}` : ''}`}
                         aria-current={active ? 'page' : undefined}
                         onClick={() => nav.onSwitchCampaign(campaign.id)}
-                        className="min-w-0 px-3 py-2 text-left"
+                        className="min-w-0 px-2.5 py-1.5 text-left sm:px-3 sm:py-2"
                       >
                         <span className={`block truncate text-sm ${active ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground'}`}>{campaign.label}</span>
                         <span className="hidden truncate text-[11px] text-muted-foreground xl:block">{campaign.detail}</span>
@@ -322,7 +322,7 @@ export function AppShell({
                         <button
                           type="button"
                           onClick={() => beginRename(campaign.id, campaign.label)}
-                          className="grid w-9 shrink-0 place-items-center border-l border-primary/25 text-accent-foreground transition-colors hover:bg-primary/15 hover:text-foreground"
+                          className="grid w-11 shrink-0 place-items-center border-l border-primary/25 text-accent-foreground transition-colors hover:bg-primary/15 hover:text-foreground"
                           aria-label={`Renomear ${campaign.label}`}
                           title="Renomear esta aba"
                         >
@@ -346,7 +346,7 @@ export function AppShell({
             </nav>
           </div>
 
-          <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
+          <div className="flex h-12 items-center gap-3 px-3 sm:h-16 sm:px-6">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
@@ -360,9 +360,9 @@ export function AppShell({
             </button>
             <div className="min-w-0 flex-1">
               {eyebrow ? (
-                <p className="truncate text-[11px] font-medium tracking-[0.14em] text-accent-foreground uppercase">{eyebrow}</p>
+                <p className="hidden truncate text-[11px] font-medium tracking-[0.14em] text-accent-foreground uppercase sm:block">{eyebrow}</p>
               ) : null}
-              <h1 className="truncate text-base font-semibold tracking-[-0.025em] sm:text-lg">{title}</h1>
+              <h1 className="truncate text-sm font-semibold tracking-[-0.025em] sm:text-lg">{title}</h1>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {detail ? <span className="hidden text-xs text-muted-foreground xl:block">{detail}</span> : null}
@@ -381,7 +381,7 @@ export function AppShell({
 
         {alert}
 
-        <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+        <main className="flex-1 px-4 py-4 sm:px-6 sm:py-8">
           {bleed ? children : <div className="mx-auto w-full max-w-4xl">{children}</div>}
         </main>
       </div>

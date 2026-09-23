@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   Link2,
   ListChecks,
+  Lock,
   Maximize2,
   Megaphone,
   MessageSquareText,
@@ -374,7 +375,7 @@ function ChatInstruction({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-5 flex items-start gap-3 border border-border bg-card/65 p-4 text-sm leading-6 text-muted-foreground">
       <MessageSquareText className="mt-1 size-4 shrink-0 text-accent-foreground" />
-      <p><strong className="text-foreground">Continue no mesmo chat.</strong> {children}</p>
+      <p>{children}</p>
     </div>
   );
 }
@@ -966,7 +967,7 @@ export default function Home() {
         {workspaceMessage ? <output className="mb-6 flex items-start gap-3 border border-primary/30 bg-primary/[0.08] p-5 text-sm leading-6 text-foreground"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-accent-foreground" /><span>{workspaceMessage}</span></output> : null}
 
         <section className="border border-border bg-card/55 p-5">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-xs font-semibold tracking-[0.12em] text-accent-foreground uppercase">Próxima etapa</p>
               <h2 className="mt-2 truncate text-xl font-semibold tracking-[-0.03em] sm:text-2xl">{doneCount === applicablePhases.length ? 'Campanha concluída' : phaseNames[nextPhase - 1]}</h2>
@@ -985,14 +986,14 @@ export default function Home() {
           {hasContext ? null : <p className="mt-4 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-sm leading-6 text-amber-100/85">As outras etapas ficam bloqueadas até o contexto estar pronto. É o que impede um prompt sem fatos.</p>}
         </section>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {phaseNames.map((name, index) => {
-            const targetPhase = (index + 1) as Phase;
+        <div className="mt-6 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+          {applicablePhases.map((targetPhase) => {
+            const index = targetPhase - 1;
+            const name = phaseNames[index];
             const Icon = stageIcons[index];
             const disabled = stageIsDisabled(targetPhase);
             const done = donePhases.includes(targetPhase);
             const current = !done && !disabled && targetPhase === nextPhase;
-            const collectionOnly = targetPhase === 2;
             const lotProgress = targetPhase === 3 && !done && selectedIds.length > 0 ? `${selectedIds.length} de 5 direções escolhidas` : null;
             return (
               <button
@@ -1000,27 +1001,28 @@ export default function Home() {
                 type="button"
                 disabled={disabled}
                 onClick={() => openStage(targetPhase)}
-                className={`group flex min-h-52 flex-col border p-5 text-left transition-colors ${
-                  disabled ? 'cursor-not-allowed border-border bg-card/25 opacity-45'
+                className={`group flex min-h-28 items-start gap-3 border p-4 text-left transition-colors ${
+                  disabled ? 'cursor-not-allowed border-border bg-card/25 opacity-55'
                   : done ? 'border-emerald-400/30 bg-emerald-400/[0.05] hover:bg-emerald-400/[0.09]'
                   : current ? 'border-primary/60 bg-primary/[0.07] hover:bg-primary/[0.11]'
                   : 'border-border bg-card/55 hover:border-primary/45 hover:bg-card/80'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className={`grid size-11 place-items-center ${done ? 'bg-emerald-400/15 text-emerald-300' : 'bg-primary/12 text-accent-foreground'}`}>
-                    {done ? <Check className="size-5" /> : <Icon className="size-5" />}
-                  </span>
-                  <span className="text-xs font-semibold text-muted-foreground">0{index + 1}</span>
-                </div>
-                <span className="mt-5 block text-lg font-semibold tracking-[-0.025em]">{name}</span>
-                <span className="mt-2 block text-sm leading-6 text-muted-foreground">{lotProgress ?? phaseDescriptions[index]}</span>
-                <span className={`mt-auto pt-5 text-xs font-medium ${done ? 'text-emerald-300' : current ? 'text-accent-foreground' : 'text-muted-foreground'}`}>
-                  {disabled ? (collectionOnly && hasContext ? 'Só existe em coleção' : 'Prepare o contexto primeiro')
-                    : done ? 'Concluída · abrir de novo →'
-                    : current ? 'Você parou aqui →'
-                    : 'Abrir esta etapa →'}
+                <span className={`grid size-10 shrink-0 place-items-center ${done ? 'bg-emerald-400/15 text-emerald-300' : 'bg-primary/12 text-accent-foreground'}`}>
+                  {done ? <Check className="size-4.5" /> : disabled ? <Lock className="size-4" /> : <Icon className="size-4.5" />}
                 </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-semibold tracking-[-0.02em]">{name}</span>
+                    <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">0{targetPhase}</span>
+                  </div>
+                  <span className="mt-1 line-clamp-2 block text-sm leading-5 text-muted-foreground">{lotProgress ?? phaseDescriptions[index]}</span>
+                  {!disabled ? (
+                    <span className={`mt-2 block text-xs font-medium ${done ? 'text-emerald-300' : current ? 'text-accent-foreground' : 'text-muted-foreground'}`}>
+                      {done ? 'Concluída · abrir novamente →' : current ? 'Próxima etapa →' : 'Abrir →'}
+                    </span>
+                  ) : null}
+                </div>
               </button>
             );
           })}
@@ -1544,7 +1546,10 @@ export default function Home() {
     return (
       <PhaseShell {...shellProps} phase={4} detail="1:1 e 9:16 · opcionais">
         <PageHeading title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
-        <div className="mb-6 border border-primary/25 bg-primary/[0.06] p-5 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">O sistema recompõe a arte para o novo formato.</strong> Ele não deve apenas cortar ou esticar a imagem. Cada botão copia um comando independente.</div>
+        <details className="mb-6 border border-primary/25 bg-primary/[0.05] px-4 py-3 text-sm text-muted-foreground">
+          <summary className="cursor-pointer font-medium text-accent-foreground">Como a adaptação funciona</summary>
+          <p className="mt-3 leading-6">O sistema recompõe a arte para o novo formato em vez de apenas cortar ou esticar. Cada botão copia um comando independente.</p>
+        </details>
         <div className="grid gap-4 xl:grid-cols-2">
           {campaignMode === 'collection' ? (
             <PromptStep
