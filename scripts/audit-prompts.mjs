@@ -857,3 +857,17 @@ console.log(
   'Prompts aprovados: contexto, lote 4:5, recuperação, carrossel, formatos, redes sociais, áudio, Kling e panfleto.',
 );
 console.log('Regra da casa presente nos', promptsQueGeramImagem.length, 'prompts que geram imagem, contando os caminhos de uma peça por vez.');
+
+/*
+ * Molde abre a galeria. Uma peça com a marca de outra loja e o texto em outro idioma
+ * é lida como anúncio alheio, não como direção reaproveitável — ela continua na
+ * biblioteca, mas atrás. Sem isso a galeria de camisa abria com short alemão.
+ */
+{
+  const criterios = { mode: 'single', offerMechanic: 'leve-mais', salesDriver: 'estetica', category: 'Vestuário' };
+  const abertas = data.references.filter((item) => data.isReferenceApplicable(item, criterios));
+  const abertura = data.sortForCampaign(abertas, criterios).slice(0, 5);
+  const capturadas = abertura.filter((item) => !item.molde).map(({ id }) => id);
+  assert.deepEqual(capturadas, [], `a abertura da galeria trouxe criativo capturado antes de molde: ${capturadas.join(', ')}`);
+  assert.ok(data.references.some((item) => item.molde), 'nenhuma referência está marcada como molde');
+}
