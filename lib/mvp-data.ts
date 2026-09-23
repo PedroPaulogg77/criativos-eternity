@@ -65,6 +65,11 @@ export type Reference = {
   /* Criativo nativo: a peca nao pode parecer anuncio. Troca a regra da casa pela regra
      do nativo, dispensa design e presenca humana, e faz o prompt pedir a copy junto. */
   native?: boolean;
+  /* Peca desenhada como molde: marca escrita SEU LOGO, idioma do aluno, produto neutro.
+     O oposto e o criativo real capturado de outra loja, com marca e idioma dela. Os dois
+     servem igual como direcao, mas o molde comunica de cara que e para reaproveitar —
+     por isso ele abre a galeria. */
+  molde?: boolean;
   /* Quantos produtos a grade comporta. A quantidade faz parte da diagramação:
      quatro itens em volta de um cartão só produzem uma grade 2x2. */
   slots?: number;
@@ -1221,6 +1226,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['coluna de benefícios', 'número gigante', 'ícone de linha', 'fundo claro'],
     image: '/references/ref-0148.png',
     limits: 'Os três benefícios saem da lista factual; sem benefício confirmado, a coluna encolhe.',
@@ -1236,6 +1242,7 @@ export const references: Reference[] = [
     people: 'corpo-suporte',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['produto no corpo', 'faixa vertical', 'filetes finos', 'ambiente desfocado'],
     image: '/references/ref-0149.png',
     limits: 'Os benefícios da faixa vêm do contexto; sem nenhum confirmado, a faixa fica só com a oferta.',
@@ -1251,6 +1258,7 @@ export const references: Reference[] = [
     people: 'humanizado',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['cena de uso', 'parede contínua', 'headline curta', 'luz de janela'],
     image: '/references/ref-0150.png',
     limits: 'A headline carrega o argumento e sai do contexto; a peça não abre lista de benefícios.',
@@ -1268,6 +1276,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['trio alinhado', 'oferta no topo', 'benefício em uma linha', 'fundo branco'],
     image: '/references/ref-0151.png',
     limits: 'As três unidades são cores confirmadas do mesmo modelo, nunca produtos diferentes.',
@@ -1283,6 +1292,7 @@ export const references: Reference[] = [
     people: 'corpo-suporte',
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['estúdio escuro', 'membro pela borda', 'número metálico', 'halo de luz'],
     image: '/references/ref-0152.png',
     limits: 'O metálico do número acompanha o material do produto; sem metal confirmado, use branco.',
@@ -1300,6 +1310,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['vista de cima', 'diagonal solta', 'superfície quente', 'sem grade'],
     image: '/references/ref-0153.png',
     limits: 'As três unidades são cores confirmadas do mesmo modelo; sem variante, mostre uma só.',
@@ -1316,6 +1327,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     slots: 5,
+    molde: true,
     tags: ['close no corpo', 'coluna de texto', 'miniaturas recortadas', 'fundo quente'],
     image: '/references/ref-0154.png',
     limits: 'As miniaturas mostram os demais itens elegíveis; com menos itens, a fileira encurta.',
@@ -1333,6 +1345,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 4,
     fillsWithVariants: true,
+    molde: true,
     tags: ['vista de cima', 'mãos pela borda', 'madeira clara', 'peças dobradas'],
     image: '/references/ref-0155.png',
     limits: 'As peças vêm da lista de elegíveis; com menos itens, a mesa fica mais livre.',
@@ -1349,6 +1362,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['leve-mais'],
     repeatsSameProduct: true,
+    molde: true,
     tags: ['pilha de unidades', 'selo circular', 'bancada escura', 'vista de cima'],
     image: '/references/ref-0156.png',
     limits: 'Repete apenas o mesmo produto real; cores diferentes só entram quando confirmadas.',
@@ -1366,6 +1380,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['arara', 'cabides iguais', 'faixa inferior', 'fundo quente'],
     image: '/references/ref-0157.png',
     limits: 'As três peças são cores confirmadas do mesmo modelo, nunca produtos diferentes.',
@@ -1383,6 +1398,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 2,
     fillsWithVariants: true,
+    molde: true,
     tags: ['dupla lado a lado', 'locação clara', 'coluna lateral', 'número quente'],
     image: '/references/ref-0158.png',
     limits: 'As duas cores vêm da lista factual; com uma só, fica uma pessoa no mesmo enquadramento.',
@@ -1400,6 +1416,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 2,
     fillsWithVariants: true,
+    molde: true,
     tags: ['duas mãos', 'gesto repetido', 'parede quente', 'duas cores'],
     image: '/references/ref-0159.png',
     recipe:
@@ -1416,6 +1433,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 4,
     fillsWithVariants: true,
+    molde: true,
     tags: ['close no corpo', 'pilha nos braços', 'quatro cores', 'parede clara'],
     image: '/references/ref-0160.png',
     recipe:
@@ -1431,6 +1449,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     silent: true,
+    molde: true,
     tags: ['faixa de sol', 'concreto claro', 'sombra longa', 'sem texto'],
     image: '/references/ref-0161.png',
     recipe:
@@ -1447,6 +1466,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['três cores'],
     image: '/references/ref-0162.png',
     recipe:
@@ -1464,6 +1484,7 @@ export const references: Reference[] = [
     slots: 6,
     fillsWithVariants: true,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['seis unidades'],
     image: '/references/ref-0163.png',
     recipe:
@@ -1478,6 +1499,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['estetica'],
     offerMechanics: ['leve-mais'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0164.png',
     recipe:
@@ -1494,6 +1516,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 2,
     fillsWithVariants: true,
+    molde: true,
     tags: ['duas cores'],
     image: '/references/ref-0165.png',
     recipe:
@@ -1511,6 +1534,7 @@ export const references: Reference[] = [
     slots: 5,
     fillsWithVariants: true,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['cinco unidades'],
     image: '/references/ref-0166.png',
     recipe:
@@ -1526,6 +1550,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0167.png',
     recipe:
@@ -1542,6 +1567,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 2,
     silent: true,
+    molde: true,
     tags: ['peça sem texto'],
     image: '/references/ref-0168.png',
     recipe:
@@ -1557,6 +1583,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['leve-mais'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0169.png',
     recipe:
@@ -1572,6 +1599,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['progressivo'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0170.png',
     recipe:
@@ -1587,6 +1615,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['progressivo'],
     slots: 3,
+    molde: true,
     tags: ['três degraus'],
     image: '/references/ref-0171.png',
     recipe:
@@ -1602,6 +1631,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['progressivo'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0172.png',
     recipe:
@@ -1616,6 +1646,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0173.png',
     recipe:
@@ -1632,6 +1663,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 2,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['duas unidades'],
     image: '/references/ref-0174.png',
     recipe:
@@ -1646,6 +1678,7 @@ export const references: Reference[] = [
     people: 'corpo-suporte',
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0175.png',
     recipe:
@@ -1660,6 +1693,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0176.png',
     recipe:
@@ -1676,6 +1710,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['três unidades'],
     image: '/references/ref-0177.png',
     recipe:
@@ -1691,6 +1726,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     silent: true,
+    molde: true,
     tags: ['peça sem texto'],
     image: '/references/ref-0178.png',
     recipe:
@@ -1707,6 +1743,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 2,
     fillsWithVariants: true,
+    molde: true,
     tags: ['duas cores'],
     image: '/references/ref-0179.png',
     recipe:
@@ -1724,6 +1761,7 @@ export const references: Reference[] = [
     slots: 4,
     fillsWithVariants: true,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['muitas unidades'],
     image: '/references/ref-0180.png',
     recipe:
@@ -1738,6 +1776,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0181.png',
     recipe:
@@ -1754,6 +1793,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 2,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['duas unidades'],
     image: '/references/ref-0182.png',
     recipe:
@@ -1770,6 +1810,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 2,
     fillsWithVariants: true,
+    molde: true,
     tags: ['duas cores'],
     image: '/references/ref-0183.png',
     recipe:
@@ -1786,6 +1827,7 @@ export const references: Reference[] = [
     offerMechanics: ['percentual'],
     slots: 3,
     fillsWithVariants: true,
+    molde: true,
     tags: ['três cores'],
     image: '/references/ref-0184.png',
     recipe:
@@ -1802,6 +1844,7 @@ export const references: Reference[] = [
     offerMechanics: ['leve-mais'],
     slots: 2,
     repeatsSameProduct: true,
+    molde: true,
     tags: ['duas unidades'],
     image: '/references/ref-0185.png',
     recipe:
@@ -1816,6 +1859,7 @@ export const references: Reference[] = [
     people: 'corpo-suporte',
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0186.png',
     recipe:
@@ -1830,6 +1874,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0187.png',
     recipe:
@@ -1845,6 +1890,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     silent: true,
+    molde: true,
     tags: ['peça sem texto'],
     image: '/references/ref-0188.png',
     recipe:
@@ -1860,6 +1906,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['progressivo'],
     slots: 4,
+    molde: true,
     tags: ['quatro produtos'],
     image: '/references/ref-0189.png',
     recipe:
@@ -1875,6 +1922,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0190.png',
     recipe:
@@ -1889,6 +1937,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0191.png',
     recipe:
@@ -1903,6 +1952,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0192.png',
     recipe:
@@ -1918,6 +1968,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
     slots: 2,
+    molde: true,
     tags: ['duas unidades'],
     image: '/references/ref-0193.png',
     recipe:
@@ -1933,6 +1984,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
     repeatsSameProduct: true,
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0194.png',
     recipe:
@@ -1947,6 +1999,7 @@ export const references: Reference[] = [
     people: 'sem-pessoa',
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
+    molde: true,
     tags: ['um produto'],
     image: '/references/ref-0195.png',
     recipe:
@@ -1962,6 +2015,7 @@ export const references: Reference[] = [
     drivers: ['estetica'],
     offerMechanics: ['percentual'],
     slots: 3,
+    molde: true,
     tags: ['três produtos'],
     image: '/references/ref-0196.png',
     recipe:
@@ -1977,6 +2031,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['produto na casa real'],
     image: '/references/ref-0197.png',
     recipe:
@@ -1992,6 +2047,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['parte do corpo com o problema'],
     image: '/references/ref-0198.png',
     recipe:
@@ -2007,6 +2063,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
     native: true,
+    molde: true,
     tags: ['pet'],
     image: '/references/ref-0199.png',
     recipe:
@@ -2022,6 +2079,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['antes e depois caseiro'],
     image: '/references/ref-0200.png',
     recipe:
@@ -2037,6 +2095,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['papel escrito à mão'],
     image: '/references/ref-0201.png',
     recipe:
@@ -2052,6 +2111,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
     native: true,
+    molde: true,
     tags: ['produto em uso real'],
     image: '/references/ref-0202.png',
     recipe:
@@ -2067,6 +2127,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['pessoa comum sem pose'],
     image: '/references/ref-0203.png',
     recipe:
@@ -2082,6 +2143,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['detalhe que denuncia o problema'],
     image: '/references/ref-0204.png',
     recipe:
@@ -2097,6 +2159,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['leve-mais'],
     native: true,
+    molde: true,
     tags: ['comida e ingrediente'],
     image: '/references/ref-0205.png',
     recipe:
@@ -2112,6 +2175,7 @@ export const references: Reference[] = [
     drivers: ['funcao'],
     offerMechanics: ['percentual'],
     native: true,
+    molde: true,
     tags: ['cena sem produto'],
     image: '/references/ref-0206.png',
     recipe:
@@ -2230,6 +2294,10 @@ export function sortForCampaign(list: Reference[], criteria: ReferenceCampaignCr
   const desempate = (a: Reference, b: Reference) =>
     offerFit(a, criteria.offerMechanic) - offerFit(b, criteria.offerMechanic)
     || categoryFit(a, criteria.category) - categoryFit(b, criteria.category)
+    /* Molde antes de criativo capturado. Uma peça com a marca de outra loja e o texto
+       em outro idioma é lida como anúncio alheio, não como direção reaproveitável —
+       ela continua na galeria, mas não é ela que abre. */
+    || (a.molde ? 0 : 1) - (b.molde ? 0 : 1)
     || driverFit(a, criteria.salesDriver) - driverFit(b, criteria.salesDriver);
 
   const filas = new Map<string, Reference[]>();
