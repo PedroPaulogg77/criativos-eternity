@@ -1,5 +1,5 @@
 import type { OfferMechanic, Reference } from '@/lib/mvp-data';
-import { HOUSE_PRODUCT_RULE, HOUSE_DESIGN_RULE, SILENT_RULE, peopleRule } from '@/lib/house-rules';
+import { HOUSE_PRODUCT_RULE, HOUSE_DESIGN_RULE, SILENT_RULE, NATIVE_RULE, NATIVE_COPY_RULE, peopleRule } from '@/lib/house-rules';
 
 export type CampaignInput = {
   mode: 'single' | 'collection';
@@ -1187,6 +1187,36 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
 - Mostre o mesmo produto sem redesenhar, recolorir ou inventar componentes.
 ${variantRule || '- Não misture variantes; use somente a variante factual registrada.'}
 ${repeatedUnitsRule}`;
+
+  /*
+   * A peça nativa inverte o núcleo: a regra da casa sai porque o mecanismo dela é não
+   * parecer anúncio, o bloco de design sai porque não existe tipografia na imagem, e a
+   * presença humana sai porque a pessoa pode mandar no quadro. Em troca entra a copy,
+   * que no nativo é metade do criativo.
+   */
+  if (reference.native) {
+    return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo nativo em proporção 4:5, mais a copy que acompanha a peça.
+
+${NATIVE_RULE}
+
+CONTEÚDO OBRIGATÓRIO
+${contentRule}
+- Use a loja/anunciante, a marca do produto e o idioma exatamente como registrados no contexto.
+${factualRule}
+- Se houver conflito entre estética e fidelidade, preserve a fidelidade.
+
+DIREÇÃO VISUAL — ${title}
+${recipe}
+
+${NATIVE_COPY_RULE}
+
+SAÍDA
+- Entregue uma única imagem final e independente em 4:5, e abaixo dela a copy em texto.
+- Não gere alternativas, colagem, grade nem carrossel.
+- Não gere nem altere nenhum outro criativo desta conversa.
+
+Entregue agora a imagem e a copy desta direção.`;
+  }
 
   return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo publicitário mestre em proporção 4:5.
 

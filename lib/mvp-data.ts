@@ -62,6 +62,9 @@ export type Reference = {
   repeatsSameProduct?: boolean;
   /* Peca que na origem nao tem uma palavra comercial. O nucleo para de injetar oferta. */
   silent?: boolean;
+  /* Criativo nativo: a peca nao pode parecer anuncio. Troca a regra da casa pela regra
+     do nativo, dispensa design e presenca humana, e faz o prompt pedir a copy junto. */
+  native?: boolean;
   /* Quantos produtos a grade comporta. A quantidade faz parte da diagramação:
      quatro itens em volta de um cartão só produzem uma grade 2x2. */
   slots?: number;

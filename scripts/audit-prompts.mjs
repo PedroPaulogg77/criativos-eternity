@@ -394,11 +394,35 @@ const promptsQueGeramImagem = [
   ...prompsUnitarios,
 ];
 
+/*
+ * Todo prompt que gera imagem carrega uma das duas regras de foco. A do nativo existe
+ * porque aquela peça só funciona se não parecer anúncio — ela substitui a regra da casa
+ * em vez de conviver com ela, do mesmo jeito que o playbook de redes a dispensa.
+ */
 for (const [nome, prompt] of promptsQueGeramImagem) {
   assert.ok(
-    prompt.includes('REGRA DA CASA — O PRODUTO EM PRIMEIRO LUGAR'),
+    prompt.includes('REGRA DA CASA — O PRODUTO EM PRIMEIRO LUGAR')
+      || prompt.includes('REGRA DO NATIVO — A PEÇA NÃO PODE PARECER ANÚNCIO'),
     `${nome} saiu sem a regra da casa de foco no produto`,
   );
+}
+
+/*
+ * Uma peça nativa não pode receber a regra da casa junto: as duas se contradizem, e a
+ * peça vira packshot de estúdio. Ela também não recebe tipografia nem presença humana,
+ * e precisa pedir a copy, que no nativo é metade do criativo.
+ */
+for (const reference of references.filter(({ native }) => native)) {
+  const prompt = compiler.compileReferencePrompt(
+    { mode: 'single', exactTarget: 'produto de teste', offer: 'ATÉ 50% DE DESCONTO', offerMechanic: 'percentual', salesDriver: 'funcao' },
+    reference,
+  );
+  assert.ok(prompt.includes('REGRA DO NATIVO'), `${reference.id} é nativa e saiu sem a regra do nativo`);
+  assert.ok(!prompt.includes('REGRA DA CASA'), `${reference.id} é nativa e voltou a levar a regra da casa`);
+  assert.ok(!prompt.includes('DESIGN E TIPOGRAFIA'), `${reference.id} é nativa e voltou a levar a regra de tipografia`);
+  assert.ok(!prompt.includes('PRESENÇA HUMANA'), `${reference.id} é nativa e voltou a levar a regra de presença humana`);
+  assert.ok(prompt.includes('COPY DESTA PEÇA'), `${reference.id} é nativa e não pede a copy`);
+  assert.deepEqual(reference.drivers, ['funcao'], `${reference.id} é nativa e precisa servir só ao argumento de função`);
 }
 
 // Nos criativos completos a regra vem inteira e antes da direção visual.

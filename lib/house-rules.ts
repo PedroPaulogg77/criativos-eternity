@@ -41,6 +41,39 @@ export const SILENT_RULE = `PEÇA SEM TEXTO COMERCIAL
 - Não crie cartão, etiqueta, faixa ou painel para acomodar texto. Se sobrar espaço, ele fica vazio.
 - A oferta desta campanha aparece nas outras peças do lote. Nesta, não aparece de forma alguma.`;
 
+/*
+ * Criativo nativo é o avesso da regra da casa, e isso é o mecanismo, não um descuido:
+ * ele funciona porque não parece anúncio. Por isso esta regra SUBSTITUI a regra da casa
+ * nas direções marcadas com `native`, e nessas peças o bloco de design e o de presença
+ * humana não entram — tipografia não existe, e a pessoa pode mandar no quadro.
+ *
+ * O que continua valendo é a verdade do produto: ele é o produto real, sem redesenho,
+ * e nada de fato inventado entra na legenda.
+ */
+export const NATIVE_RULE = `REGRA DO NATIVO — A PEÇA NÃO PODE PARECER ANÚNCIO
+Esta regra vale mais que a direção visual e mais que qualquer instrução abaixo. Se alguma delas conflitar com esta, esta vence.
+- O teste é um só: quem passa o olho tem que achar que uma pessoa comum postou isso. No instante em que parecer peça de loja, a peça falhou.
+- A imagem não recebe nada aplicado por cima: nem texto, nem oferta, nem preço, nem selo, nem logo, nem moldura, nem faixa, nem botão, nem seta. O que não estava na cena não entra na foto.
+- A foto é de celular, não de estúdio: luz do ambiente, enquadramento comum, sem iluminação montada, sem fundo infinito, sem sombra desenhada e sem retoque.
+- A cena é um lugar onde alguém mora ou passa: bancada, sofá, cama, quintal, carro, calçada, banheiro. Nada de mesa de estúdio nem cenário montado.
+- O produto é o produto real, sem redesenhar, recolorir nem inventar componente — mas ele não precisa mandar no quadro. Pode estar de lado, pequeno, parcialmente cortado ou fora de foco, como estaria numa foto de verdade.
+- Quando aparecer gente, é gente comum: sem pose de catálogo, sem maquiagem de produção, sem sorriso de banco de imagem. Roupa do dia a dia.
+- Imperfeição é o ponto: leve desfoque, grão, reflexo torto e enquadramento desalinhado são bem-vindos. Nada pode parecer catálogo.
+- A oferta não vive na imagem. Ela vive na legenda e no headline, que saem escritos junto com a peça.`;
+
+/*
+ * O app não tem IA: quem escreve é o ChatGPT do aluno, no mesmo turno da imagem.
+ * Por isso a copy é pedida aqui, e só nas peças nativas — nas outras a imagem já
+ * carrega a oferta e está completa.
+ */
+export const NATIVE_COPY_RULE = `COPY DESTA PEÇA
+Depois da imagem, escreva também, em texto, nesta ordem:
+- NOME DE QUEM POSTA: um nome comum de pessoa, coerente com o público registrado no contexto. Não use médico, clínica, laboratório, jornal, órgão de saúde nem qualquer autoridade.
+- LEGENDA: um relato em primeira pessoa, de três a cinco linhas — como era antes, o que mudou e o que a pessoa faria hoje. Escreva como alguém escreve num post: sem publicidade, sem lista de benefícios, sem exclamação e sem emoji.
+- HEADLINE: uma linha curta que desperta curiosidade sem entregar o desfecho.
+- A oferta aparece só no headline, exatamente como foi recebida.
+- A legenda usa somente o que o contexto confirmou. Sem número, prazo, garantia, diagnóstico, resultado médico ou promessa de cura.`;
+
 export function peopleRule(reference: Reference) {
   if (reference.people === 'sem-pessoa') {
     return `PRESENÇA HUMANA — SEM PESSOA
