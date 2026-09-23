@@ -43,6 +43,6 @@ tsconfig.tsbuildinfo
 
 # páginas de análise geradas localmente: ferramenta nossa, não fazem parte do app
 /public/auditoria-referencias.html
-/public/caminhos.html
+# caminhos.html fica no repo: e a pagina que mostra, com as imagens, o que abre em cada caminho do aluno
 /public/lacunas.html
 /public/decisoes.html

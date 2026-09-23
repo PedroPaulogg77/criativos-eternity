@@ -1,0 +1,2597 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caminhos do aluno</title>
+<style>
+  :root{--bg:#131019;--fg:#f4f1f8;--card:#1c1826;--muted:#9b93ab;--line:rgba(255,255,255,.12);--good:#3ecf8e;--bad:#f4585c}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto;padding:44px 16px 96px}
+  h1{font-size:29px;letter-spacing:-.02em;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 32px;max-width:78ch}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:56px}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.alerta td{background:rgba(244,88,92,.09)}
+  tr.aviso td{background:rgba(232,177,58,.08)}
+  a{color:inherit}
+  section{border-top:1px solid var(--line);padding-top:22px;margin-bottom:46px}
+  .head{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+  h2{font-size:18px;margin:0;letter-spacing:-.01em}
+  .answers{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .counts{color:var(--muted);font-size:12px}
+  .counts .n{color:var(--fg);font-weight:700;font-size:15px}
+  .pill{display:inline-block;margin-left:8px;padding:2px 8px;font-size:11px;font-weight:700;letter-spacing:.03em}
+  .pill.ok{background:rgba(62,207,142,.16);color:var(--good)}
+  .pill.bad{background:rgba(244,88,92,.16);color:var(--bad)}
+  .pill.aviso{background:rgba(232,177,58,.16);color:#e8b13a}
+  .grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
+  .grid.destaque{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:22px}
+  .sub2{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;margin:0 0 9px}
+  .pos{position:absolute;bottom:0;right:0;background:rgba(0,0,0,.75);color:#fff;font-size:11px;font-weight:700;padding:2px 7px}
+  figure{margin:0;background:var(--card);border:1px solid var(--line);position:relative}
+  figure.hi{border-color:var(--good)}
+  figure img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#000}
+  figcaption{padding:6px 7px;font-size:10px;line-height:1.3;color:var(--muted)}
+  figcaption b{display:block;color:var(--fg);font-weight:600;letter-spacing:.02em}
+  .tag{position:absolute;top:0;left:0;background:var(--good);color:#06231a;font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 5px;text-transform:uppercase}
+  .vazio{background:rgba(244,88,92,.1);border:1px solid rgba(244,88,92,.35);padding:14px;color:#ffd7d8;margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>O que o aluno vê em cada caminho</h1>
+  <p class="sub">128 referências no banco, 7 caminhos possíveis. O caminho nasce de três respostas: o que ele vai anunciar, como a oferta funciona e o que faz o cliente comprar. Borda verde marca as direções cuja peça de origem já anuncia essa mesma oferta — são as que a galeria põe na frente.</p>
+
+  <table>
+    <tr><th>escopo</th><th>oferta</th><th>argumento</th><th class="num">abrem</th><th class="num">constroem</th></tr>
+    
+    <tr>
+      <td><a href="#c0">Produto único</a></td>
+      <td>até X% de desconto</td>
+      <td>vende pela estética</td>
+      <td class="num">69</td>
+      <td class="num">24</td>
+    </tr>
+    <tr>
+      <td><a href="#c1">Produto único</a></td>
+      <td>compre X, leve Y</td>
+      <td>vende pela estética</td>
+      <td class="num">69</td>
+      <td class="num">29</td>
+    </tr>
+    <tr>
+      <td><a href="#c2">Coleção</a></td>
+      <td>até X% de desconto</td>
+      <td>vende pela estética</td>
+      <td class="num">58</td>
+      <td class="num">17</td>
+    </tr>
+    <tr>
+      <td><a href="#c3">Coleção</a></td>
+      <td>compre X, leve Y</td>
+      <td>vende pela estética</td>
+      <td class="num">58</td>
+      <td class="num">22</td>
+    </tr>
+    <tr>
+      <td><a href="#c4">Coleção</a></td>
+      <td>desconto progressivo</td>
+      <td>vende pela estética</td>
+      <td class="num">58</td>
+      <td class="num">18</td>
+    </tr>
+    <tr>
+      <td><a href="#c5">Produto único</a></td>
+      <td>até X% de desconto</td>
+      <td>vende por uma funcionalidade</td>
+      <td class="num">43</td>
+      <td class="num">17</td>
+    </tr>
+    <tr>
+      <td><a href="#c6">Produto único</a></td>
+      <td>compre X, leve Y</td>
+      <td>vende por uma funcionalidade</td>
+      <td class="num">43</td>
+      <td class="num">14</td>
+    </tr>
+  </table>
+
+  <section id="c0">
+    <div class="head">
+      <div>
+        <h2>Produto único</h2>
+        <p class="answers">até X% de desconto &middot; vende pela estética</p>
+      </div>
+      <div class="counts">
+        <span class="n">69</span> direções abrem &middot; <span class="n">24</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0155.png" alt="Mãos arrumando a coleção sobre a mesa">
+        <figcaption><b>REF-0155</b>Mãos arrumando a coleção sobre a mesa</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0153.png" alt="Trio deitado em superfície clara vista de cima">
+        <figcaption><b>REF-0153</b>Trio deitado em superfície clara vista de cima</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0161.png" alt="Produto sozinho em luz de fim de tarde, sem texto">
+        <figcaption><b>REF-0161</b>Produto sozinho em luz de fim de tarde, sem texto</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0158.png" alt="Dupla sem rosto com a mesma peça em duas cores">
+        <figcaption><b>REF-0158</b>Dupla sem rosto com a mesma peça em duas cores</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0152.png" alt="Produto no corpo em estúdio escuro com número metálico">
+        <figcaption><b>REF-0152</b>Produto no corpo em estúdio escuro com número metálico</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 64</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0054.png" alt="Grade desigual cortada por faixa">
+        <figcaption><b>REF-0054</b>Grade desigual cortada por faixa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0044.png" alt="Grade de conjuntos em fundo claro">
+        <figcaption><b>REF-0044</b>Grade de conjuntos em fundo claro</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0026.png" alt="Modelo editorial com oferta gigante">
+        <figcaption><b>REF-0026</b>Modelo editorial com oferta gigante</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0007.png" alt="Mosaico editorial">
+        <figcaption><b>REF-0007</b>Mosaico editorial</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0144.png" alt="Split claro com uso e packshot">
+        <figcaption><b>REF-0144</b>Split claro com uso e packshot</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0141.png" alt="Oferta direta sobre fundo branco">
+        <figcaption><b>REF-0141</b>Oferta direta sobre fundo branco</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0143.png" alt="Mosaico de uso e detalhes">
+        <figcaption><b>REF-0143</b>Mosaico de uso e detalhes</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0043.png" alt="Dupla de modelos com oferta lateral">
+        <figcaption><b>REF-0043</b>Dupla de modelos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0002.png" alt="Lifestyle esportivo">
+        <figcaption><b>REF-0002</b>Lifestyle esportivo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0015.png" alt="Vitrine modular clara">
+        <figcaption><b>REF-0015</b>Vitrine modular clara</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0023.png" alt="Mosaico de produto em uso">
+        <figcaption><b>REF-0023</b>Mosaico de produto em uso</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0027.png" alt="Unboxing com oferta na tampa">
+        <figcaption><b>REF-0027</b>Unboxing com oferta na tampa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0063.png" alt="Três variantes lado a lado">
+        <figcaption><b>REF-0063</b>Três variantes lado a lado</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0160.png" alt="Close sem rosto abraçando a pilha das outras cores">
+        <figcaption><b>REF-0160</b>Close sem rosto abraçando a pilha das outras cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0179.png" alt="Produto sobre cor chapada saturada">
+        <figcaption><b>REF-0179</b>Produto sobre cor chapada saturada</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0176.png" alt="Macro que estoura as bordas com oferta minúscula">
+        <figcaption><b>REF-0176</b>Macro que estoura as bordas com oferta minúscula</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0159.png" alt="Duas mãos, a mesma bolsa em duas cores">
+        <figcaption><b>REF-0159</b>Duas mãos, a mesma bolsa em duas cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0140.png" alt="Produto no corpo em ambiente externo">
+        <figcaption><b>REF-0140</b>Produto no corpo em ambiente externo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0055.png" alt="Quadrantes de conjunto com faixa no meio">
+        <figcaption><b>REF-0055</b>Quadrantes de conjunto com faixa no meio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0163.png" alt="Gaveta aberta com as unidades enroladas">
+        <figcaption><b>REF-0163</b>Gaveta aberta com as unidades enroladas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0142.png" alt="Lifestyle com packshot em primeiro plano">
+        <figcaption><b>REF-0142</b>Lifestyle com packshot em primeiro plano</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0025.png" alt="Flat lay radial de coleção">
+        <figcaption><b>REF-0025</b>Flat lay radial de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0040.png" alt="Modelo inteiro com escada de desconto">
+        <figcaption><b>REF-0040</b>Modelo inteiro com escada de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0068.png" alt="Produto escuro com faixa inclinada">
+        <figcaption><b>REF-0068</b>Produto escuro com faixa inclinada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0037.png" alt="Escada de desconto com modelo">
+        <figcaption><b>REF-0037</b>Escada de desconto com modelo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0032.png" alt="Peça em caixa com placa grande">
+        <figcaption><b>REF-0032</b>Peça em caixa com placa grande</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0166.png" alt="Mão pegando uma unidade da fileira">
+        <figcaption><b>REF-0166</b>Mão pegando uma unidade da fileira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0157.png" alt="Trio pendurado na arara com faixa de oferta">
+        <figcaption><b>REF-0157</b>Trio pendurado na arara com faixa de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0178.png" alt="Sombra dura de persiana cortando o produto">
+        <figcaption><b>REF-0178</b>Sombra dura de persiana cortando o produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0162.png" alt="Uma mão erguendo três cabides">
+        <figcaption><b>REF-0162</b>Uma mão erguendo três cabides</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0145.png" alt="Close íntimo com oferta em cartões">
+        <figcaption><b>REF-0145</b>Close íntimo com oferta em cartões</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0001.png" alt="Split premium escuro">
+        <figcaption><b>REF-0001</b>Split premium escuro</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0180.png" alt="Torre alta de unidades cortada pelo topo">
+        <figcaption><b>REF-0180</b>Torre alta de unidades cortada pelo topo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0006.png" alt="Lifestyle premium">
+        <figcaption><b>REF-0006</b>Lifestyle premium</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0008.png" alt="Native ad retrô">
+        <figcaption><b>REF-0008</b>Native ad retrô</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0052.png" alt="Modelo sentado com escada lateral">
+        <figcaption><b>REF-0052</b>Modelo sentado com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0147.png" alt="Painel editorial com produto no corpo">
+        <figcaption><b>REF-0147</b>Painel editorial com produto no corpo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0067.png" alt="Pilha de unidades com selo circular">
+        <figcaption><b>REF-0067</b>Pilha de unidades com selo circular</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0005.png" alt="Cartão físico de oferta">
+        <figcaption><b>REF-0005</b>Cartão físico de oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0177.png" alt="Unidades em queda congelada no ar">
+        <figcaption><b>REF-0177</b>Unidades em queda congelada no ar</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0187.png" alt="Textura do conteúdo ao lado do frasco fechado">
+        <figcaption><b>REF-0187</b>Textura do conteúdo ao lado do frasco fechado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0165.png" alt="Veste uma, mostra a outra">
+        <figcaption><b>REF-0165</b>Veste uma, mostra a outra</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0046.png" alt="Grade sobreposta com escada superior">
+        <figcaption><b>REF-0046</b>Grade sobreposta com escada superior</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0003.png" alt="Cenário tátil e quente">
+        <figcaption><b>REF-0003</b>Cenário tátil e quente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0016.png" alt="Close editorial em uso">
+        <figcaption><b>REF-0016</b>Close editorial em uso</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0012.png" alt="Catálogo amplo de coleção">
+        <figcaption><b>REF-0012</b>Catálogo amplo de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0045.png" alt="Modelo com escada em cartões de duas faixas">
+        <figcaption><b>REF-0045</b>Modelo com escada em cartões de duas faixas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0011.png" alt="Trio de coleção cromática">
+        <figcaption><b>REF-0011</b>Trio de coleção cromática</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0188.png" alt="Macro do conteúdo com o frasco pequeno em cima">
+        <figcaption><b>REF-0188</b>Macro do conteúdo com o frasco pequeno em cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0036.png" alt="Dois pulsos lifestyle com oferta">
+        <figcaption><b>REF-0036</b>Dois pulsos lifestyle com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0048.png" alt="Flat lay denso com escada lateral">
+        <figcaption><b>REF-0048</b>Flat lay denso com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0009.png" alt="Vitrine tátil de coleção">
+        <figcaption><b>REF-0009</b>Vitrine tátil de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0047.png" alt="Flat lay neutro com oferta no vazio">
+        <figcaption><b>REF-0047</b>Flat lay neutro com oferta no vazio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0021.png" alt="Coleção em pedestal de luxo">
+        <figcaption><b>REF-0021</b>Coleção em pedestal de luxo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0195.png" alt="Frasco em luz âmbar com o respingo congelado">
+        <figcaption><b>REF-0195</b>Frasco em luz âmbar com o respingo congelado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0051.png" alt="Flat lay editorial com escada central">
+        <figcaption><b>REF-0051</b>Flat lay editorial com escada central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0029.png" alt="Dupla de produtos com oferta lateral">
+        <figcaption><b>REF-0029</b>Dupla de produtos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0156.png" alt="Pilha de unidades vista de cima em bancada escura">
+        <figcaption><b>REF-0156</b>Pilha de unidades vista de cima em bancada escura</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0053.png" alt="Grade de produtos com tarja de anúncio">
+        <figcaption><b>REF-0053</b>Grade de produtos com tarja de anúncio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0164.png" alt="Peça pendurada na parede com prendedor">
+        <figcaption><b>REF-0164</b>Peça pendurada na parede com prendedor</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0024.png" alt="Produto em caixa presenteável">
+        <figcaption><b>REF-0024</b>Produto em caixa presenteável</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0097.png" alt="Produto em close sobre superfície premium">
+        <figcaption><b>REF-0097</b>Produto em close sobre superfície premium</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0126.png" alt="Conjunto claro em flat lay">
+        <figcaption><b>REF-0126</b>Conjunto claro em flat lay</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0146.png" alt="Still life com lupa de detalhe">
+        <figcaption><b>REF-0146</b>Still life com lupa de detalhe</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c1">
+    <div class="head">
+      <div>
+        <h2>Produto único</h2>
+        <p class="answers">compre X, leve Y &middot; vende pela estética</p>
+      </div>
+      <div class="counts">
+        <span class="n">69</span> direções abrem &middot; <span class="n">29</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0163.png" alt="Gaveta aberta com as unidades enroladas">
+        <figcaption><b>REF-0163</b>Gaveta aberta com as unidades enroladas</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0166.png" alt="Mão pegando uma unidade da fileira">
+        <figcaption><b>REF-0166</b>Mão pegando uma unidade da fileira</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0157.png" alt="Trio pendurado na arara com faixa de oferta">
+        <figcaption><b>REF-0157</b>Trio pendurado na arara com faixa de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0156.png" alt="Pilha de unidades vista de cima em bancada escura">
+        <figcaption><b>REF-0156</b>Pilha de unidades vista de cima em bancada escura</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0162.png" alt="Uma mão erguendo três cabides">
+        <figcaption><b>REF-0162</b>Uma mão erguendo três cabides</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 64</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0001.png" alt="Split premium escuro">
+        <figcaption><b>REF-0001</b>Split premium escuro</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0002.png" alt="Lifestyle esportivo">
+        <figcaption><b>REF-0002</b>Lifestyle esportivo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0016.png" alt="Close editorial em uso">
+        <figcaption><b>REF-0016</b>Close editorial em uso</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0008.png" alt="Native ad retrô">
+        <figcaption><b>REF-0008</b>Native ad retrô</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0015.png" alt="Vitrine modular clara">
+        <figcaption><b>REF-0015</b>Vitrine modular clara</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0067.png" alt="Pilha de unidades com selo circular">
+        <figcaption><b>REF-0067</b>Pilha de unidades com selo circular</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0063.png" alt="Três variantes lado a lado">
+        <figcaption><b>REF-0063</b>Três variantes lado a lado</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0068.png" alt="Produto escuro com faixa inclinada">
+        <figcaption><b>REF-0068</b>Produto escuro com faixa inclinada</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0043.png" alt="Dupla de modelos com oferta lateral">
+        <figcaption><b>REF-0043</b>Dupla de modelos com oferta lateral</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0145.png" alt="Close íntimo com oferta em cartões">
+        <figcaption><b>REF-0145</b>Close íntimo com oferta em cartões</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0023.png" alt="Mosaico de produto em uso">
+        <figcaption><b>REF-0023</b>Mosaico de produto em uso</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0040.png" alt="Modelo inteiro com escada de desconto">
+        <figcaption><b>REF-0040</b>Modelo inteiro com escada de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0143.png" alt="Mosaico de uso e detalhes">
+        <figcaption><b>REF-0143</b>Mosaico de uso e detalhes</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0180.png" alt="Torre alta de unidades cortada pelo topo">
+        <figcaption><b>REF-0180</b>Torre alta de unidades cortada pelo topo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0005.png" alt="Cartão físico de oferta">
+        <figcaption><b>REF-0005</b>Cartão físico de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0177.png" alt="Unidades em queda congelada no ar">
+        <figcaption><b>REF-0177</b>Unidades em queda congelada no ar</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0164.png" alt="Peça pendurada na parede com prendedor">
+        <figcaption><b>REF-0164</b>Peça pendurada na parede com prendedor</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0165.png" alt="Veste uma, mostra a outra">
+        <figcaption><b>REF-0165</b>Veste uma, mostra a outra</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0046.png" alt="Grade sobreposta com escada superior">
+        <figcaption><b>REF-0046</b>Grade sobreposta com escada superior</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0147.png" alt="Painel editorial com produto no corpo">
+        <figcaption><b>REF-0147</b>Painel editorial com produto no corpo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0006.png" alt="Lifestyle premium">
+        <figcaption><b>REF-0006</b>Lifestyle premium</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0012.png" alt="Catálogo amplo de coleção">
+        <figcaption><b>REF-0012</b>Catálogo amplo de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0027.png" alt="Unboxing com oferta na tampa">
+        <figcaption><b>REF-0027</b>Unboxing com oferta na tampa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0141.png" alt="Oferta direta sobre fundo branco">
+        <figcaption><b>REF-0141</b>Oferta direta sobre fundo branco</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0152.png" alt="Produto no corpo em estúdio escuro com número metálico">
+        <figcaption><b>REF-0152</b>Produto no corpo em estúdio escuro com número metálico</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0052.png" alt="Modelo sentado com escada lateral">
+        <figcaption><b>REF-0052</b>Modelo sentado com escada lateral</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0003.png" alt="Cenário tátil e quente">
+        <figcaption><b>REF-0003</b>Cenário tátil e quente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0155.png" alt="Mãos arrumando a coleção sobre a mesa">
+        <figcaption><b>REF-0155</b>Mãos arrumando a coleção sobre a mesa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0011.png" alt="Trio de coleção cromática">
+        <figcaption><b>REF-0011</b>Trio de coleção cromática</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0146.png" alt="Still life com lupa de detalhe">
+        <figcaption><b>REF-0146</b>Still life com lupa de detalhe</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0036.png" alt="Dois pulsos lifestyle com oferta">
+        <figcaption><b>REF-0036</b>Dois pulsos lifestyle com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0048.png" alt="Flat lay denso com escada lateral">
+        <figcaption><b>REF-0048</b>Flat lay denso com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0037.png" alt="Escada de desconto com modelo">
+        <figcaption><b>REF-0037</b>Escada de desconto com modelo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0026.png" alt="Modelo editorial com oferta gigante">
+        <figcaption><b>REF-0026</b>Modelo editorial com oferta gigante</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0007.png" alt="Mosaico editorial">
+        <figcaption><b>REF-0007</b>Mosaico editorial</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0032.png" alt="Peça em caixa com placa grande">
+        <figcaption><b>REF-0032</b>Peça em caixa com placa grande</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0140.png" alt="Produto no corpo em ambiente externo">
+        <figcaption><b>REF-0140</b>Produto no corpo em ambiente externo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0144.png" alt="Split claro com uso e packshot">
+        <figcaption><b>REF-0144</b>Split claro com uso e packshot</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0009.png" alt="Vitrine tátil de coleção">
+        <figcaption><b>REF-0009</b>Vitrine tátil de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0160.png" alt="Close sem rosto abraçando a pilha das outras cores">
+        <figcaption><b>REF-0160</b>Close sem rosto abraçando a pilha das outras cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0021.png" alt="Coleção em pedestal de luxo">
+        <figcaption><b>REF-0021</b>Coleção em pedestal de luxo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0161.png" alt="Produto sozinho em luz de fim de tarde, sem texto">
+        <figcaption><b>REF-0161</b>Produto sozinho em luz de fim de tarde, sem texto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0158.png" alt="Dupla sem rosto com a mesma peça em duas cores">
+        <figcaption><b>REF-0158</b>Dupla sem rosto com a mesma peça em duas cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0051.png" alt="Flat lay editorial com escada central">
+        <figcaption><b>REF-0051</b>Flat lay editorial com escada central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0142.png" alt="Lifestyle com packshot em primeiro plano">
+        <figcaption><b>REF-0142</b>Lifestyle com packshot em primeiro plano</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0025.png" alt="Flat lay radial de coleção">
+        <figcaption><b>REF-0025</b>Flat lay radial de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0045.png" alt="Modelo com escada em cartões de duas faixas">
+        <figcaption><b>REF-0045</b>Modelo com escada em cartões de duas faixas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0044.png" alt="Grade de conjuntos em fundo claro">
+        <figcaption><b>REF-0044</b>Grade de conjuntos em fundo claro</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0029.png" alt="Dupla de produtos com oferta lateral">
+        <figcaption><b>REF-0029</b>Dupla de produtos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0176.png" alt="Macro que estoura as bordas com oferta minúscula">
+        <figcaption><b>REF-0176</b>Macro que estoura as bordas com oferta minúscula</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0159.png" alt="Duas mãos, a mesma bolsa em duas cores">
+        <figcaption><b>REF-0159</b>Duas mãos, a mesma bolsa em duas cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0053.png" alt="Grade de produtos com tarja de anúncio">
+        <figcaption><b>REF-0053</b>Grade de produtos com tarja de anúncio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0047.png" alt="Flat lay neutro com oferta no vazio">
+        <figcaption><b>REF-0047</b>Flat lay neutro com oferta no vazio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0153.png" alt="Trio deitado em superfície clara vista de cima">
+        <figcaption><b>REF-0153</b>Trio deitado em superfície clara vista de cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0178.png" alt="Sombra dura de persiana cortando o produto">
+        <figcaption><b>REF-0178</b>Sombra dura de persiana cortando o produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0054.png" alt="Grade desigual cortada por faixa">
+        <figcaption><b>REF-0054</b>Grade desigual cortada por faixa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0179.png" alt="Produto sobre cor chapada saturada">
+        <figcaption><b>REF-0179</b>Produto sobre cor chapada saturada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0187.png" alt="Textura do conteúdo ao lado do frasco fechado">
+        <figcaption><b>REF-0187</b>Textura do conteúdo ao lado do frasco fechado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0055.png" alt="Quadrantes de conjunto com faixa no meio">
+        <figcaption><b>REF-0055</b>Quadrantes de conjunto com faixa no meio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0188.png" alt="Macro do conteúdo com o frasco pequeno em cima">
+        <figcaption><b>REF-0188</b>Macro do conteúdo com o frasco pequeno em cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0195.png" alt="Frasco em luz âmbar com o respingo congelado">
+        <figcaption><b>REF-0195</b>Frasco em luz âmbar com o respingo congelado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0024.png" alt="Produto em caixa presenteável">
+        <figcaption><b>REF-0024</b>Produto em caixa presenteável</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0097.png" alt="Produto em close sobre superfície premium">
+        <figcaption><b>REF-0097</b>Produto em close sobre superfície premium</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0126.png" alt="Conjunto claro em flat lay">
+        <figcaption><b>REF-0126</b>Conjunto claro em flat lay</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c2">
+    <div class="head">
+      <div>
+        <h2>Coleção</h2>
+        <p class="answers">até X% de desconto &middot; vende pela estética</p>
+      </div>
+      <div class="counts">
+        <span class="n">58</span> direções abrem &middot; <span class="n">17</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0154.png" alt="Close sem rosto com a coleção em miniaturas">
+        <figcaption><b>REF-0154</b>Close sem rosto com a coleção em miniaturas</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0153.png" alt="Trio deitado em superfície clara vista de cima">
+        <figcaption><b>REF-0153</b>Trio deitado em superfície clara vista de cima</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0158.png" alt="Dupla sem rosto com a mesma peça em duas cores">
+        <figcaption><b>REF-0158</b>Dupla sem rosto com a mesma peça em duas cores</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0054.png" alt="Grade desigual cortada por faixa">
+        <figcaption><b>REF-0054</b>Grade desigual cortada por faixa</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0044.png" alt="Grade de conjuntos em fundo claro">
+        <figcaption><b>REF-0044</b>Grade de conjuntos em fundo claro</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 53</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0007.png" alt="Mosaico editorial">
+        <figcaption><b>REF-0007</b>Mosaico editorial</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0043.png" alt="Dupla de modelos com oferta lateral">
+        <figcaption><b>REF-0043</b>Dupla de modelos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0015.png" alt="Vitrine modular clara">
+        <figcaption><b>REF-0015</b>Vitrine modular clara</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0022.png" alt="Vitrine física com oferta">
+        <figcaption><b>REF-0022</b>Vitrine física com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0023.png" alt="Mosaico de produto em uso">
+        <figcaption><b>REF-0023</b>Mosaico de produto em uso</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0038.png" alt="Mosaico de looks com card central">
+        <figcaption><b>REF-0038</b>Mosaico de looks com card central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0033.png" alt="Caixa de envio em loja física">
+        <figcaption><b>REF-0033</b>Caixa de envio em loja física</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0040.png" alt="Modelo inteiro com escada de desconto">
+        <figcaption><b>REF-0040</b>Modelo inteiro com escada de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0063.png" alt="Três variantes lado a lado">
+        <figcaption><b>REF-0063</b>Três variantes lado a lado</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0155.png" alt="Mãos arrumando a coleção sobre a mesa">
+        <figcaption><b>REF-0155</b>Mãos arrumando a coleção sobre a mesa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0179.png" alt="Produto sobre cor chapada saturada">
+        <figcaption><b>REF-0179</b>Produto sobre cor chapada saturada</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0159.png" alt="Duas mãos, a mesma bolsa em duas cores">
+        <figcaption><b>REF-0159</b>Duas mãos, a mesma bolsa em duas cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0055.png" alt="Quadrantes de conjunto com faixa no meio">
+        <figcaption><b>REF-0055</b>Quadrantes de conjunto com faixa no meio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0163.png" alt="Gaveta aberta com as unidades enroladas">
+        <figcaption><b>REF-0163</b>Gaveta aberta com as unidades enroladas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0025.png" alt="Flat lay radial de coleção">
+        <figcaption><b>REF-0025</b>Flat lay radial de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0034.png" alt="Balcão de joalheria com placa">
+        <figcaption><b>REF-0034</b>Balcão de joalheria com placa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0050.png" alt="Grade de cinco looks com oferta inferior">
+        <figcaption><b>REF-0050</b>Grade de cinco looks com oferta inferior</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0039.png" alt="Vitrine modular com card de desconto">
+        <figcaption><b>REF-0039</b>Vitrine modular com card de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0052.png" alt="Modelo sentado com escada lateral">
+        <figcaption><b>REF-0052</b>Modelo sentado com escada lateral</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0160.png" alt="Close sem rosto abraçando a pilha das outras cores">
+        <figcaption><b>REF-0160</b>Close sem rosto abraçando a pilha das outras cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0190.png" alt="Kit na caixa aberta com berço recortado">
+        <figcaption><b>REF-0190</b>Kit na caixa aberta com berço recortado</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0167.png" alt="Uma mão usando a coleção inteira">
+        <figcaption><b>REF-0167</b>Uma mão usando a coleção inteira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0001.png" alt="Split premium escuro">
+        <figcaption><b>REF-0001</b>Split premium escuro</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0180.png" alt="Torre alta de unidades cortada pelo topo">
+        <figcaption><b>REF-0180</b>Torre alta de unidades cortada pelo topo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0008.png" alt="Native ad retrô">
+        <figcaption><b>REF-0008</b>Native ad retrô</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0014.png" alt="Modelo herói com catálogo inferior">
+        <figcaption><b>REF-0014</b>Modelo herói com catálogo inferior</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0045.png" alt="Modelo com escada em cartões de duas faixas">
+        <figcaption><b>REF-0045</b>Modelo com escada em cartões de duas faixas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0166.png" alt="Mão pegando uma unidade da fileira">
+        <figcaption><b>REF-0166</b>Mão pegando uma unidade da fileira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0157.png" alt="Trio pendurado na arara com faixa de oferta">
+        <figcaption><b>REF-0157</b>Trio pendurado na arara com faixa de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0168.png" alt="Conjunto vestido em luz de folhagem">
+        <figcaption><b>REF-0168</b>Conjunto vestido em luz de folhagem</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0046.png" alt="Grade sobreposta com escada superior">
+        <figcaption><b>REF-0046</b>Grade sobreposta com escada superior</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0189.png" alt="Linha completa alinhada pela base, subindo em altura">
+        <figcaption><b>REF-0189</b>Linha completa alinhada pela base, subindo em altura</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0012.png" alt="Catálogo amplo de coleção">
+        <figcaption><b>REF-0012</b>Catálogo amplo de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0005.png" alt="Cartão físico de oferta">
+        <figcaption><b>REF-0005</b>Cartão físico de oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0169.png" alt="Três peças no cabideiro de parede">
+        <figcaption><b>REF-0169</b>Três peças no cabideiro de parede</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0196.png" alt="Rotina numerada com um produto por passo">
+        <figcaption><b>REF-0196</b>Rotina numerada com um produto por passo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0048.png" alt="Flat lay denso com escada lateral">
+        <figcaption><b>REF-0048</b>Flat lay denso com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0003.png" alt="Cenário tátil e quente">
+        <figcaption><b>REF-0003</b>Cenário tátil e quente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0047.png" alt="Flat lay neutro com oferta no vazio">
+        <figcaption><b>REF-0047</b>Flat lay neutro com oferta no vazio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0170.png" alt="Três pedestais em alturas crescentes">
+        <figcaption><b>REF-0170</b>Três pedestais em alturas crescentes</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0162.png" alt="Uma mão erguendo três cabides">
+        <figcaption><b>REF-0162</b>Uma mão erguendo três cabides</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0051.png" alt="Flat lay editorial com escada central">
+        <figcaption><b>REF-0051</b>Flat lay editorial com escada central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0009.png" alt="Vitrine tátil de coleção">
+        <figcaption><b>REF-0009</b>Vitrine tátil de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0103.png" alt="Peças sobre cenário do próprio universo">
+        <figcaption><b>REF-0103</b>Peças sobre cenário do próprio universo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0172.png" alt="Escada de pedra, uma peça por degrau">
+        <figcaption><b>REF-0172</b>Escada de pedra, uma peça por degrau</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0165.png" alt="Veste uma, mostra a outra">
+        <figcaption><b>REF-0165</b>Veste uma, mostra a outra</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0053.png" alt="Grade de produtos com tarja de anúncio">
+        <figcaption><b>REF-0053</b>Grade de produtos com tarja de anúncio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0177.png" alt="Unidades em queda congelada no ar">
+        <figcaption><b>REF-0177</b>Unidades em queda congelada no ar</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0171.png" alt="Três faixas, mãos com uma, duas e três peças">
+        <figcaption><b>REF-0171</b>Três faixas, mãos com uma, duas e três peças</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0011.png" alt="Trio de coleção cromática">
+        <figcaption><b>REF-0011</b>Trio de coleção cromática</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0036.png" alt="Dois pulsos lifestyle com oferta">
+        <figcaption><b>REF-0036</b>Dois pulsos lifestyle com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0021.png" alt="Coleção em pedestal de luxo">
+        <figcaption><b>REF-0021</b>Coleção em pedestal de luxo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0029.png" alt="Dupla de produtos com oferta lateral">
+        <figcaption><b>REF-0029</b>Dupla de produtos com oferta lateral</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c3">
+    <div class="head">
+      <div>
+        <h2>Coleção</h2>
+        <p class="answers">compre X, leve Y &middot; vende pela estética</p>
+      </div>
+      <div class="counts">
+        <span class="n">58</span> direções abrem &middot; <span class="n">22</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0163.png" alt="Gaveta aberta com as unidades enroladas">
+        <figcaption><b>REF-0163</b>Gaveta aberta com as unidades enroladas</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0166.png" alt="Mão pegando uma unidade da fileira">
+        <figcaption><b>REF-0166</b>Mão pegando uma unidade da fileira</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0157.png" alt="Trio pendurado na arara com faixa de oferta">
+        <figcaption><b>REF-0157</b>Trio pendurado na arara com faixa de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0162.png" alt="Uma mão erguendo três cabides">
+        <figcaption><b>REF-0162</b>Uma mão erguendo três cabides</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0001.png" alt="Split premium escuro">
+        <figcaption><b>REF-0001</b>Split premium escuro</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 53</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0008.png" alt="Native ad retrô">
+        <figcaption><b>REF-0008</b>Native ad retrô</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0015.png" alt="Vitrine modular clara">
+        <figcaption><b>REF-0015</b>Vitrine modular clara</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0014.png" alt="Modelo herói com catálogo inferior">
+        <figcaption><b>REF-0014</b>Modelo herói com catálogo inferior</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0063.png" alt="Três variantes lado a lado">
+        <figcaption><b>REF-0063</b>Três variantes lado a lado</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0043.png" alt="Dupla de modelos com oferta lateral">
+        <figcaption><b>REF-0043</b>Dupla de modelos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0022.png" alt="Vitrine física com oferta">
+        <figcaption><b>REF-0022</b>Vitrine física com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0023.png" alt="Mosaico de produto em uso">
+        <figcaption><b>REF-0023</b>Mosaico de produto em uso</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0033.png" alt="Caixa de envio em loja física">
+        <figcaption><b>REF-0033</b>Caixa de envio em loja física</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0040.png" alt="Modelo inteiro com escada de desconto">
+        <figcaption><b>REF-0040</b>Modelo inteiro com escada de desconto</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0180.png" alt="Torre alta de unidades cortada pelo topo">
+        <figcaption><b>REF-0180</b>Torre alta de unidades cortada pelo topo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0005.png" alt="Cartão físico de oferta">
+        <figcaption><b>REF-0005</b>Cartão físico de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0169.png" alt="Três peças no cabideiro de parede">
+        <figcaption><b>REF-0169</b>Três peças no cabideiro de parede</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0165.png" alt="Veste uma, mostra a outra">
+        <figcaption><b>REF-0165</b>Veste uma, mostra a outra</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0046.png" alt="Grade sobreposta com escada superior">
+        <figcaption><b>REF-0046</b>Grade sobreposta com escada superior</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0012.png" alt="Catálogo amplo de coleção">
+        <figcaption><b>REF-0012</b>Catálogo amplo de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0038.png" alt="Mosaico de looks com card central">
+        <figcaption><b>REF-0038</b>Mosaico de looks com card central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0034.png" alt="Balcão de joalheria com placa">
+        <figcaption><b>REF-0034</b>Balcão de joalheria com placa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0050.png" alt="Grade de cinco looks com oferta inferior">
+        <figcaption><b>REF-0050</b>Grade de cinco looks com oferta inferior</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0052.png" alt="Modelo sentado com escada lateral">
+        <figcaption><b>REF-0052</b>Modelo sentado com escada lateral</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0003.png" alt="Cenário tátil e quente">
+        <figcaption><b>REF-0003</b>Cenário tátil e quente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0154.png" alt="Close sem rosto com a coleção em miniaturas">
+        <figcaption><b>REF-0154</b>Close sem rosto com a coleção em miniaturas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0177.png" alt="Unidades em queda congelada no ar">
+        <figcaption><b>REF-0177</b>Unidades em queda congelada no ar</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0036.png" alt="Dois pulsos lifestyle com oferta">
+        <figcaption><b>REF-0036</b>Dois pulsos lifestyle com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0048.png" alt="Flat lay denso com escada lateral">
+        <figcaption><b>REF-0048</b>Flat lay denso com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0007.png" alt="Mosaico editorial">
+        <figcaption><b>REF-0007</b>Mosaico editorial</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0039.png" alt="Vitrine modular com card de desconto">
+        <figcaption><b>REF-0039</b>Vitrine modular com card de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0045.png" alt="Modelo com escada em cartões de duas faixas">
+        <figcaption><b>REF-0045</b>Modelo com escada em cartões de duas faixas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0009.png" alt="Vitrine tátil de coleção">
+        <figcaption><b>REF-0009</b>Vitrine tátil de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0155.png" alt="Mãos arrumando a coleção sobre a mesa">
+        <figcaption><b>REF-0155</b>Mãos arrumando a coleção sobre a mesa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0011.png" alt="Trio de coleção cromática">
+        <figcaption><b>REF-0011</b>Trio de coleção cromática</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0158.png" alt="Dupla sem rosto com a mesma peça em duas cores">
+        <figcaption><b>REF-0158</b>Dupla sem rosto com a mesma peça em duas cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0051.png" alt="Flat lay editorial com escada central">
+        <figcaption><b>REF-0051</b>Flat lay editorial com escada central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0025.png" alt="Flat lay radial de coleção">
+        <figcaption><b>REF-0025</b>Flat lay radial de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0189.png" alt="Linha completa alinhada pela base, subindo em altura">
+        <figcaption><b>REF-0189</b>Linha completa alinhada pela base, subindo em altura</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0160.png" alt="Close sem rosto abraçando a pilha das outras cores">
+        <figcaption><b>REF-0160</b>Close sem rosto abraçando a pilha das outras cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0021.png" alt="Coleção em pedestal de luxo">
+        <figcaption><b>REF-0021</b>Coleção em pedestal de luxo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0159.png" alt="Duas mãos, a mesma bolsa em duas cores">
+        <figcaption><b>REF-0159</b>Duas mãos, a mesma bolsa em duas cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0053.png" alt="Grade de produtos com tarja de anúncio">
+        <figcaption><b>REF-0053</b>Grade de produtos com tarja de anúncio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0047.png" alt="Flat lay neutro com oferta no vazio">
+        <figcaption><b>REF-0047</b>Flat lay neutro com oferta no vazio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0044.png" alt="Grade de conjuntos em fundo claro">
+        <figcaption><b>REF-0044</b>Grade de conjuntos em fundo claro</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0029.png" alt="Dupla de produtos com oferta lateral">
+        <figcaption><b>REF-0029</b>Dupla de produtos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0167.png" alt="Uma mão usando a coleção inteira">
+        <figcaption><b>REF-0167</b>Uma mão usando a coleção inteira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0054.png" alt="Grade desigual cortada por faixa">
+        <figcaption><b>REF-0054</b>Grade desigual cortada por faixa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0103.png" alt="Peças sobre cenário do próprio universo">
+        <figcaption><b>REF-0103</b>Peças sobre cenário do próprio universo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0153.png" alt="Trio deitado em superfície clara vista de cima">
+        <figcaption><b>REF-0153</b>Trio deitado em superfície clara vista de cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0168.png" alt="Conjunto vestido em luz de folhagem">
+        <figcaption><b>REF-0168</b>Conjunto vestido em luz de folhagem</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0055.png" alt="Quadrantes de conjunto com faixa no meio">
+        <figcaption><b>REF-0055</b>Quadrantes de conjunto com faixa no meio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0170.png" alt="Três pedestais em alturas crescentes">
+        <figcaption><b>REF-0170</b>Três pedestais em alturas crescentes</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0171.png" alt="Três faixas, mãos com uma, duas e três peças">
+        <figcaption><b>REF-0171</b>Três faixas, mãos com uma, duas e três peças</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0172.png" alt="Escada de pedra, uma peça por degrau">
+        <figcaption><b>REF-0172</b>Escada de pedra, uma peça por degrau</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0196.png" alt="Rotina numerada com um produto por passo">
+        <figcaption><b>REF-0196</b>Rotina numerada com um produto por passo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0179.png" alt="Produto sobre cor chapada saturada">
+        <figcaption><b>REF-0179</b>Produto sobre cor chapada saturada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0190.png" alt="Kit na caixa aberta com berço recortado">
+        <figcaption><b>REF-0190</b>Kit na caixa aberta com berço recortado</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c4">
+    <div class="head">
+      <div>
+        <h2>Coleção</h2>
+        <p class="answers">desconto progressivo &middot; vende pela estética</p>
+      </div>
+      <div class="counts">
+        <span class="n">58</span> direções abrem &middot; <span class="n">18</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0189.png" alt="Linha completa alinhada pela base, subindo em altura">
+        <figcaption><b>REF-0189</b>Linha completa alinhada pela base, subindo em altura</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0170.png" alt="Três pedestais em alturas crescentes">
+        <figcaption><b>REF-0170</b>Três pedestais em alturas crescentes</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0171.png" alt="Três faixas, mãos com uma, duas e três peças">
+        <figcaption><b>REF-0171</b>Três faixas, mãos com uma, duas e três peças</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0046.png" alt="Grade sobreposta com escada superior">
+        <figcaption><b>REF-0046</b>Grade sobreposta com escada superior</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0047.png" alt="Flat lay neutro com oferta no vazio">
+        <figcaption><b>REF-0047</b>Flat lay neutro com oferta no vazio</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 53</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0022.png" alt="Vitrine física com oferta">
+        <figcaption><b>REF-0022</b>Vitrine física com oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0050.png" alt="Grade de cinco looks com oferta inferior">
+        <figcaption><b>REF-0050</b>Grade de cinco looks com oferta inferior</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0038.png" alt="Mosaico de looks com card central">
+        <figcaption><b>REF-0038</b>Mosaico de looks com card central</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0033.png" alt="Caixa de envio em loja física">
+        <figcaption><b>REF-0033</b>Caixa de envio em loja física</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0040.png" alt="Modelo inteiro com escada de desconto">
+        <figcaption><b>REF-0040</b>Modelo inteiro com escada de desconto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0154.png" alt="Close sem rosto com a coleção em miniaturas">
+        <figcaption><b>REF-0154</b>Close sem rosto com a coleção em miniaturas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0015.png" alt="Vitrine modular clara">
+        <figcaption><b>REF-0015</b>Vitrine modular clara</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0063.png" alt="Três variantes lado a lado">
+        <figcaption><b>REF-0063</b>Três variantes lado a lado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0043.png" alt="Dupla de modelos com oferta lateral">
+        <figcaption><b>REF-0043</b>Dupla de modelos com oferta lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0163.png" alt="Gaveta aberta com as unidades enroladas">
+        <figcaption><b>REF-0163</b>Gaveta aberta com as unidades enroladas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0172.png" alt="Escada de pedra, uma peça por degrau">
+        <figcaption><b>REF-0172</b>Escada de pedra, uma peça por degrau</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0158.png" alt="Dupla sem rosto com a mesma peça em duas cores">
+        <figcaption><b>REF-0158</b>Dupla sem rosto com a mesma peça em duas cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0048.png" alt="Flat lay denso com escada lateral">
+        <figcaption><b>REF-0048</b>Flat lay denso com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0007.png" alt="Mosaico editorial">
+        <figcaption><b>REF-0007</b>Mosaico editorial</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0034.png" alt="Balcão de joalheria com placa">
+        <figcaption><b>REF-0034</b>Balcão de joalheria com placa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0023.png" alt="Mosaico de produto em uso">
+        <figcaption><b>REF-0023</b>Mosaico de produto em uso</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0039.png" alt="Vitrine modular com card de desconto">
+        <figcaption><b>REF-0039</b>Vitrine modular com card de desconto</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0052.png" alt="Modelo sentado com escada lateral">
+        <figcaption><b>REF-0052</b>Modelo sentado com escada lateral</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0155.png" alt="Mãos arrumando a coleção sobre a mesa">
+        <figcaption><b>REF-0155</b>Mãos arrumando a coleção sobre a mesa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0180.png" alt="Torre alta de unidades cortada pelo topo">
+        <figcaption><b>REF-0180</b>Torre alta de unidades cortada pelo topo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0153.png" alt="Trio deitado em superfície clara vista de cima">
+        <figcaption><b>REF-0153</b>Trio deitado em superfície clara vista de cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0159.png" alt="Duas mãos, a mesma bolsa em duas cores">
+        <figcaption><b>REF-0159</b>Duas mãos, a mesma bolsa em duas cores</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0051.png" alt="Flat lay editorial com escada central">
+        <figcaption><b>REF-0051</b>Flat lay editorial com escada central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0008.png" alt="Native ad retrô">
+        <figcaption><b>REF-0008</b>Native ad retrô</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0014.png" alt="Modelo herói com catálogo inferior">
+        <figcaption><b>REF-0014</b>Modelo herói com catálogo inferior</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0045.png" alt="Modelo com escada em cartões de duas faixas">
+        <figcaption><b>REF-0045</b>Modelo com escada em cartões de duas faixas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0160.png" alt="Close sem rosto abraçando a pilha das outras cores">
+        <figcaption><b>REF-0160</b>Close sem rosto abraçando a pilha das outras cores</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0003.png" alt="Cenário tátil e quente">
+        <figcaption><b>REF-0003</b>Cenário tátil e quente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0157.png" alt="Trio pendurado na arara com faixa de oferta">
+        <figcaption><b>REF-0157</b>Trio pendurado na arara com faixa de oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0162.png" alt="Uma mão erguendo três cabides">
+        <figcaption><b>REF-0162</b>Uma mão erguendo três cabides</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0053.png" alt="Grade de produtos com tarja de anúncio">
+        <figcaption><b>REF-0053</b>Grade de produtos com tarja de anúncio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0012.png" alt="Catálogo amplo de coleção">
+        <figcaption><b>REF-0012</b>Catálogo amplo de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0166.png" alt="Mão pegando uma unidade da fileira">
+        <figcaption><b>REF-0166</b>Mão pegando uma unidade da fileira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0009.png" alt="Vitrine tátil de coleção">
+        <figcaption><b>REF-0009</b>Vitrine tátil de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0169.png" alt="Três peças no cabideiro de parede">
+        <figcaption><b>REF-0169</b>Três peças no cabideiro de parede</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0165.png" alt="Veste uma, mostra a outra">
+        <figcaption><b>REF-0165</b>Veste uma, mostra a outra</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0001.png" alt="Split premium escuro">
+        <figcaption><b>REF-0001</b>Split premium escuro</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0025.png" alt="Flat lay radial de coleção">
+        <figcaption><b>REF-0025</b>Flat lay radial de coleção</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0005.png" alt="Cartão físico de oferta">
+        <figcaption><b>REF-0005</b>Cartão físico de oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0044.png" alt="Grade de conjuntos em fundo claro">
+        <figcaption><b>REF-0044</b>Grade de conjuntos em fundo claro</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0177.png" alt="Unidades em queda congelada no ar">
+        <figcaption><b>REF-0177</b>Unidades em queda congelada no ar</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0167.png" alt="Uma mão usando a coleção inteira">
+        <figcaption><b>REF-0167</b>Uma mão usando a coleção inteira</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0054.png" alt="Grade desigual cortada por faixa">
+        <figcaption><b>REF-0054</b>Grade desigual cortada por faixa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0103.png" alt="Peças sobre cenário do próprio universo">
+        <figcaption><b>REF-0103</b>Peças sobre cenário do próprio universo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0179.png" alt="Produto sobre cor chapada saturada">
+        <figcaption><b>REF-0179</b>Produto sobre cor chapada saturada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0168.png" alt="Conjunto vestido em luz de folhagem">
+        <figcaption><b>REF-0168</b>Conjunto vestido em luz de folhagem</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0055.png" alt="Quadrantes de conjunto com faixa no meio">
+        <figcaption><b>REF-0055</b>Quadrantes de conjunto com faixa no meio</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0190.png" alt="Kit na caixa aberta com berço recortado">
+        <figcaption><b>REF-0190</b>Kit na caixa aberta com berço recortado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0196.png" alt="Rotina numerada com um produto por passo">
+        <figcaption><b>REF-0196</b>Rotina numerada com um produto por passo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0011.png" alt="Trio de coleção cromática">
+        <figcaption><b>REF-0011</b>Trio de coleção cromática</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0036.png" alt="Dois pulsos lifestyle com oferta">
+        <figcaption><b>REF-0036</b>Dois pulsos lifestyle com oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0021.png" alt="Coleção em pedestal de luxo">
+        <figcaption><b>REF-0021</b>Coleção em pedestal de luxo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0029.png" alt="Dupla de produtos com oferta lateral">
+        <figcaption><b>REF-0029</b>Dupla de produtos com oferta lateral</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c5">
+    <div class="head">
+      <div>
+        <h2>Produto único</h2>
+        <p class="answers">até X% de desconto &middot; vende por uma funcionalidade</p>
+      </div>
+      <div class="counts">
+        <span class="n">43</span> direções abrem &middot; <span class="n">17</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0149.png" alt="Produto funcional no corpo com coluna de benefícios">
+        <figcaption><b>REF-0149</b>Produto funcional no corpo com coluna de benefícios</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0148.png" alt="Produto funcional com tópicos e número gigante">
+        <figcaption><b>REF-0148</b>Produto funcional com tópicos e número gigante</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0150.png" alt="Produto funcional em cena de uso com parede livre">
+        <figcaption><b>REF-0150</b>Produto funcional em cena de uso com parede livre</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0151.png" alt="Trio funcional com benefício em linha única">
+        <figcaption><b>REF-0151</b>Trio funcional com benefício em linha única</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0183.png" alt="Mão com o produto e tópicos em linha fina">
+        <figcaption><b>REF-0183</b>Mão com o produto e tópicos em linha fina</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 38</h3><div class="grid">
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0010.png" alt="Produto zenital com benefícios">
+        <figcaption><b>REF-0010</b>Produto zenital com benefícios</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0017.jpg" alt="Antes e depois direto">
+        <figcaption><b>REF-0017</b>Antes e depois direto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0069.png" alt="Prova documental com faixa de oferta">
+        <figcaption><b>REF-0069</b>Prova documental com faixa de oferta</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0072.png" alt="Depoimento com duas fotos do cliente">
+        <figcaption><b>REF-0072</b>Depoimento com duas fotos do cliente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0076.png" alt="Comparativo funcional em duas colunas">
+        <figcaption><b>REF-0076</b>Comparativo funcional em duas colunas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0086.png" alt="Produto instalado com headline central">
+        <figcaption><b>REF-0086</b>Produto instalado com headline central</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0147.png" alt="Painel editorial com produto no corpo">
+        <figcaption><b>REF-0147</b>Painel editorial com produto no corpo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0198.png" alt="Pé descalço no chão, no primeiro passo do dia">
+        <figcaption><b>REF-0198</b>Pé descalço no chão, no primeiro passo do dia</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0173.png" alt="Produto ao centro com legendas apontando">
+        <figcaption><b>REF-0173</b>Produto ao centro com legendas apontando</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0203.png" alt="Pessoa comum sentada no sofá, foto tirada por outra pessoa">
+        <figcaption><b>REF-0203</b>Pessoa comum sentada no sofá, foto tirada por outra pessoa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0182.png" alt="Split diagonal entre o produto e a oferta">
+        <figcaption><b>REF-0182</b>Split diagonal entre o produto e a oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0184.png" alt="Mão na bancada com as cores ao lado">
+        <figcaption><b>REF-0184</b>Mão na bancada com as cores ao lado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0018.jpg" alt="Comparativo problema e solução">
+        <figcaption><b>REF-0018</b>Comparativo problema e solução</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0078.png" alt="Depoimento visual com relato longo">
+        <figcaption><b>REF-0078</b>Depoimento visual com relato longo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0204.png" alt="Detalhe do problema num objeto de casa">
+        <figcaption><b>REF-0204</b>Detalhe do problema num objeto de casa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0181.png" alt="Produto gigante atrás, produto real na frente">
+        <figcaption><b>REF-0181</b>Produto gigante atrás, produto real na frente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0193.png" alt="Produto ao lado do refil, com a conta desenhada">
+        <figcaption><b>REF-0193</b>Produto ao lado do refil, com a conta desenhada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0174.png" alt="Mão afundando um dos dois travesseiros">
+        <figcaption><b>REF-0174</b>Mão afundando um dos dois travesseiros</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0019.png" alt="Como usar em três passos">
+        <figcaption><b>REF-0019</b>Como usar em três passos</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0175.png" alt="Perna com o produto e faixa escura de oferta">
+        <figcaption><b>REF-0175</b>Perna com o produto e faixa escura de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0191.png" alt="Ingrediente cru cortado ao lado do produto">
+        <figcaption><b>REF-0191</b>Ingrediente cru cortado ao lado do produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0185.png" alt="Os dois joelhos, uma unidade em cada">
+        <figcaption><b>REF-0185</b>Os dois joelhos, uma unidade em cada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0081.png" alt="Close comparativo com produto em círculo">
+        <figcaption><b>REF-0081</b>Close comparativo com produto em círculo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0186.png" alt="Produto em uso visto de costas">
+        <figcaption><b>REF-0186</b>Produto em uso visto de costas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0192.png" alt="Frasco cortado ao meio mostrando as camadas">
+        <figcaption><b>REF-0192</b>Frasco cortado ao meio mostrando as camadas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0085.jpg" alt="Split de resultado com produto em círculo">
+        <figcaption><b>REF-0085</b>Split de resultado com produto em círculo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0020.png" alt="Produto com depoimentos">
+        <figcaption><b>REF-0020</b>Produto com depoimentos</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0197.png" alt="Produto esquecido na bancada da cozinha">
+        <figcaption><b>REF-0197</b>Produto esquecido na bancada da cozinha</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0028.png" alt="Detalhe funcional com depoimento">
+        <figcaption><b>REF-0028</b>Detalhe funcional com depoimento</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0200.png" alt="Duas fotos do mesmo canto da casa, com meses de diferença">
+        <figcaption><b>REF-0200</b>Duas fotos do mesmo canto da casa, com meses de diferença</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0145.png" alt="Close íntimo com oferta em cartões">
+        <figcaption><b>REF-0145</b>Close íntimo com oferta em cartões</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0201.png" alt="Bilhete escrito à mão sobre a mesa">
+        <figcaption><b>REF-0201</b>Bilhete escrito à mão sobre a mesa</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0206.png" alt="Cena do lugar onde o problema acontece, sem produto">
+        <figcaption><b>REF-0206</b>Cena do lugar onde o problema acontece, sem produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0194.png" alt="Dose diária contada ao lado do pote">
+        <figcaption><b>REF-0194</b>Dose diária contada ao lado do pote</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0199.png" alt="Cachorro deitado no tapete, visto de cima">
+        <figcaption><b>REF-0199</b>Cachorro deitado no tapete, visto de cima</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0202.png" alt="Produto no porta-copos do carro, parado no trânsito">
+        <figcaption><b>REF-0202</b>Produto no porta-copos do carro, parado no trânsito</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0205.png" alt="Ingrediente e produto na mesa do café da manhã">
+        <figcaption><b>REF-0205</b>Ingrediente e produto na mesa do café da manhã</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0084.png" alt="Produto isolado com promessa numérica">
+        <figcaption><b>REF-0084</b>Produto isolado com promessa numérica</figcaption>
+      </figure></div>
+  </section>
+
+  <section id="c6">
+    <div class="head">
+      <div>
+        <h2>Produto único</h2>
+        <p class="answers">compre X, leve Y &middot; vende por uma funcionalidade</p>
+      </div>
+      <div class="counts">
+        <span class="n">43</span> direções abrem &middot; <span class="n">14</span> nasceram com essa oferta &middot; abertura com <span class="n">5</span> de 5 composições distintas <span class="pill ok">fecha o lote</span>
+      </div>
+    </div>
+    <h3 class="sub2">O lote de abertura — as 5 primeiras que ele vê</h3>
+       <div class="grid destaque">
+      <figure class="hi">
+        <span class="pos">1</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0175.png" alt="Perna com o produto e faixa escura de oferta">
+        <figcaption><b>REF-0175</b>Perna com o produto e faixa escura de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">2</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0194.png" alt="Dose diária contada ao lado do pote">
+        <figcaption><b>REF-0194</b>Dose diária contada ao lado do pote</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">3</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0182.png" alt="Split diagonal entre o produto e a oferta">
+        <figcaption><b>REF-0182</b>Split diagonal entre o produto e a oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">4</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0174.png" alt="Mão afundando um dos dois travesseiros">
+        <figcaption><b>REF-0174</b>Mão afundando um dos dois travesseiros</figcaption>
+      </figure>
+      <figure class="hi">
+        <span class="pos">5</span>
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0010.png" alt="Produto zenital com benefícios">
+        <figcaption><b>REF-0010</b>Produto zenital com benefícios</figcaption>
+      </figure></div>
+       <h3 class="sub2">Depois delas, mais 38</h3><div class="grid">
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0069.png" alt="Prova documental com faixa de oferta">
+        <figcaption><b>REF-0069</b>Prova documental com faixa de oferta</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0147.png" alt="Painel editorial com produto no corpo">
+        <figcaption><b>REF-0147</b>Painel editorial com produto no corpo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0150.png" alt="Produto funcional em cena de uso com parede livre">
+        <figcaption><b>REF-0150</b>Produto funcional em cena de uso com parede livre</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0017.jpg" alt="Antes e depois direto">
+        <figcaption><b>REF-0017</b>Antes e depois direto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0072.png" alt="Depoimento com duas fotos do cliente">
+        <figcaption><b>REF-0072</b>Depoimento com duas fotos do cliente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0076.png" alt="Comparativo funcional em duas colunas">
+        <figcaption><b>REF-0076</b>Comparativo funcional em duas colunas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0086.png" alt="Produto instalado com headline central">
+        <figcaption><b>REF-0086</b>Produto instalado com headline central</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0186.png" alt="Produto em uso visto de costas">
+        <figcaption><b>REF-0186</b>Produto em uso visto de costas</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0199.png" alt="Cachorro deitado no tapete, visto de cima">
+        <figcaption><b>REF-0199</b>Cachorro deitado no tapete, visto de cima</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0193.png" alt="Produto ao lado do refil, com a conta desenhada">
+        <figcaption><b>REF-0193</b>Produto ao lado do refil, com a conta desenhada</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0185.png" alt="Os dois joelhos, uma unidade em cada">
+        <figcaption><b>REF-0185</b>Os dois joelhos, uma unidade em cada</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0203.png" alt="Pessoa comum sentada no sofá, foto tirada por outra pessoa">
+        <figcaption><b>REF-0203</b>Pessoa comum sentada no sofá, foto tirada por outra pessoa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0018.jpg" alt="Comparativo problema e solução">
+        <figcaption><b>REF-0018</b>Comparativo problema e solução</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0078.png" alt="Depoimento visual com relato longo">
+        <figcaption><b>REF-0078</b>Depoimento visual com relato longo</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0145.png" alt="Close íntimo com oferta em cartões">
+        <figcaption><b>REF-0145</b>Close íntimo com oferta em cartões</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0202.png" alt="Produto no porta-copos do carro, parado no trânsito">
+        <figcaption><b>REF-0202</b>Produto no porta-copos do carro, parado no trânsito</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0151.png" alt="Trio funcional com benefício em linha única">
+        <figcaption><b>REF-0151</b>Trio funcional com benefício em linha única</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0183.png" alt="Mão com o produto e tópicos em linha fina">
+        <figcaption><b>REF-0183</b>Mão com o produto e tópicos em linha fina</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0019.png" alt="Como usar em três passos">
+        <figcaption><b>REF-0019</b>Como usar em três passos</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0149.png" alt="Produto funcional no corpo com coluna de benefícios">
+        <figcaption><b>REF-0149</b>Produto funcional no corpo com coluna de benefícios</figcaption>
+      </figure>
+      <figure class="hi">
+        
+        <span class="tag">nasceu com a oferta</span>
+        <img loading="lazy" src="/references/ref-0205.png" alt="Ingrediente e produto na mesa do café da manhã">
+        <figcaption><b>REF-0205</b>Ingrediente e produto na mesa do café da manhã</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0184.png" alt="Mão na bancada com as cores ao lado">
+        <figcaption><b>REF-0184</b>Mão na bancada com as cores ao lado</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0081.png" alt="Close comparativo com produto em círculo">
+        <figcaption><b>REF-0081</b>Close comparativo com produto em círculo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0198.png" alt="Pé descalço no chão, no primeiro passo do dia">
+        <figcaption><b>REF-0198</b>Pé descalço no chão, no primeiro passo do dia</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0148.png" alt="Produto funcional com tópicos e número gigante">
+        <figcaption><b>REF-0148</b>Produto funcional com tópicos e número gigante</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0085.jpg" alt="Split de resultado com produto em círculo">
+        <figcaption><b>REF-0085</b>Split de resultado com produto em círculo</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0204.png" alt="Detalhe do problema num objeto de casa">
+        <figcaption><b>REF-0204</b>Detalhe do problema num objeto de casa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0173.png" alt="Produto ao centro com legendas apontando">
+        <figcaption><b>REF-0173</b>Produto ao centro com legendas apontando</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0020.png" alt="Produto com depoimentos">
+        <figcaption><b>REF-0020</b>Produto com depoimentos</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0181.png" alt="Produto gigante atrás, produto real na frente">
+        <figcaption><b>REF-0181</b>Produto gigante atrás, produto real na frente</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0028.png" alt="Detalhe funcional com depoimento">
+        <figcaption><b>REF-0028</b>Detalhe funcional com depoimento</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0191.png" alt="Ingrediente cru cortado ao lado do produto">
+        <figcaption><b>REF-0191</b>Ingrediente cru cortado ao lado do produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0192.png" alt="Frasco cortado ao meio mostrando as camadas">
+        <figcaption><b>REF-0192</b>Frasco cortado ao meio mostrando as camadas</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0197.png" alt="Produto esquecido na bancada da cozinha">
+        <figcaption><b>REF-0197</b>Produto esquecido na bancada da cozinha</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0200.png" alt="Duas fotos do mesmo canto da casa, com meses de diferença">
+        <figcaption><b>REF-0200</b>Duas fotos do mesmo canto da casa, com meses de diferença</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0201.png" alt="Bilhete escrito à mão sobre a mesa">
+        <figcaption><b>REF-0201</b>Bilhete escrito à mão sobre a mesa</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0206.png" alt="Cena do lugar onde o problema acontece, sem produto">
+        <figcaption><b>REF-0206</b>Cena do lugar onde o problema acontece, sem produto</figcaption>
+      </figure>
+      <figure>
+        
+        
+        <img loading="lazy" src="/references/ref-0084.png" alt="Produto isolado com promessa numérica">
+        <figcaption><b>REF-0084</b>Produto isolado com promessa numérica</figcaption>
+      </figure></div>
+  </section>
+</div>
+</body>
+</html>
