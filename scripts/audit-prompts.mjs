@@ -736,7 +736,11 @@ for (const [mode, campanha] of [['single', single], ['collection', collection]])
   const receitas = list.map((reference) => {
     const prompt = compiler.compileReferencePrompt(campanha, reference);
     const resto = prompt.slice(prompt.indexOf('DIREÇÃO VISUAL') + 20);
-    return resto.slice(0, resto.search(/\n[A-ZÇÃÕÁÉÍÓÚÂÊÔ ]{6,}\n/));
+    /* O corte precisa pegar o travessão: o bloco que mais contamina a medida é
+       "PRESENÇA HUMANA — CORPO SEM IDENTIDADE", e sem o — ele entrava na conta.
+       Duas peças com o mesmo `people` compartilham esse bloco inteiro, e isso
+       inflava a semelhança entre receitas que não têm nada a ver uma com a outra. */
+    return resto.slice(0, resto.search(/\n[A-ZÇÃÕÁÉÍÓÚÂÊÔ —-]{6,}\n/));
   });
   const proprias = palavrasProprias(receitas);
   for (let i = 0; i < list.length; i += 1) {
