@@ -262,7 +262,7 @@ for (const idDirecao of APROVADAS) {
   if (!base) { faltando.push(`${idDirecao}: sem definição`); continue; }
   /* As nativas vivem no proprio arquivo; o marcador vem da origem, nao de cada item. */
   const ehNativa = nativos.some((n) => n.id === idDirecao);
-  const item = { ...base, ...(metadadosSerie2[idDirecao] ?? {}), native: ehNativa || base.native };
+  const item = { ...base, ...metadadosSerie2[idDirecao], native: ehNativa || base.native };
   const arquivo = item.arquivo ?? arquivoDe(idDirecao);
   if (!arquivo) { faltando.push(`${idDirecao}: sem imagem em ${ORIGEM}`); continue; }
 
