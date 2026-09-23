@@ -1,5 +1,5 @@
 import type { OfferMechanic, Reference } from '@/lib/mvp-data';
-import { HOUSE_PRODUCT_RULE, HOUSE_DESIGN_RULE, SILENT_RULE, peopleRule } from '@/lib/house-rules';
+import { HOUSE_PRODUCT_RULE, HOUSE_DESIGN_RULE, SILENT_RULE, NATIVE_RULE, NATIVE_COPY_RULE, peopleRule } from '@/lib/house-rules';
 
 export type CampaignInput = {
   mode: 'single' | 'collection';
@@ -539,15 +539,16 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0040': {
     title: 'MODELO INTEIRO COM ESCADA DE DESCONTO',
-    collection: `- O que define esta direção: um único look de corpo inteiro fica em pé numa lateral, enquanto a outra lateral apresenta uma escada de oferta aberta diretamente sobre o fundo cinza. Não existem cartões atrás dos degraus.
-- O estúdio é cinza claro e contínuo, com piso e parede unidos por transição suave. A luz vem ampla de um lado e projeta uma sombra longa e discreta atrás da pessoa.
-- A pessoa aparece da cabeça aos pés, de frente ou em leve três quartos, com rosto completo e expressão natural. Casting, idade, gênero e corpo seguem o público capturado.
-- O look é a primeira leitura de produto: aparece inteiro, nítido, sem casaco, bolsa ou acessório que cubra as peças. Um único look representa a coleção; não invente outros itens ao redor.
-- No lado vazio, o wordmark fica no alto. Abaixo dele, uma headline em duas linhas combina uma linha regular e outra mais pesada, sem virar um bloco maior do que a pessoa.
-- A escada fica abaixo da headline, aberta no próprio fundo. Cada degrau forma uma linha horizontal com ícones de sacola à esquerda, quantidade no meio, um filete vertical e a vantagem grande à direita.
-- A quantidade de ícones cresce de acordo com cada condição real da oferta. As linhas são separadas por filetes horizontais finos; não existe borda externa nem fundo de cartão.
-- Se a oferta tiver menos degraus, mostre menos linhas e preserve o espaço. Não invente percentuais, vantagens ou uma terceira condição para imitar a referência.
-- Paleta cinza, preta e branca, com somente uma cor suave da identidade se ela estiver presente na marca. Nada de selo, CTA, benefício, avaliação ou faixa inferior.`,
+    collection: `- O que define esta direção: a escada da oferta é uma COLUNA empilhada, e cada degrau traz o ícone dentro de um círculo cheio, a quantidade acima e o percentual grande logo abaixo. A pessoa fica em pé de perfil do outro lado. Uma linha de condição fecha a coluna no pé.
+- Estúdio cinza claro e FRIO, contínuo, com piso e parede unidos por transição suave. Luz ampla e difusa de um lado, sem sol duro e sem sombra recortada na parede.
+- A pessoa aparece da cabeça aos pés, EM PÉ e de perfil ou em leve três quartos, com o corpo voltado para fora do quadro e o rosto completo. Casting, idade, gênero e corpo seguem o público capturado.
+- O look é claro e se destaca contra o cinza do estúdio. Aparece inteiro e nítido, sem casaco, bolsa ou acessório que cubra as peças. Um único look representa a coleção; não invente outros itens ao redor.
+- No lado vazio, o wordmark fica no alto, seguido de um filete horizontal longo que atravessa a largura da coluna.
+- Cada degrau é um bloco empilhado, não uma linha: à esquerda, um círculo cheio de cinza com o ícone de sacola dentro; à direita, a quantidade em corpo pequeno e o percentual em corpo grande logo abaixo dela. Filetes horizontais curtos separam um degrau do seguinte.
+- A quantidade de sacolas dentro do círculo cresce a cada degrau, acompanhando as condições reais da oferta.
+- No pé da coluna, uma linha única de condição em corpo pequeno, com um ícone de confirmação em círculo vazado ao lado. Ela só aparece quando a condição estiver confirmada no contexto.
+- Se a oferta tiver menos degraus, mostre menos blocos e preserve o espaço. Não invente percentuais, vantagens ou uma terceira condição para imitar a referência.
+- Paleta cinza e preta sobre fundo frio. Nada de selo, CTA, benefício, avaliação, headline ou faixa inferior.`,
   },
   'REF-0046': {
     title: 'GRADE SOBREPOSTA COM ESCADA SUPERIOR',
@@ -612,15 +613,15 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0052': {
     title: 'MODELO SENTADO COM ESCADA LATERAL',
-    collection: `- O que define esta direção: um único look aparece numa pessoa sentada sobre um bloco na lateral direita, enquanto uma headline pesada e uma tabela compacta de oferta ocupam a lateral esquerda. A pose sentada e a tabela curta distinguem esta direção da modelo em pé.
-- O estúdio é off-white ou cinza muito claro, com parede e base contínuas. O bloco tem o mesmo tom do fundo e aparece somente pela sombra.
-- A pessoa fica sentada de lado, com o tronco voltado para a câmera e uma perna avançando em diagonal sobre a base. O corpo aparece da cabeça até os pés, com rosto completo e expressão natural.
-- O look é inteiro e nítido. Roupa, calçado e acessórios só aparecem quando pertencem ao produto ou são neutros e necessários ao uso; nada compete com a peça anunciada.
-- Um único look representa a coleção. Não espalhe produtos, não crie miniaturas e não invente outras peças para preencher o quadro.
-- No lado esquerdo, o wordmark serifado no alto, acompanhado de uma linha curta de assinatura em corpo bem menor e letras espaçadas. Não existe headline: depois dessas duas linhas vem a oferta.
-- Um filete fino separa o wordmark da oferta. Cada degrau ocupa uma linha compacta com ícones de sacola, quantidade, filete vertical e vantagem grande; tudo fica aberto no próprio fundo.
-- A quantidade de ícones cresce conforme a condição real. Com menos degraus, mostre menos linhas e preserve o vazio; não use cartões nem fita de melhor oferta.
-- Paleta clara e neutra, texto escuro e somente cores reais do look. Não há selo, CTA, benefício, avaliação ou faixa inferior.`,
+    collection: `- O que define esta direção: sol duro entrando de lado desenha uma sombra recortada na parede, e a pessoa aparece AGACHADA no chão, apoiada numa das mãos. A tabela de vantagens fica do outro lado, em linhas horizontais soltas, sem nenhum círculo em volta dos símbolos.
+- Ambiente quente: parede e chão em bege claro contínuo, banhados por luz solar direta que projeta sombras nítidas e inclinadas atrás da pessoa. Nada de estúdio difuso nem cinza frio.
+- A pessoa está agachada perto do chão, tronco erguido e voltado para a câmera, uma perna esticada em diagonal e o olhar para fora do quadro. O corpo aparece inteiro, com rosto completo.
+- As peças vestidas são escuras e recortam contra a parede clara — é esse contraste que sustenta a leitura do produto. Meia e calçado claros podem aparecer quando pertencerem ao conjunto vendido.
+- Um único conjunto representa a coleção. Não espalhe produtos, não crie miniaturas e não invente outras peças para preencher o quadro.
+- Do lado livre, a assinatura da loja em letra serifada e larga, com uma linha curta de tagline logo abaixo, em corpo bem menor e letras muito espaçadas. Não existe headline.
+- Um traço fino e comprido separa a assinatura da tabela. Cada linha da tabela junta os símbolos de compra à esquerda, a quantidade em seguida, um traço vertical curto e a vantagem em corpo grande à direita. Tudo pousa direto na parede, sem retângulo, sem círculo e sem preenchimento atrás.
+- Os símbolos se multiplicam conforme a condição real. Com menos condições, use menos linhas e preserve o vazio; não use fita de melhor escolha.
+- Paleta quente e neutra, letra escura e somente as cores reais das peças. Não há selo, CTA, benefício, avaliação nem faixa inferior.`,
   },
   'REF-0063': {
     title: 'TRÊS PRODUTOS FRONTAIS COM OFERTA INFERIOR',
@@ -977,7 +978,578 @@ const testedDirections: Record<string, TestedDirection> = {
 - A cor vem inteira dos produtos e do objeto. Não existe fundo colorido nem luz colorida artificial.
 - Com menos peças confirmadas, use menos e deixe mais superfície aparecendo; nunca recolora nem invente peça para preencher o leque.
 - Esta direção não tem pessoa, texto, tarja, selo, ícone, wordmark, moldura nem qualquer elemento gráfico sobre a imagem.`,
+  },  'REF-0148': {
+    title: 'PRODUTO FUNCIONAL COM TÓPICOS E NÚMERO GIGANTE',
+    single: `- O que define esta direção: o produto ocupa um lado inteiro do quadro e o outro lado é uma coluna de texto que explica a função, fechada embaixo por um número de desconto gigante. É a peça que precisa dizer o que o produto faz.
+- Fundo cinza muito claro, quase branco, liso e contínuo, sem cenário e sem textura.
+- O produto aparece de frente em três quartos, ocupando a metade direita e a maior área da imagem, com sombra de contato curta embaixo.
+- Na metade esquerda, alinhados à esquerda e empilhados: a marca no alto; três linhas curtas de benefício, cada uma com um ícone de LINHA FINA solto ao lado, sem círculo, sem moldura e sem fundo; e o bloco da oferta na base.
+- O bloco da oferta tem três níveis: uma palavra pequena e muito espaçada, o número em corpo gigante — o maior texto da peça — e uma linha pequena em caixa alta espaçada.
+- Só existem duas cores gráficas: o preto do texto e o cinza do fundo. Toda a cor vem do produto.
+- Esta peça não tem pessoa, cenário, selo, moldura, CTA, preço riscado nem embalagem.`,
   },
+  'REF-0149': {
+    title: 'PRODUTO FUNCIONAL NO CORPO COM COLUNA DE BENEFÍCIOS',
+    single: `- O que define esta direção: o produto aparece em uso sobre o corpo, e o argumento fica numa faixa vertical clara ao lado, separada por filetes finos em vez de cartões.
+- Fundo de ambiente doméstico claro e neutro, profundamente desfocado, sem objeto reconhecível.
+- O enquadramento começa abaixo do queixo e termina na altura do peito. O produto é o elemento mais nítido e mais iluminado do quadro.
+- Na faixa vertical à esquerda, alinhado à esquerda: a marca no alto; três linhas curtas de benefício separadas por filetes finos horizontais; e o bloco da oferta embaixo, com o número em corpo grande.
+- A roupa da pessoa é lisa e de cor claramente diferente do produto, num tom intermediário e sem brilho.
+- Esta peça não tem selo, cartão, moldura, CTA, estrela de avaliação nem depoimento.`,
+  },
+  'REF-0150': {
+    title: 'PRODUTO FUNCIONAL EM CENA DE USO COM PAREDE LIVRE',
+    single: `- O que define esta direção: uma pessoa usa o produto de verdade em um ambiente real, e toda a comunicação vive na parede clara ao lado, sem painel e sem divisória. A parede da cena continua atrás do texto.
+- Ambiente interno claro, com luz natural de janela. A parede lisa ocupa um lado inteiro do quadro.
+- A pessoa aparece da cabeça até a cintura, com rosto inteiro e expressão natural. O produto fica na altura do rosto, nítido e bem iluminado.
+- Sobre a parede, alinhado à esquerda: a marca pequena no alto; uma headline de duas linhas em caixa alta pesada; um filete horizontal curto; e a oferta em uma linha só, caixa alta, corpo médio.
+- Não existe lista de benefícios com ícone: o argumento cabe na headline.
+- Esta peça não tem selo, cartão, moldura, CTA nem texto sobre o corpo da pessoa.`,
+  },
+  'REF-0151': {
+    title: 'TRIO FUNCIONAL COM BENEFÍCIO EM LINHA ÚNICA',
+    single: `- O que define esta direção: o mesmo produto em três cores, alinhado como mostruário, com a oferta em cima e uma única linha de benefício embaixo. O argumento cabe numa frase; o resto é a variedade de cores.
+- Fundo branco levemente cinzento, contínuo, sem cenário, sem plinto e sem textura.
+- As três unidades ficam lado a lado, todas em pé, no mesmo ângulo e no mesmo tamanho, com espaçamento regular e sem se sobrepor. A do meio avança ligeiramente. Sombra de contato suave sob cada uma.
+- No alto, centralizados: a marca em corpo pequeno e espaçado, e a oferta em caixa alta pesada ocupando quase toda a largura — o maior elemento de texto da peça.
+- Abaixo dos produtos, uma única linha centralizada, corpo pequeno e espaçado, com os benefícios separados por pontos.
+- Esta peça não tem pessoa, cenário, selo, moldura, ícone nem CTA.
+- Com duas cores confirmadas, ficam duas unidades centralizadas com a mesma folga; com uma só, a unidade fica maior e o fundo mais livre.`,
+  },
+  'REF-0152': {
+    title: 'PRODUTO NO CORPO EM ESTÚDIO ESCURO COM NÚMERO METÁLICO',
+    single: `- O que define esta direção: um membro entra pela borda exibindo o produto, e o resto do quadro é estúdio escuro quase vazio, com o número da oferta em cor metálica como único ponto de cor.
+- Fundo de estúdio escuro profundo, quase preto, com um halo de luz logo atrás do produto e os cantos escurecendo.
+- O antebraço entra em diagonal por baixo, cortado bem antes do cotovelo. Nada do rosto, do ombro ou do tronco aparece. A manga, quando aparecer, é lisa e escura.
+- O produto é o ponto mais claro e mais nítido de toda a imagem.
+- Na área escura acima do braço, alinhado à esquerda: a marca pequena no alto; uma palavra pequena e muito espaçada; o número em corpo gigante e cor metálica; e uma linha pequena em caixa alta espaçada.
+- Só existem três cores: o escuro do estúdio, o branco do texto e o metálico do número.
+- Esta peça não tem selo, cartão, moldura, benefício escrito nem CTA.`,
+  },
+  'REF-0153': {
+    title: 'TRIO DEITADO EM SUPERFÍCIE CLARA VISTA DE CIMA',
+    single: `- O que define esta direção: as três unidades estão deitadas e fotografadas de cima sobre uma superfície contínua, em diagonal solta, sem alinhamento rígido. É mostruário de cor sem virar grade.
+- A superfície é clara e quente — papel mineral ou pedra fosca clareada — e ocupa o quadro inteiro, sem horizonte, sem mesa e sem cenário.
+- As três unidades se distribuem em diagonal suave, com folga entre elas. A do centro fica ligeiramente maior e mais à frente. Alças e detalhes arrumados, sem nó e sem dobra confusa.
+- No canto superior, alinhado à esquerda e em preto: a marca pequena e espaçada, um filete horizontal curto, e a oferta em duas linhas de caixa alta pesada.
+- Nenhuma cor gráfica além do preto do texto. Toda a cor vem dos produtos.
+- Esta peça não tem pessoa, selo, etiqueta, preço, CTA nem moldura.
+- Com menos cores confirmadas, a diagonal fica com menos unidades e mais superfície aparecendo; nenhuma cor é inventada para fechar o trio.`,
+  },
+  'REF-0154': {
+    title: 'CLOSE SEM ROSTO COM A COLEÇÃO EM MINIATURAS',
+    collection: `- O que define esta direção: uma pessoa fotografada de perto, do maxilar para baixo, veste a peça principal e ocupa um lado inteiro do quadro; do outro lado, uma coluna de texto termina numa fileira de miniaturas recortadas com as outras peças da coleção.
+- Fundo claro e quente, liso e contínuo, com luz suave vinda de um lado.
+- A pessoa fica de frente no lado direito do quadro, enquadrada do maxilar até o quadril, em close. O rosto não aparece. Braços relaxados ao lado do corpo, sem cobrir o produto.
+- A peça vestida é o maior e o mais iluminado elemento do quadro. A calça é lisa, neutra, em tom escuro e apagado, claramente secundária.
+- Na coluna do outro lado, alinhado à esquerda: a marca pequena, um filete horizontal curto e a oferta em caixa alta pesada de duas linhas — o maior texto da peça.
+- Embaixo da oferta, na mesma coluna, uma fileira de miniaturas recortadas direto sobre o fundo claro, sem cartão e sem moldura, cada uma com uma das outras peças, todas no mesmo tamanho, de frente e na mesma luz.
+- Esta peça não tem selo, cartão, moldura, benefício escrito nem CTA.
+- Com menos produtos confirmados, a fileira de miniaturas encurta; nada é inventado para completá-la.`,
+  },
+  'REF-0155': {
+    title: 'MÃOS ARRUMANDO A COLEÇÃO SOBRE A MESA',
+    collection: `- O que define esta direção: a cena é vista de cima e duas mãos entram pela borda inferior ajeitando as peças. O gesto humano dá vida à peça sem que ninguém apareça.
+- A madeira clara da mesa ocupa o quadro inteiro. Luz natural vinda de um lado, sombras suaves e curtas.
+- Só as mãos e um pedaço dos antebraços aparecem: nada de rosto, ombro ou tronco. As mãos tocam uma das peças, sem cobrir nenhuma delas por inteiro.
+- As peças ficam dobradas e distribuídas com folga, cada uma em uma cor distinta, todas no mesmo tratamento de luz.
+- Na área livre da mesa, no alto: a marca pequena e espaçada, centralizada, e a oferta em caixa alta pesada numa linha só, também centralizada.
+- Esta peça não tem selo, cartão, etiqueta, preço, CTA nem moldura.
+- Com menos itens confirmados, as mãos ajeitam menos peças e a mesa fica mais livre; nada é inventado para preencher a madeira.`,
+  },
+  'REF-0156': {
+    title: 'PILHA DE UNIDADES VISTA DE CIMA EM BANCADA ESCURA',
+    single: `- O que define esta direção: a mesma unidade repetida e empilhada é o que anuncia a oferta — dá para contar as peças — e um selo circular de cor sólida carrega o número, solto sobre a foto.
+- Bancada de pedra escura e fosca, ocupando o quadro inteiro, com luz lateral fria e sombra curta sob a pilha. Sem cenário, sem objeto de decoração e sem horizonte.
+- A pilha é fotografada de cima, em diagonal, de perto: cada camada dobrada aparece inteira e em cor distinta, empilhada com alinhamento solto, uma peça levemente deslocada da outra.
+- No alto, sobre a bancada, a marca pequena e clara, e abaixo dela uma headline de duas linhas em caixa alta pesada e clara.
+- Num canto livre, um selo circular de cor sólida quente traz a oferta em duas linhas, sem moldura e sem sombra. É o único elemento colorido da parte gráfica.
+- Esta peça não tem pessoa, embalagem, etiqueta, preço riscado, CTA nem moldura.
+- Com menos unidades confirmadas, a pilha fica mais baixa e a bancada mais livre. Nenhuma peça é inventada para engordar a pilha.`,
+  },
+  'REF-0157': {
+    title: 'TRIO PENDURADO NA ARARA COM FAIXA DE OFERTA',
+    single: `- O que define esta direção: o mesmo modelo em três cores, alinhado de frente como mostruário, com um bloco de texto no topo e a oferta numa faixa cheia fechando a base.
+- Fundo claro e quente, liso e contínuo, tipo parede de estúdio. Uma barra metálica fina e horizontal atravessa a parte de cima da área das peças, e os cabides penduram nela.
+- As três peças ficam lado a lado, de frente, no mesmo tamanho e na mesma altura, com folga entre elas e sem se sobrepor. Cabides idênticos e discretos. Caimento natural, sem dobra confusa.
+- No alto, centralizado e em preto: a marca em corpo pequeno e espaçado, e abaixo o nome do produto em duas linhas de caixa alta pesada.
+- Na base, uma faixa horizontal preta de ponta a ponta, com a oferta centralizada em caixa alta clara.
+- Fora do preto do texto e da faixa, nenhuma cor gráfica: toda a cor vem das peças.
+- Esta peça não tem pessoa, selo, etiqueta, preço, ícone, CTA nem moldura.
+- Com duas cores confirmadas, ficam duas peças na arara, centralizadas e com a mesma folga. Nenhuma cor é inventada para fechar o trio.`,
+  },
+  'REF-0158': {
+    title: 'DUPLA SEM ROSTO COM A MESMA PEÇA EM DUAS CORES',
+    single: `- O que define esta direção: duas pessoas lado a lado, do maxilar para baixo, vestem o mesmo modelo em cores diferentes, e toda a comunicação vive numa coluna de texto ao lado, sobre a área clara da locação.
+- Locação externa de pedra clara, com parede lisa e luz natural alta. O fundo é claro e quase sem detalhe.
+- As duas pessoas ficam de frente, lado a lado, enquadradas do maxilar até o quadril, em close. Os rostos não aparecem. Mãos nos bolsos ou ao lado do corpo, sem cobrir as peças.
+- As calças são lisas, neutras, iguais nas duas pessoas, em tom escuro e apagado, claramente secundárias.
+- As duas peças vestidas são os dois maiores elementos da fotografia. Braços relaxados, e nenhuma pessoa encobre a outra.
+- Na coluna lateral, sobre o fundo claro e alinhado à esquerda: a marca pequena no alto; o nome do produto em três linhas de caixa alta pesada; um filete horizontal curto; e o bloco da oferta, com uma palavra pequena espaçada, o número em corpo gigante e uma linha pequena em caixa alta espaçada.
+- O número da oferta é o único elemento em cor quente; todo o resto do texto é escuro.
+- Esta peça não tem selo, cartão, moldura, relógio, acessório em destaque, benefício escrito nem CTA.
+- Com uma cor confirmada, fica uma pessoa só, no mesmo enquadramento, e a coluna de texto continua igual.`,
+  },
+  'REF-0159': {
+    title: 'DUAS MÃOS, A MESMA BOLSA EM DUAS CORES',
+    single: `- O que define esta direção: duas mãos entram por lados opostos do quadro, cada uma segurando a mesma bolsa numa cor diferente. O gesto repetido mostra que existem opções sem virar mostruário.
+- Fundo de parede lisa clara e quente, contínuo, com luz lateral suave e sombra curta das bolsas na parede.
+- Cada mão aparece só até o pulso, entrando pela borda. As duas bolsas ficam na mesma altura, lado a lado, com folga entre elas, e são os dois elementos mais nítidos e mais iluminados.
+- No alto, centralizado: a marca pequena e espaçada, e abaixo a oferta em uma linha de caixa alta pesada.
+- Nenhuma cor gráfica além do texto escuro. Toda a cor vem das bolsas.
+- Esta peça não tem selo, cartão, etiqueta, benefício escrito nem CTA.
+- Com uma cor confirmada, entra uma mão só, e o outro lado do quadro fica com a parede livre.`,
+  },
+  'REF-0160': {
+    title: 'CLOSE SEM ROSTO ABRAÇANDO A PILHA DAS OUTRAS CORES',
+    single: `- O que define esta direção: uma pessoa fotografada de perto, do maxilar para baixo, veste uma cor e segura contra o corpo a pilha dobrada das outras três. Caimento e variedade de cores cabem no mesmo enquadramento fechado, sem cenário.
+- Fundo de parede lisa clara e quente, contínuo, com luz natural de janela vinda de um lado.
+- A pessoa fica de frente, enquadrada do maxilar até o quadril, em close. O rosto não aparece. A calça é lisa, neutra, em tom escuro e apagado, claramente secundária.
+- Os dois braços seguram a pilha dobrada na altura da cintura, sem cobrir a frente do cardigã vestido. Cada cor da pilha aparece inteira na borda dobrada. O cardigã vestido é o maior elemento do quadro.
+- Na faixa livre de parede ao lado da pessoa, alinhado à esquerda: a marca pequena, e abaixo a oferta em duas linhas de caixa alta pesada.
+- Esta peça não tem selo, cartão, moldura, joia, benefício escrito nem CTA.
+- Com menos cores confirmadas, a pilha nos braços fica mais baixa; nenhuma cor nova é inventada para engrossá-la.`,
+  },
+  'REF-0161': {
+    title: 'PRODUTO SOZINHO EM LUZ DE FIM DE TARDE, SEM TEXTO',
+    single: `- O que define esta direção: o produto sozinho, iluminado por uma faixa de sol de fim de tarde que atravessa a cena. A luz é o argumento; não há texto nenhum.
+- Superfície de concreto claro e liso, com parede do mesmo material ao fundo. Uma faixa de luz quente e recortada cruza a parede e a superfície; o resto da cena fica em sombra suave.
+- O tênis fica dentro da faixa de luz, em perfil de três quartos, com sombra longa e nítida projetada para trás.
+- O produto é o ponto mais claro e mais nítido do quadro.
+- Esta peça não tem pessoa, texto, selo, moldura nem objeto de cena.`,
+  },
+  'REF-0162': {
+    title: 'UMA MÃO ERGUENDO TRÊS CABIDES',
+    single: `- O que define esta direção: uma única mão entra pelo alto do quadro segurando três cabides de uma vez, e as três cores pendem abertas em leque. É o gesto de quem já decidiu levar todas.
+- Fundo de parede lisa, clara e quente, contínuo, sem cenário. Luz lateral suave e sombra curta das peças na parede.
+- Só a mão e o pulso aparecem. A peça da frente fica inteira; as outras duas aparecem pela lateral, deslocadas, cada cor bem separada da vizinha.
+- Embaixo, centralizados: a oferta em uma linha de caixa alta pesada e escura e, logo abaixo, a marca pequena e espaçada.
+- Esta peça não tem headline, benefício, etiqueta, selo ou CTA.
+- Com duas cores confirmadas, a mão segura dois cabides; com uma só, um cabide e a peça fica maior.`,
+  },
+  'REF-0163': {
+    title: 'GAVETA ABERTA COM AS UNIDADES ENROLADAS',
+    single: `- O que define esta direção: uma gaveta aberta vista de cima, com as unidades enroladas em fileira. É a gaveta cheia que a oferta promete.
+- Gaveta de madeira clara, vista de cima, ocupando quase todo o quadro. A borda da cômoda aparece escura em volta.
+- As unidades ficam enroladas e deitadas lado a lado, cada uma com a cor inteira visível, sem sobreposição.
+- Na borda escura acima da gaveta: a marca pequena e clara e a oferta em uma linha de caixa alta pesada e clara.
+- Esta peça não tem pessoa, headline, etiqueta, embalagem, selo ou CTA.
+- Com menos cores confirmadas, a fileira repete as cores reais até encher a gaveta; nenhuma cor nova é inventada.`,
+  },
+  'REF-0164': {
+    title: 'PEÇA PENDURADA NA PAREDE COM PRENDEDOR',
+    single: `- O que define esta direção: uma única peça pendurada numa parede lisa, como em um ateliê. Quase todo o quadro é respiro, e o texto é curto.
+- Parede lisa branca-quente, com textura leve de reboco e luz natural lateral projetando a sombra da peça na parede.
+- A peça fica pendurada no centro por um prendedor de madeira preso a um prego, caindo reta, inteira e sem dobra.
+- Embaixo, na mesma linha: a marca pequena à esquerda e a oferta em caixa alta pesada e escura à direita.
+- Esta peça não tem pessoa, headline, benefício, selo ou CTA.`,
+  },
+  'REF-0165': {
+    title: 'VESTE UMA, MOSTRA A OUTRA',
+    single: `- O que define esta direção: a pessoa veste uma unidade e estende a segunda, dobrada, em direção à câmera. A segunda peça na mão é a oferta.
+- Parede lisa clara, contínua, com luz natural de janela vinda de um lado.
+- A pessoa fica de frente num lado do quadro, enquadrada do maxilar até o quadril, em close. A mão segura a outra cor dobrada à frente do corpo, sem cobrir a camisa vestida. A calça é lisa, escura e apagada.
+- Na parede livre do outro lado, alinhados à esquerda: a marca pequena e a oferta em duas linhas de caixa alta pesada. A parede continua atrás do texto, sem painel.
+- Esta peça não tem headline, benefício, selo ou CTA.
+- Com uma única cor confirmada, a peça dobrada é da mesma cor da vestida.`,
+  },
+  'REF-0166': {
+    title: 'MÃO PEGANDO UMA UNIDADE DA FILEIRA',
+    single: `- O que define esta direção: as unidades formam uma fileira regular vista de cima, e uma mão entra pela borda pegando uma delas. O gesto quebra a grade e dá escala.
+- Tecido de linho claro e liso, visto de cima, ocupando o quadro inteiro, com luz natural lateral e sombras curtas.
+- Os pares ficam enrolados em fileira, do mesmo tamanho e com espaçamento regular. A mão, só até o pulso, entra por baixo e segura um deles, levemente deslocado da fileira.
+- No alto, centralizados: a marca pequena e espaçada e a oferta em uma linha de caixa alta pesada.
+- Esta peça não tem headline, etiqueta, embalagem, selo ou CTA.
+- Com menos cores confirmadas, a fileira repete as cores reais; nenhuma cor nova é inventada.`,
+  },
+  'REF-0167': {
+    title: 'UMA MÃO USANDO A COLEÇÃO INTEIRA',
+    collection: `- O que define esta direção: uma única mão e pulso usam as três peças ao mesmo tempo. O corpo vira expositor da coleção.
+- Fundo de seda clara e lisa, levemente ondulada, com luz suave.
+- A mão e o pulso entram em diagonal por uma borda, com os dedos relaxados. As três peças ficam no centro, todas visíveis, nenhuma escondendo a outra. Unhas curtas e neutras.
+- No canto oposto à mão, alinhados à esquerda: a marca pequena, um filete curto e a oferta em duas linhas de caixa alta pesada e escura.
+- Esta peça não tem selo, cartão, embalagem ou CTA.
+- Com menos itens confirmados, a mão usa só os itens reais.`,
+  },
+  'REF-0168': {
+    title: 'CONJUNTO VESTIDO EM LUZ DE FOLHAGEM',
+    collection: `- O que define esta direção: o conjunto vestido fotografado como editorial, sem nenhum texto. A luz filtrada e o caimento vendem sozinhos.
+- Locação externa de parede branca caiada com sombra de folhagem projetada, luz de sol alta e contraste suave.
+- A pessoa fica de frente, levemente de lado, enquadrada do maxilar até a canela. O conjunto ocupa a maior parte da fotografia.
+- Sem bolsa, óculos, joia ou acessório.
+- Esta peça não tem texto, marca, selo, borda ou efeito gráfico.
+- Com menos peças confirmadas, o corpo veste só as que existem e o enquadramento fecha onde o conjunto acaba.`,
+  },
+  'REF-0169': {
+    title: 'TRÊS PEÇAS NO CABIDEIRO DE PAREDE',
+    collection: `- O que define esta direção: peças diferentes penduradas lado a lado em ganchos de parede, cada uma no seu cabide. É o guarda-roupa aberto da coleção.
+- Parede lisa clara e quente, atravessada por uma régua de madeira escura que segura os ganchos.
+- As peças pendem de frente, no mesmo nível e com folga entre elas, cada uma inteira.
+- Embaixo, na parede livre, centralizados: a oferta em uma linha de caixa alta pesada e escura e a marca pequena abaixo dela.
+- Esta peça não tem pessoa, headline, etiqueta, selo, preço ou CTA.
+- Com menos itens confirmados, a régua segura menos ganchos e fica mais curta.`,
+  },
+  'REF-0170': {
+    title: 'TRÊS PEDESTAIS EM ALTURAS CRESCENTES',
+    collection: `- O que define esta direção: a escada do desconto é física. Pedestais sobem de um lado para o outro, cada um com um produto, e cada degrau carrega o seu percentual.
+- Fundo claro e quente, contínuo, com luz suave vinda de cima e sombras curtas.
+- Pedestais cilíndricos de pedra clara lado a lado, cada um mais alto que o anterior, com um produto inteiro em cima de cada.
+- Na face de cada pedestal, em escuro: a quantidade em corpo pequeno e o percentual em caixa alta pesada logo abaixo. O último percentual é o maior.
+- No alto, alinhados à esquerda: a marca pequena e uma headline de uma linha dizendo que quanto mais leva, mais economiza.
+- Esta peça não tem pessoa, selo, cartão, preço ou CTA.
+- Com mais degraus na oferta, entram mais pedestais; com menos itens, um item pode aparecer em mais de um degrau.`,
+  },
+  'REF-0171': {
+    title: 'TRÊS FAIXAS, MÃOS COM UMA, DUAS E TRÊS PEÇAS',
+    collection: `- O que define esta direção: o quadro é dividido em três faixas horizontais, e em cada uma um par de mãos segura uma pilha maior — uma peça, duas, três. A escada do desconto é contada nas mãos.
+- As três faixas têm o mesmo fundo claro e liso, separadas por filetes finos escuros.
+- Em cada faixa, duas mãos entram por um lado segurando a pilha dobrada; só mãos e pulsos aparecem. As pilhas crescem de cima para baixo.
+- Do outro lado de cada faixa, alinhados à direita: a quantidade em corpo pequeno e o percentual em caixa alta pesada. O percentual da última faixa é o maior.
+- A marca pequena fica no topo da primeira faixa.
+- Esta peça não tem headline, selo, cartão, preço ou CTA.
+- Com mais degraus na oferta, entram mais faixas e cada uma fica mais baixa.`,
+  },
+  'REF-0172': {
+    title: 'ESCADA DE PEDRA, UMA PEÇA POR DEGRAU',
+    collection: `- O que define esta direção: uma escada real vira a escada do desconto. Cada degrau segura um produto e o seu percentual, subindo.
+- Escada externa de pedra clara vista de lado em três quartos, luz de sol alta e parede clara ao fundo.
+- Um produto inteiro em cada degrau, subindo da frente para trás.
+- Na face vertical de cada degrau, em escuro: o percentual em caixa alta pesada, crescendo com o degrau. A marca pequena fica no alto.
+- Esta peça não tem pessoa, headline, selo, cartão, preço ou CTA.
+- Com mais degraus na oferta, a escada ganha degraus; com menos itens, um degrau pode ficar só com o percentual.`,
+  },
+  'REF-0173': {
+    title: 'PRODUTO AO CENTRO COM LEGENDAS APONTANDO',
+    single: `- O que define esta direção: o produto no centro e três legendas curtas ligadas por linhas finas às partes que elas descrevem. A peça explica o produto apontando para ele.
+- Fundo cinza muito claro, liso e contínuo.
+- O produto aparece em três quartos, no centro, inteiro, com sombra de contato curta.
+- Três legendas de duas ou três palavras, em escuro, ligadas por linhas finas e retas às partes certas do produto. As linhas não cruzam o produto.
+- No alto, centralizada, a marca pequena. Embaixo, centralizada, a oferta em uma linha de caixa alta pesada.
+- Esta peça não tem pessoa, selo, cartão, ícone ou CTA.`,
+  },
+  'REF-0174': {
+    title: 'MÃO AFUNDANDO UM DOS DOIS TRAVESSEIROS',
+    single: `- O que define esta direção: as duas unidades lado a lado na cama, e uma mão afunda uma delas mostrando a espuma que volta ao formato. O par é a oferta; o gesto é o argumento.
+- Cama arrumada com lençol cinza-claro liso, vista de cima em diagonal, com luz de manhã vinda de janela lateral.
+- Só a mão e o pulso aparecem, entrando pela borda e pressionando o centro de uma unidade. A outra fica intacta ao lado.
+- Na área livre do lençol, no alto: a marca pequena, uma headline de uma linha com o benefício e a oferta em caixa alta pesada.
+- Esta peça não tem lista de tópicos, ícone, selo, cartão ou CTA.
+- Com uma unidade confirmada, a mão pressiona a única que existe e o resto da cama fica livre.`,
+  },
+  'REF-0175': {
+    title: 'PERNA COM O PRODUTO E FAIXA ESCURA DE OFERTA',
+    single: `- O que define esta direção: uma perna em perfil mostra o produto em uso, e uma faixa escura embaixo junta a oferta e os benefícios.
+- Fundo cinza-claro quente, liso e contínuo.
+- A perna aparece em perfil, do joelho até o pé descalço, apoiada na ponta.
+- Na base, uma faixa sólida escura de ponta a ponta: a oferta em caixa alta pesada e clara de um lado, e os três benefícios empilhados do outro.
+- A marca pequena fica no alto, alinhada à esquerda.
+- Esta peça não tem selo, cartão, ícone ou CTA.`,
+  },
+  'REF-0176': {
+    title: 'MACRO QUE ESTOURA AS BORDAS COM OFERTA MINÚSCULA',
+    single: `- O que define esta direção: o produto é fotografado tão perto que não cabe no quadro — ele entra por uma borda e sai pela outra, cortado dos dois lados. A textura do material é o assunto, e o texto é minúsculo ao lado.
+- Fundo do mesmo material do produto continuando atrás dele, e na mesma claridade dele: produto claro pede fundo claro, produto escuro pede fundo escuro. Sem cenário, superfície ou horizonte visível.
+- O produto atravessa o quadro na diagonal, cortado nas duas pontas. Costura, textura, cadarço e acabamento aparecem em detalhe absoluto, com foco fechadíssimo e profundidade curta.
+- Luz rasante de um lado só, criando relevo forte na textura e sombra funda no lado oposto.
+- Num canto, em corpo pequeno e discreto, empilhados: a marca e a oferta em duas linhas. O texto é o menor elemento da peça e não disputa com a foto.
+- Nenhuma cor gráfica: o texto é claro ou escuro conforme o fundo, e toda a cor vem do produto.
+- Esta peça não tem pessoa, packshot inteiro, selo, moldura, benefício ou CTA. Nada de mostrar o produto por completo.`,
+  },
+  'REF-0177': {
+    title: 'UNIDADES EM QUEDA CONGELADA NO AR',
+    single: `- O que define esta direção: as unidades estão no ar, congeladas no meio de uma queda, em alturas e rotações diferentes. Nada toca o chão e não existe apoio, mesa, plinto ou fio à vista.
+- Fundo de estúdio claro, liso e contínuo, com sombras suaves e desalinhadas no piso, muito abaixo dos produtos, provando a altura.
+- As unidades ocupam o terço central do quadro, cada uma numa altura e num giro diferente, todas nítidas e sem borrão de movimento.
+- A de cima aparece um pouco menor e mais distante; a de baixo, maior e mais perto. A diferença de tamanho conta a queda.
+- No alto, alinhados à esquerda: a marca pequena e a oferta em duas linhas de caixa alta pesada e escura. O texto ocupa a área vazia acima da queda.
+- Esta peça não tem pessoa, mão, cenário, faixa, selo, moldura ou CTA. Nada de suporte visível segurando o produto.
+- Com menos cores confirmadas, caem menos unidades e o espaço vazio aumenta.`,
+  },
+  'REF-0178': {
+    title: 'SOMBRA DURA DE PERSIANA CORTANDO O PRODUTO',
+    single: `- O que define esta direção: uma sombra dura de persiana atravessa o quadro em faixas paralelas e passa por cima do produto. A sombra é o elemento gráfico da peça, e não existe nenhum texto.
+- Superfície e parede em concreto claro e liso, contínuos, sob sol forte e direto.
+- Faixas de sombra retas e bem marcadas cruzam o quadro na diagonal, com bordas nítidas e espaçamento regular, cobrindo parte do produto e parte do fundo.
+- O produto fica no centro, em três quartos, com pelo menos uma faixa de luz cheia atravessando sua parte principal — a silhueta inteira continua legível mesmo com as faixas por cima.
+- O contraste entre luz e sombra é alto, sem meio-tom.
+- Esta peça não tem texto, marca, pessoa, objeto de cena, selo, moldura ou efeito gráfico aplicado. A única geometria é a sombra real.`,
+  },
+  'REF-0179': {
+    title: 'PRODUTO SOBRE COR CHAPADA SATURADA',
+    single: `- O que define esta direção: o quadro inteiro é uma única cor chapada e saturada, e o produto flutua sobre ela. É a peça mais colorida do banco, e a cor é do fundo, nunca do texto.
+- Fundo de uma só cor viva, forte e uniforme — sem gradiente, textura, cenário ou horizonte. A cor é escolhida para contrastar com o produto: escura se o produto for claro, clara e saturada se o produto for escuro.
+- As unidades ficam em pé no centro, lado a lado e levemente desalinhadas em altura, com sombra de contato curta e da mesma cor do fundo, um tom mais escura.
+- No alto, centralizada, a oferta em caixa alta pesada, em branco ou preto puro conforme a leitura sobre a cor. A marca pequena fica na base, centralizada, na mesma cor do texto.
+- Só existem duas cores na peça inteira: a do fundo e a do texto. Todo o resto vem dos produtos.
+- Esta peça não tem pessoa, cenário, faixa, selo, moldura, benefício escrito ou CTA.
+- Com uma cor confirmada, fica uma unidade só, centralizada, e o fundo ganha mais respiro.`,
+  },
+  'REF-0180': {
+    title: 'TORRE ALTA DE UNIDADES CORTADA PELO TOPO',
+    single: `- O que define esta direção: uma torre de unidades dobradas sobe do pé do quadro e sai cortada pelo topo. Não dá para ver onde termina, e é isso que anuncia a quantidade.
+- Fundo claro, liso e contínuo, com luz lateral suave e sombra longa da torre projetada para o lado.
+- A torre é estreita e muito alta, ligeiramente fora do centro, com as unidades empilhadas em alinhamento solto, uma levemente deslocada da outra. As cores confirmadas se alternam subindo.
+- A câmera está na altura da base, ligeiramente abaixo, olhando para cima — a torre afina no topo e reforça a altura.
+- Na faixa vertical livre ao lado da torre, alinhados à esquerda e na base: a marca pequena e a oferta em duas linhas de caixa alta pesada.
+- Esta peça não tem pessoa, mão, prateleira, cenário, faixa, selo ou CTA.
+- Com menos cores confirmadas, a torre alterna as cores reais; a altura nunca diminui.`,
+  },
+  'REF-0181': {
+    title: 'PRODUTO GIGANTE ATRÁS, PRODUTO REAL NA FRENTE',
+    single: `- O que define esta direção: o mesmo produto aparece duas vezes no mesmo quadro, em escalas muito diferentes — um close gigante e desfocado ocupando o fundo inteiro, e a unidade completa e nítida na frente. A peça mostra o detalhe e o produto de uma vez só.
+- Não existe fundo de estúdio: o fundo é o próprio produto, em macro, muito desfocado, mostrando só textura e cor.
+- Na frente, a unidade inteira aparece em três quartos, pequena em relação ao fundo, absolutamente nítida, com sombra de contato curta.
+- A parte do produto que está gigante ao fundo é justamente a que o benefício principal descreve.
+- Na área mais limpa do fundo desfocado, alinhados à esquerda: a marca pequena, os benefícios em linhas curtas separadas por filetes finos, e a oferta na base com o número em corpo grande.
+- O texto é claro sobre o fundo escuro, ou escuro sobre o fundo claro — nunca uma terceira cor.
+- Esta peça não tem pessoa, ícone, cartão, selo, moldura, estrela de avaliação ou CTA.`,
+  },
+  'REF-0182': {
+    title: 'SPLIT DIAGONAL ENTRE O PRODUTO E A OFERTA',
+    single: `- O que define esta direção: uma linha diagonal corta o quadro de canto a canto e divide a peça em dois territórios — de um lado a fotografia, do outro um campo de cor sólida com a oferta. O corte é inclinado, nunca vertical nem horizontal.
+- Do lado da fotografia, as duas unidades aparecem deitadas e cruzadas sobre superfície escura e fosca, com luz lateral dura e sombra curta.
+- Do outro lado da diagonal, um campo de cor sólida e escura, sem textura, sem foto e sem degradê.
+- Sobre o campo sólido, acompanhando a inclinação da diagonal: a oferta em caixa alta pesada e clara em duas linhas, os benefícios em linhas curtas abaixo, e a marca pequena na base.
+- Nenhuma unidade cruza a diagonal: a foto termina exatamente onde o campo começa.
+- Só existem duas cores gráficas: o escuro do campo e o claro do texto.
+- Esta peça não tem pessoa, ícone, cartão, selo, moldura ou CTA.
+- Com uma unidade confirmada, ela aparece sozinha do lado da fotografia, e o campo de cor continua igual.`,
+  },
+  'REF-0183': {
+    title: 'MÃO COM O PRODUTO E TÓPICOS EM LINHA FINA',
+    single: `- O que define esta direção: a mão mostra o produto de perto, a segunda cor fica em pé na base, e o argumento vem em três tópicos com ícone de linha fina.
+- Fundo de banheiro claro, azulejo branco liso e desfocado.
+- A mão, só até o pulso, segura uma unidade em pé. A outra cor fica em pé na base, ao lado e um pouco atrás.
+- Do outro lado do quadro, empilhados e alinhados à esquerda: a marca pequena no alto; três tópicos curtos, cada um com um ícone de linha fina solto, sem círculo e sem fundo; e a oferta na base, com o número em corpo grande.
+- Todo o texto e todo o ícone são escuros sobre o fundo claro. A peça não tem nenhuma cor de acento, nem no número, nem em selo, nem em faixa: a única cor do quadro vem do produto.
+- Esta peça não tem selo, cartão, estrela de avaliação ou CTA.
+- Com uma cor só, a unidade da base some e a mão fica sozinha.`,
+  },
+  'REF-0184': {
+    title: 'MÃO NA BANCADA COM AS CORES AO LADO',
+    single: `- O que define esta direção: uma mão ergue o produto cheio de vitamina numa cozinha real, e as outras cores estão em pé na bancada, na mesma luz. Uso e variedade na mesma foto.
+- Cozinha clara, bancada de pedra clara e parede lisa clara ao fundo, com luz de janela.
+- Só a mão e o antebraço aparecem, entrando pela borda com uma unidade cheia. As outras ficam em pé na bancada, ao lado, inteiras.
+- Na parede livre, alinhados à esquerda: a marca pequena, uma headline de duas linhas com o benefício principal em caixa alta pesada e a oferta em uma linha.
+- Todo o texto é escuro sobre a parede clara. A peça não tem selo, tarja, cartão nem nenhuma cor de acento: a única cor do quadro vem dos produtos e do conteúdo do copo.
+- Esta peça não tem lista de tópicos, ícone ou CTA.
+- Com menos cores confirmadas, a bancada fica com menos unidades.`,
+  },
+  'REF-0185': {
+    title: 'OS DOIS JOELHOS, UMA UNIDADE EM CADA',
+    single: `- O que define esta direção: o produto vem em par porque o corpo tem dois joelhos. As duas pernas aparecem lado a lado, cada joelho com uma unidade.
+- Fundo de estúdio claro e liso.
+- As pernas aparecem de frente, lado a lado, enquadradas do meio da coxa até o meio da canela. A bermuda é lisa, neutra e escura.
+- Numa faixa lateral clara, alinhados à esquerda: a marca pequena, os três benefícios em linhas curtas separadas por filetes finos e a oferta na base, em caixa alta pesada.
+- Todo o texto, todo o filete e todo o ícone são escuros sobre a faixa clara. A peça não tem tarja colorida, selo colorido nem número em cor: a única cor do quadro é a pele e o preto do produto.
+- Esta peça não tem cartão, moldura, estrela de avaliação ou CTA.`,
+  },
+  'REF-0186': {
+    title: 'PRODUTO EM USO VISTO DE COSTAS',
+    single: `- O que define esta direção: o produto em uso visto de costas, durante uma corrida real, com uma headline de benefício sobre o céu claro.
+- Parque aberto com céu claro e liso ocupando a parte de cima do quadro; o resto do fundo levemente desfocado.
+- A pessoa é vista de costas e de perto: nuca, orelhas e ombros, com o arco do fone passando atrás da nuca. Camiseta lisa em tom neutro.
+- Sobre o céu, alinhados à esquerda: a marca pequena, uma headline de duas linhas com o benefício em caixa alta pesada e a oferta em uma linha abaixo.
+- Todo o texto é escuro sobre o céu claro. A peça não tem tarja, caixa, selo nem cor de acento: a única cor do quadro vem da própria cena.
+- Esta peça não tem lista de tópicos, ícone, cartão ou CTA.`,
+  },
+  'REF-0187': {
+    title: 'TEXTURA DO CONTEÚDO AO LADO DO FRASCO FECHADO',
+    single: `- O que define esta direção: o produto fechado de um lado e o conteúdo dele espalhado direto na superfície do outro. A textura do creme é tão importante quanto a embalagem — é ela que o cliente compra.
+- Superfície de pedra clara e fosca, contínua, ocupando o quadro inteiro, com luz suave vinda de cima e sombra curta.
+- O pote aparece fechado, em três quartos, ligeiramente fora do centro, inteiro e nítido.
+- Ao lado dele, sobre a mesma pedra, uma porção generosa do conteúdo espalhada com relevo real: picos, ondas e brilho de superfície úmida, num traço solto e assimétrico que não vira coração nem forma desenhada.
+- A textura recebe a mesma luz do produto e fica igualmente nítida. As duas coisas juntas ocupam a maior parte do quadro.
+- No alto, alinhados à esquerda: a marca pequena e a oferta em duas linhas de caixa alta pesada e escura.
+- Nenhuma cor gráfica: toda a cor vem do produto e do conteúdo.
+- Esta peça não tem pessoa, mão, espátula, ingrediente, cenário, selo, moldura ou CTA.`,
+  },
+  'REF-0188': {
+    title: 'MACRO DO CONTEÚDO COM O FRASCO PEQUENO EM CIMA',
+    single: `- O que define esta direção: o quadro inteiro é o conteúdo em macro absoluto, e o frasco aparece pequeno, pousado sobre ele. A escala inverte: o líquido é o cenário e a embalagem é o objeto.
+- Uma poça larga e rasa do próprio sérum cobre o quadro de borda a borda, com bolhas, viscosidade e reflexo de luz visíveis em detalhe.
+- O frasco fica pousado sobre a poça, pequeno em relação a ela, inteiro, nítido e em pé, com o reflexo dele deitado no líquido.
+- Luz lateral rasante cria brilho alto nas bordas das bolhas e escurece o fundo da poça, dando profundidade.
+- Esta peça não tem texto, marca, pessoa, mão, ingrediente, cenário, selo, moldura ou efeito gráfico.`,
+  },
+  'REF-0189': {
+    title: 'LINHA COMPLETA ALINHADA PELA BASE, SUBINDO EM ALTURA',
+    collection: `- O que define esta direção: os frascos da linha ficam lado a lado, todos apoiados na mesma base, e as alturas diferentes desenham uma escada natural. A escada do desconto é a própria linha de produtos, e os percentuais correm rentes a essa silhueta.
+- Fundo claro e quente, liso e contínuo, com luz suave de cima e sombras curtas alinhadas na mesma direção.
+- Os produtos ficam em fila, encostando quase, ordenados do mais baixo ao mais alto, todos de frente e no mesmo plano. Nenhum é girado nem adiantado.
+- Acompanhando a linha do topo dos frascos, subindo com ela: a quantidade em corpo pequeno e o percentual em caixa alta pesada logo abaixo, um par por degrau. O último percentual é o maior.
+- A marca pequena fica no alto, alinhada à esquerda, longe dos percentuais.
+- Toda a cor vem dos frascos e do conteúdo; o texto é escuro e sem cor de acento.
+- Esta peça não tem pessoa, mão, ingrediente, caixa, selo, moldura ou CTA.
+- Com menos itens confirmados, a fila encurta e sobra mais fundo; nenhum frasco é inventado para completar a escada.`,
+  },
+  'REF-0190': {
+    title: 'KIT NA CAIXA ABERTA COM BERÇO RECORTADO',
+    collection: `- O que define esta direção: uma caixa rígida aberta, vista de cima, com um berço interno recortado sob medida, e cada produto encaixado no seu vão. É o kit como objeto fechado, não como produtos soltos lado a lado.
+- A caixa ocupa quase todo o quadro, apoiada sobre superfície escura e fosca, com a tampa encostada atrás, inclinada, mostrando o interior liso.
+- O berço interno é de espuma ou papelão em tom neutro, com vãos do formato exato de cada frasco. Cada produto fica deitado no seu vão, inteiro, visível e sem sobrepor o vizinho.
+- Luz difusa de cima, sem reflexo duro no vidro e sem sombra cortando os produtos.
+- Na superfície escura ao lado da caixa, alinhados à esquerda: a marca pequena e a oferta em duas linhas de caixa alta pesada e clara.
+- Esta peça não tem pessoa, mão, laço, papel de presente, ingrediente, selo, moldura ou CTA.
+- Com menos itens confirmados, o berço tem menos vãos e a caixa fica mais estreita; nenhum vão fica vazio.`,
+  },
+  'REF-0191': {
+    title: 'INGREDIENTE CRU CORTADO AO LADO DO PRODUTO',
+    single: `- O que define esta direção: o produto ao lado do ingrediente cru que ele carrega, cortado e fresco. O ingrediente prova a promessa sem que nenhum texto precise explicá-la.
+- Superfície de pedra clara e molhada, com gotas de água reais espalhadas, sob luz de sol direta e sombra marcada.
+- O produto fica em pé no centro, inteiro e nítido, com gotas de água na própria embalagem.
+- Ao lado, o ingrediente cru aparece inteiro e cortado ao meio, mostrando o interior, na mesma luz e na mesma nitidez do produto — mas menor que ele.
+- Numa faixa do fundo livre, alinhados à esquerda: a marca pequena, os benefícios em linhas curtas separadas por filetes finos, e a oferta na base com o número em corpo grande.
+- Todo o texto é escuro sobre o fundo claro; a peça não tem cor de acento, tarja nem selo.
+- Esta peça não tem pessoa, mão, ícone, cartão, moldura ou CTA.`,
+  },
+  'REF-0192': {
+    title: 'FRASCO CORTADO AO MEIO MOSTRANDO AS CAMADAS',
+    single: `- O que define esta direção: duas unidades do mesmo produto lado a lado — uma inteira e fechada, outra aberta em corte reto mostrando o interior. O corte é o argumento: o cliente vê o que está comprando por dentro.
+- Fundo cinza muito claro, liso e contínuo, com luz difusa e sombra de contato curta sob cada unidade.
+- As duas unidades ficam em pé, lado a lado, no mesmo tamanho e no mesmo ângulo. A da direita está seccionada verticalmente, com o corte limpo e reto, revelando a massa interna e o mecanismo.
+- A face cortada é nítida e bem iluminada, sem brilho plástico e sem aparência de desenho técnico.
+- Três legendas curtas em escuro, ligadas por linhas finas retas às partes do corte que elas descrevem. As linhas não cruzam o produto.
+- No alto, centralizada, a marca pequena. Embaixo, centralizada, a oferta em uma linha de caixa alta pesada.
+- Esta peça não tem pessoa, mão, ícone, cartão, selo ou CTA.`,
+  },
+  'REF-0193': {
+    title: 'PRODUTO AO LADO DO REFIL, COM A CONTA DESENHADA',
+    single: `- O que define esta direção: o frasco com válvula de um lado e o refil de pé do outro, com uma seta larga entre eles apontando do refil para o frasco. A peça mostra a recompra em vez de anunciá-la só no texto.
+- Fundo claro e liso, contínuo, com luz difusa e sombra de contato curta sob cada peça.
+- As duas peças ficam em pé, no mesmo plano, com folga entre elas. O frasco é ligeiramente maior e fica à frente; o refil fica um passo atrás.
+- Entre os dois, uma seta larga e cheia, escura, apontando do refil para o frasco. A seta é menor que qualquer uma das peças.
+- No alto, centralizados: a marca pequena e a oferta em uma linha de caixa alta pesada. Embaixo, uma única linha pequena e espaçada com os benefícios separados por pontos.
+- A seta é o único elemento gráfico da peça, e é da mesma cor do texto.
+- Esta peça não tem pessoa, mão, ícone, cartão, selo, moldura ou CTA.`,
+  },
+  'REF-0194': {
+    title: 'DOSE DIÁRIA CONTADA AO LADO DO POTE',
+    single: `- O que define esta direção: o pote fechado e, ao lado, as cápsulas contadas e alinhadas em fileira certinha sobre a superfície. Dá para contar a dose com o olho — esse é o argumento.
+- Superfície de pedra clara e fosca vista de cima, contínua, com luz suave e sombras curtas.
+- O pote aparece deitado ou em pé num canto, inteiro e nítido.
+- As cápsulas ficam alinhadas em fileira regular, todas na mesma direção e com espaçamento igual, saindo da boca do pote em direção ao lado oposto do quadro. A quantidade da fileira é a dose que o benefício declara.
+- Na área livre, alinhados à esquerda: a marca pequena, os benefícios em linhas curtas separadas por filetes finos, e a oferta na base em caixa alta pesada.
+- Todo o texto é escuro; a peça não tem tarja, selo nem cor de acento. A cor vem só do produto.
+- Esta peça não tem pessoa, mão, copo, água, ícone, cartão ou CTA.`,
+  },
+  'REF-0195': {
+    title: 'FRASCO EM LUZ ÂMBAR COM O RESPINGO CONGELADO',
+    single: `- O que define esta direção: o frasco em pé sobre uma lâmina de líquido, com um respingo congelado subindo ao lado dele. O movimento parado é o que dá o clima, e a peça é quase toda escura.
+- Fundo escuro profundo, quase preto, com uma única luz âmbar quente vindo de trás e de baixo, atravessando o vidro e acendendo o líquido por dentro.
+- A base é uma lâmina rasa do mesmo líquido, espelhando o frasco, com o reflexo alongado descendo no quadro.
+- Ao lado do frasco, um respingo congelado sobe em coroa, com gotas soltas no ar, todas nítidas e sem borrão.
+- O frasco é o ponto mais brilhante da imagem; os cantos do quadro escurecem por completo.
+- Na área escura do alto, alinhados à esquerda: a marca pequena e clara e a oferta em duas linhas de caixa alta pesada e clara.
+- Só existem três cores: o escuro do fundo, o âmbar do líquido e o claro do texto.
+- Esta peça não tem pessoa, mão, flor, especiaria, caixa, selo, moldura ou CTA.`,
+  },
+  'REF-0196': {
+    title: 'ROTINA NUMERADA COM UM PRODUTO POR PASSO',
+    collection: `- O que define esta direção: o quadro se divide em três faixas verticais iguais, uma por passo da rotina, e cada faixa tem o seu número grande, o seu produto e a mão aplicando o conteúdo. A ordem de uso é a composição.
+- As três faixas repetem o mesmo fundo claro e liso, a mesma luz e o mesmo enquadramento, separadas por respiros finos.
+- Em cada faixa, uma mão aparece só até o pulso, com uma porção do conteúdo daquele passo sobre as pontas dos dedos ou no dorso. Nenhuma outra parte do corpo entra no quadro.
+- O produto de cada passo fica em pé atrás da mão, inteiro e nítido, e é maior que a mão na leitura.
+- No alto de cada faixa, um número grande e escuro — 1, 2 e 3 — e abaixo dele uma palavra só dizendo o passo.
+- Na base, atravessando as três faixas, uma linha com a marca pequena de um lado e a oferta em caixa alta pesada do outro.
+- Todo o texto é escuro; a peça não tem tarja, selo nem cor de acento.
+- Esta peça não tem rosto, cartão, ícone, moldura ou CTA.
+- Com menos itens confirmados, a peça tem menos faixas e cada uma fica mais larga; a numeração acompanha.`,
+  },
+  'REF-0197': {
+    title: 'PRODUTO ESQUECIDO NA BANCADA DA COZINHA',
+    single: `- O que define esta direção: a foto que alguém tira da própria bancada de manhã, sem arrumar nada. O produto está ali no meio da rotina, não em cima de um pedestal.
+- Bancada de cozinha comum, com a pia parcialmente visível, um pano dobrado torto, um copo usado e a luz cinzenta da manhã entrando pela janela.
+- O produto fica em pé perto da borda, ligeiramente fora do centro, com a tampa apoiada ao lado como se tivesse acabado de ser aberto.
+- A câmera está na altura do peito de quem está em pé, apontada um pouco para baixo, com a bancada saindo pela borda inferior.
+- A foto tem o desfoque leve de quem fotografou de perto sem firmar a mão, e a cor puxa para o frio da luz natural.
+- Nada na cena foi arrumado para a foto: se um objeto está fora do lugar, ele fica.`,
+  },
+  'REF-0198': {
+    title: 'PÉ DESCALÇO NO CHÃO, NO PRIMEIRO PASSO DO DIA',
+    single: `- O que define esta direção: a foto que alguém tira do próprio pé, olhando de cima, no momento em que dói. É o gesto de quem quer mostrar o problema para outra pessoa.
+- Quarto comum de manhã, chão de piso frio, o pé da cama e um pedaço de lençol entrando na borda do quadro.
+- A câmera é o próprio olhar de quem está sentado na beira da cama: aponta para baixo, em ângulo inclinado, e mostra o pé apoiado no chão.
+- O produto aparece pequeno, dentro de um sapato caído de lado ao alcance da mão, parcialmente na sombra.
+- A luz é fraca e desigual, com o contraste alto de manhã cedo. Sombra funda sob a cama.
+- Nada de close de estúdio, pele retocada, unha feita ou pedicure. É um pé comum de uma pessoa comum.`,
+  },
+  'REF-0199': {
+    title: 'CACHORRO DEITADO NO TAPETE, VISTO DE CIMA',
+    single: `- O que define esta direção: a foto que o dono tira do próprio cachorro deitado, do jeito que ele está, com o produto largado ao lado. É a foto que uma pessoa manda para a amiga.
+- Sala comum, tapete um pouco puído, sofá cortado na borda do quadro, brinquedo do cachorro esquecido no canto.
+- O cachorro está deitado de lado, relaxado, com a cabeça apoiada no tapete e os olhos semicerrados. Ele ocupa a maior parte do quadro.
+- O sachê do produto está aberto e caído ao lado dele, com alguns petiscos fora, sem nenhum arranjo.
+- A câmera aponta para baixo da altura de quem está em pé, levemente torta, e a foto tem grão de luz baixa de fim de tarde.
+- Nada de cachorro de banco de imagem, pelo escovado, coleira nova ou cenário limpo.`,
+  },
+  'REF-0200': {
+    title: 'DUAS FOTOS DO MESMO CANTO DA CASA, COM MESES DE DIFERENÇA',
+    single: `- O que define esta direção: duas fotos caseiras do mesmo canto de parede, tiradas do mesmo lugar em momentos diferentes, encostadas uma na outra. Não existe cartão, borda, rótulo nem seta: são só duas fotos lado a lado, como quem junta duas imagens no celular.
+- O canto é o encontro de duas paredes atrás de um móvel, num quarto comum, com rodapé e um pedaço do móvel aparecendo.
+- Na primeira, a parede tem manchas escuras de mofo e a tinta descascando na quina. Na segunda, o mesmo canto está limpo e o produto aparece no chão, encostado na parede, ligado.
+- As duas fotos têm o mesmo enquadramento torto e a mesma luz de lâmpada amarelada, porque foram tiradas pela mesma pessoa no mesmo lugar.
+- A emenda entre as duas é uma linha simples, sem moldura e sem espaço branco.
+- Nada de texto, etiqueta, rótulo de antes e depois, seta ou marcação de cor.`,
+  },
+  'REF-0201': {
+    title: 'BILHETE ESCRITO À MÃO SOBRE A MESA',
+    single: `- O que define esta direção: um bilhete escrito à mão numa folha comum, fotografado de cima sobre a mesa, com o produto encostado ao lado. A letra é de alguém de verdade, não uma fonte imitando escrita.
+- Mesa de madeira escura e gasta de cozinha, com a caneta largada em cima do papel e um pedaço de toalha de mesa na borda.
+- O papel é uma folha de bloco comum, levemente amassada, escrita a caneta esferográfica azul, com letra de pessoa mais velha, linha irregular e uma palavra rasurada.
+- O bilhete traz um lembrete curto e doméstico, escrito à mão, sem nada de publicitário.
+- O produto fica ao lado do papel, aberto, com alguns compartimentos cheios e outros vazios.
+- A câmera aponta direto para baixo, com leve inclinação, e a sombra do celular de quem fotografa aparece na borda.
+- Nada de caligrafia bonita, papel novo, caneta-tinteiro ou mesa arrumada.`,
+  },
+  'REF-0202': {
+    title: 'PRODUTO NO PORTA-COPOS DO CARRO, PARADO NO TRÂNSITO',
+    single: `- O que define esta direção: a foto que alguém tira de dentro do próprio carro, parado, com o celular na mão. O produto está no porta-copos, usado, no meio da vida real.
+- Interior de carro comum, console entre os bancos, câmbio e um pedaço do banco do passageiro. Pelo para-brisa, um trânsito parado e desfocado.
+- O produto está encaixado no porta-copos, ligeiramente sujo de uso, com uma marca de dedo no inox.
+- A câmera está na altura do banco, apontada para baixo em diagonal, enquadrando o console e parte do para-brisa.
+- A luz é a do dia entrando pelo vidro, com reflexo no painel e uma faixa estourada onde o sol bate.
+- Nada de carro de revista, painel limpo, produto novo sem marca de uso ou estrada bonita ao fundo.`,
+  },
+  'REF-0203': {
+    title: 'PESSOA COMUM SENTADA NO SOFÁ, FOTO TIRADA POR OUTRA PESSOA',
+    single: `- O que define esta direção: a foto que um parente tira de alguém sentado, sem avisar. A pessoa não posa, não olha para a câmera e está no meio de outra coisa.
+- Sala comum de casa, sofá com manta torta, mesinha com controle remoto e um copo, parede com quadro pequeno.
+- A pessoa está sentada de lado, com o produto apoiado nas costas, olhando para a TV fora do quadro, com expressão neutra e roupa de estar em casa.
+- A câmera está à altura de quem está em pé na sala, a alguns passos, e pega a pessoa inteira do joelho para cima, com o sofá cortado pela borda.
+- A luz é de lâmpada de teto misturada com o resto de luz da janela, com cor desigual e sombra dura embaixo.
+- Nada de modelo, maquiagem, roupa nova, sorriso para a câmera ou sala de decoração.`,
+  },
+  'REF-0204': {
+    title: 'DETALHE DO PROBLEMA NUM OBJETO DE CASA',
+    single: `- O que define esta direção: um close de celular no problema, feito por quem estava incomodado com ele. A mão puxa o tecido para mostrar melhor, e o produto está por perto sem protagonismo.
+- Um casaco escuro estendido na cama, com o lençol amassado aparecendo ao redor.
+- A mão de uma pessoa segura e estica um pedaço do tecido, deixando as bolinhas claras visíveis contra o escuro. Só a mão e parte do pulso aparecem.
+- O produto está largado sobre a cama ao lado, um pouco fora de foco, com o reservatório cheio de fiapos.
+- A câmera está muito perto, com foco curto: parte do tecido está nítida e o resto desmancha.
+- A luz é de lâmpada do quarto, amarelada, com a sombra da mão caindo sobre o tecido.
+- Nada de estúdio, fundo neutro, tecido novo ou iluminação montada.`,
+  },
+  'REF-0205': {
+    title: 'INGREDIENTE E PRODUTO NA MESA DO CAFÉ DA MANHÃ',
+    single: `- O que define esta direção: a foto de uma mesa de café da manhã de verdade, no meio do preparo, com o produto entre as outras coisas. A cena está pela metade, não montada.
+- Mesa de madeira escura e comum, com uma caneca de café pela metade, uma colher suja apoiada no guardanapo, migalhas e um celular virado para baixo.
+- O produto está aberto ao lado da caneca, com a colher dosadora dentro e um pouco de pó derramado na mesa.
+- A câmera aponta de cima, em ângulo torto, cortando a borda da mesa e pegando um pedaço da cadeira.
+- A luz é a da manhã pela janela lateral, com reflexo na caneca e sombras compridas.
+- Nada de flat lay arrumado, louça combinando, flores, tábua de madeira decorativa ou fundo neutro.`,
+  },
+  'REF-0206': {
+    title: 'CENA DO LUGAR ONDE O PROBLEMA ACONTECE, SEM PRODUTO',
+    single: `- O que define esta direção: a foto do lugar onde o problema acontece, sem o produto nenhum no quadro. A cena sozinha faz a pessoa reconhecer a própria casa.
+- Um corredor comum de casa à noite, quase todo escuro, com portas fechadas dos dois lados e o batente do quarto aparecendo perto.
+- A única luz é um resto de claridade vindo de uma porta entreaberta no fim do corredor, desenhando uma faixa no chão.
+- A câmera está à altura de quem acabou de levantar, apontada para o fundo do corredor, um pouco inclinada.
+- A foto tem grão alto e é escura de verdade: os cantos somem, e só o piso perto da faixa de luz aparece.
+- Esta peça não mostra o produto. Ela mostra o problema.
+- Nada de luz bonita, casa de revista, corredor largo ou decoração.`,
+  },
+
 };
 
 function compileSingleContextPrompt(campaign: CampaignInput) {
@@ -1187,6 +1759,36 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
 - Mostre o mesmo produto sem redesenhar, recolorir ou inventar componentes.
 ${variantRule || '- Não misture variantes; use somente a variante factual registrada.'}
 ${repeatedUnitsRule}`;
+
+  /*
+   * A peça nativa inverte o núcleo: a regra da casa sai porque o mecanismo dela é não
+   * parecer anúncio, o bloco de design sai porque não existe tipografia na imagem, e a
+   * presença humana sai porque a pessoa pode mandar no quadro. Em troca entra a copy,
+   * que no nativo é metade do criativo.
+   */
+  if (reference.native) {
+    return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo nativo em proporção 4:5, mais a copy que acompanha a peça.
+
+${NATIVE_RULE}
+
+CONTEÚDO OBRIGATÓRIO
+${contentRule}
+- Use a loja/anunciante, a marca do produto e o idioma exatamente como registrados no contexto.
+${factualRule}
+- Se houver conflito entre estética e fidelidade, preserve a fidelidade.
+
+DIREÇÃO VISUAL — ${title}
+${recipe}
+
+${NATIVE_COPY_RULE}
+
+SAÍDA
+- Entregue uma única imagem final e independente em 4:5, e abaixo dela a copy em texto.
+- Não gere alternativas, colagem, grade nem carrossel.
+- Não gere nem altere nenhum outro criativo desta conversa.
+
+Entregue agora a imagem e a copy desta direção.`;
+  }
 
   return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo publicitário mestre em proporção 4:5.
 

@@ -14,8 +14,11 @@
     "pagina:caminhos": "node scripts/build-paths-page.mjs",
     "pagina:lacunas": "node scripts/build-gaps-page.mjs",
     "pagina:decisoes": "node scripts/build-decisions-page.mjs",
+    "prompts:referencias": "node scripts/build-reference-prompts.mjs",
     "lint": "oxlint",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "prompts:lote": "node scripts/build-lote-codex.mjs",
+    "audit:lacunas": "node scripts/audit-lacunas.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",
