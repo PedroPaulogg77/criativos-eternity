@@ -8,7 +8,16 @@ export type CampaignInput = {
   linkAccess: 'public' | 'protected';
   offer: string;
   offerMechanic?: OfferMechanic | null;
+  channels?: Array<'google' | 'meta'>;
 };
+
+export type MasterFormat = '1:1' | '4:5';
+
+/* Google não precisa nascer vertical. Em campanha mista, Meta conserva o mestre 4:5
+ * e o lote inteiro recebe a adaptação quadrada depois. */
+export function masterFormatForCampaign(campaign: CampaignInput): MasterFormat {
+  return campaign.channels?.length === 1 && campaign.channels[0] === 'google' ? '1:1' : '4:5';
+}
 
 type TestedDirection = {
   title: string;
@@ -1646,9 +1655,9 @@ Antes de gerar qualquer imagem, construa o contexto factual obedecendo a estas r
 3. Separe a marca da loja/anunciante da marca dos produtos quando forem diferentes.
 4. Preserve exatamente a oferta recebida, apenas localizando a redação para o idioma da loja quando necessário.
 5. Não invente produtos, variantes, cores, materiais, logos, benefícios, preços, cupons, urgência, avaliações, garantias ou condições comerciais.
-6. Identifique todos os produtos ou looks visualmente confirmáveis que pertençam à coleção. Atribua IDs P01, P02, P03 e assim por diante; cada ID deve descrever apenas um produto ou look real.
-7. A seleção e a ordem dos produtos são LIVRES dentro dos itens elegíveis. Cada peça futura vai pedir a sua própria quantidade — pode ser três, quatro, seis ou mais — e escolherá entre os elegíveis. Liste TODOS os que conseguir confirmar, não apenas quatro. Só trate IDs específicos como obrigatórios se esta mensagem os declarar explicitamente.
-8. Se não existirem pelo menos quatro itens confirmáveis, peça somente a menor fonte adicional necessária. Não gere a imagem ainda.
+6. Percorra a vitrine da coleção na ordem em que os produtos aparecem na página, começando pelo primeiro item visível. Não pule itens para escolher os que parecem mais bonitos ou mais fáceis de usar.
+7. Identifique os primeiros OITO produtos ou looks visualmente confirmáveis da coleção. Atribua IDs P01 a P08 exatamente nessa ordem; P01 é o primeiro item da vitrine, P02 o segundo, e assim por diante. Cada ID descreve um produto ou look real, com a imagem, o nome e os detalhes que o distinguem.
+8. Se a coleção tiver menos de oito itens confirmáveis, registre todos os que existirem. Não invente, repita ou substitua um produto para completar a lista. Não gere a imagem ainda.
 9. Registre o estilo tipográfico da loja: se as letras da marca e do site são com ou sem serifa, o peso, a caixa e o espaçamento que ela usa.
 10. Registre o público-alvo da coleção: gênero, faixa etária e contexto de uso indicados pela página, pela categoria, pelas fotos e pela tabela de tamanhos.
 11. Registre o argumento de venda da coleção como ESTÉTICA: uma coleção é um conjunto de produtos que se vendem pela própria imagem. Não transforme a coleção em peça de explicação técnica.
@@ -1670,12 +1679,16 @@ Identidade visual observada:
 Estilo tipográfico da loja:
 Público-alvo da coleção:
 Argumento de venda:
-Produtos/looks elegíveis:
+Produtos prioritários da coleção, na ordem da vitrine:
 - P01:
 - P02:
 - P03:
-[continue se necessário]
-Regra de seleção visual: escolher livremente entre os elegíveis, na quantidade que cada peça pedir.
+- P04:
+- P05:
+- P06:
+- P07:
+- P08:
+Regra de seleção visual: quando a direção pedir N itens, use P01 até PN nessa ordem. Se houver menos itens confirmados do que a direção comporta, use somente os confirmados e reequilibre a composição.
 Título publicitário proposto:
 Fonte principal usada: link / prints / ambos
 Prazo de entrega publicado:
@@ -1693,6 +1706,27 @@ export function compileContextPrompt(campaign: CampaignInput) {
     : compileSingleContextPrompt(campaign);
 }
 
+/* O aluno não confere uma tela inteira antes de seguir. Se algo escapar, este é o
+ * retorno curto para o mesmo chat, sem reiniciar a campanha. */
+export function compileContextRecoveryPrompt(campaign: CampaignInput) {
+  const collectionRule = campaign.mode === 'collection'
+    ? `- Releia a vitrine da coleção pela ordem visual da página e substitua a lista de produtos pela prioridade correta: P01 até P08, sem pular, reordenar ou escolher itens livremente.
+- Se houver menos de oito itens, registre somente os que existirem.`
+    : '- Releia somente o produto do link e confirme sua variante, materiais, cores, identidade e oferta.';
+
+  return `A captura de contexto anterior trouxe informações erradas ou incompletas. Não gere imagem agora.
+
+Volte à fonte pública desta campanha:
+- Alvo: ${campaign.exactTarget}
+- Link: ${campaign.sourceUrl}
+- Promoção que precisa permanecer literal: ${campaign.offer}
+
+Corrija o CONTEXTO CAPTURADO usando somente o que estiver publicado na página.
+${collectionRule}
+- Não invente produto, benefício, preço, condição, cor, logo ou detalhe que não esteja confirmado.
+- Termine reenviando apenas o CONTEXTO CAPTURADO corrigido e “PRONTO PARA GERAR: SIM” quando os fatos estiverem consistentes.`;
+}
+
 function compileDirections(campaign: CampaignInput, selected: Reference[], round: number) {
   return selected
     .map((reference, index) => {
@@ -1704,7 +1738,7 @@ function compileDirections(campaign: CampaignInput, selected: Reference[], round
       const peopleLines = people ? people.split('\n').slice(1).join('\n') : '';
       const slotLine = campaign.mode === 'collection' && reference.slots
         ? `
-- Quantidade alvo desta direção: ${reference.slots} produtos ou looks distintos, todos da lista de elegíveis. Com menos itens confirmados, use menos módulos e deixe cada um maior. Nunca invente produto nem categoria para preencher.`
+- Quantidade alvo desta direção: ${reference.slots} produtos ou looks distintos, puxados da lista prioritária em ordem de P01 para frente. Com menos itens confirmados, use menos módulos e deixe cada um maior. Nunca invente produto nem categoria para preencher.`
         : '';
       const variantLine = supportsVariants(campaign, reference)
         ? `
@@ -1721,6 +1755,7 @@ function compileDirections(campaign: CampaignInput, selected: Reference[], round
 }
 
 export function compileReferencePrompt(campaign: CampaignInput, reference: Reference) {
+  const masterFormat = masterFormatForCampaign(campaign);
   const tested = testedDirections[reference.id];
   const title = tested?.title ?? reference.name.toUpperCase();
   const baseRecipe = tested?.[supportsVariants(campaign, reference) ? 'collection' : campaign.mode] ?? `- ${reference.recipe}`;
@@ -1750,7 +1785,7 @@ export function compileReferencePrompt(campaign: CampaignInput, reference: Refer
     : '';
   const contentRule = campaign.mode === 'collection'
     ? `- Anuncie somente a coleção “${campaign.exactTarget}”.
-- Mostre simultaneamente até ${slotsWord} produtos ou looks distintos, e SOMENTE itens que constem na lista de elegíveis do CONTEXTO CAPTURADO — V004. Essa quantidade é o alvo da diagramação, não uma cota a cumprir.
+- Mostre simultaneamente até ${slotsWord} produtos ou looks distintos, e SOMENTE itens que constem na lista prioritária do CONTEXTO CAPTURADO — V004, começando por P01 e seguindo a ordem da vitrine. Essa quantidade é o alvo da diagramação, não uma cota a cumprir.
 - O número de itens confirmados manda sobre a quantidade da direção. Se houver menos itens do que módulos, use menos módulos e deixe cada um maior, reequilibrando a composição.
 - É proibido inventar produto ou categoria para preencher espaço. Vale exatamente o que a lista de elegíveis traz: se ela reúne várias categorias, todas entram; se traz uma só, a peça inteira é dessa categoria e nada de fora aparece.
 - Um quadro com menos itens do que módulos é correto. Um quadro com item que não está na lista é entrega inválida, por melhor que ele combine com a cena.
@@ -1767,7 +1802,7 @@ ${repeatedUnitsRule}`;
    * que no nativo é metade do criativo.
    */
   if (reference.native) {
-    return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo nativo em proporção 4:5, mais a copy que acompanha a peça.
+    return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo nativo em proporção ${masterFormat}, mais a copy que acompanha a peça.
 
 ${NATIVE_RULE}
 
@@ -1783,14 +1818,14 @@ ${recipe}
 ${NATIVE_COPY_RULE}
 
 SAÍDA
-- Entregue uma única imagem final e independente em 4:5, e abaixo dela a copy em texto.
+- Entregue uma única imagem final e independente em ${masterFormat}, e abaixo dela a copy em texto.
 - Não gere alternativas, colagem, grade nem carrossel.
 - Não gere nem altere nenhum outro criativo desta conversa.
 
 Entregue agora a imagem e a copy desta direção.`;
   }
 
-  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo publicitário mestre em proporção 4:5.
+  return `Usando exclusivamente o CONTEXTO CAPTURADO e as fontes factuais já verificadas anteriormente nesta conversa, gere agora SOMENTE UM criativo publicitário mestre em proporção ${masterFormat}.
 
 ${HOUSE_PRODUCT_RULE}
 
@@ -1808,7 +1843,7 @@ ${recipe}
 ${silentBlock}${peopleBlock}${HOUSE_DESIGN_RULE}
 
 SAÍDA
-- Entregue uma única imagem final e independente em 4:5.
+- Entregue uma única imagem final e independente em ${masterFormat}.
 - Não gere alternativas, colagem, grade, carrossel ou explicações em texto.
 - Não gere nem altere nenhum outro criativo desta conversa.
 
@@ -1816,6 +1851,7 @@ Entregue agora somente a imagem final desta direção.`;
 }
 
 function compileSingleMasterPrompt(campaign: CampaignInput, selected: Reference[], round: number) {
+  const masterFormat = masterFormatForCampaign(campaign);
   const labels = selected.map((_, index) => itemLabel(index, round));
   const factualRule = selected.some(({ id }) => testimonialReferenceIds.has(id))
     ? '- Não invente preço, benefício, garantia, cupom, urgência, selo, embalagem ou acessório. Nas referências de depoimento, depoimento, nome, avatar e estrelas são elementos de texto publicitário e devem ser gerados como a receita pedir. Isso não autoriza inventar fato técnico, oferta ou detalhe do produto.'
@@ -1837,7 +1873,7 @@ Esta resposta precisa terminar com EXATAMENTE CINCO arquivos de imagem anexados.
 - Antes de enviar a resposta, conte os arquivos anexados. Se não forem cinco arquivos, cada um com uma peça só, gere os que faltam antes de responder.
 
 REGRA DE SAÍDA DO LOTE
-- As cinco imagens são finais, independentes e todas em proporção 4:5.
+- As cinco imagens são finais, independentes e todas em proporção ${masterFormat}.
 - Cada imagem deve funcionar sozinha como anúncio, sem depender das outras para ser entendida.
 - Não interrompa depois da primeira imagem e não peça confirmação entre elas.
 - Identifique cada arquivo fora da imagem com seu número e nome de direção visual.
@@ -1862,7 +1898,7 @@ ${compileDirections(campaign, selected, round)}
 CHECAGEM FINAL DO LOTE
 Antes de gerar, confirme internamente:
 1. A resposta terá cinco arquivos de imagem anexados, e cada arquivo tem uma peça só. Nenhum arquivo é colagem, grade ou montagem.
-2. Todos estarão em 4:5.
+2. Todos estarão em ${masterFormat}.
 3. O mesmo produto factual e a mesma oferta aparecerão corretamente nos cinco.
 4. Cada imagem corresponderá somente à sua direção visual numerada.
 5. Nenhuma referência criativa, marca externa, embalagem ou fato inventado será incorporado.
@@ -1874,6 +1910,7 @@ Entregue agora os cinco criativos ${labels.join(', ')}, em ordem, sem explicaç�
 }
 
 function compileCollectionMasterPrompt(campaign: CampaignInput, selected: Reference[], round: number) {
+  const masterFormat = masterFormatForCampaign(campaign);
   const labels = selected.map((_, index) => itemLabel(index, round));
   return `Usando exclusivamente o CONTEXTO CAPTURADO — V004 e as fontes factuais já verificadas anteriormente nesta conversa, execute agora um lote com EXATAMENTE CINCO criativos publicitários mestres para a coleção “${campaign.exactTarget}”.
 
@@ -1889,7 +1926,7 @@ Esta resposta precisa terminar com EXATAMENTE CINCO arquivos de imagem anexados.
 - Antes de enviar a resposta, conte os arquivos anexados. Se não forem cinco arquivos, cada um com uma peça só, gere os que faltam antes de responder.
 
 REGRA DE SAÍDA DO LOTE
-- As cinco imagens são finais, independentes e todas em proporção 4:5.
+- As cinco imagens são finais, independentes e todas em proporção ${masterFormat}.
 - Cada imagem deve funcionar sozinha como anúncio, sem depender das outras para ser entendida.
 - Não interrompa depois da primeira imagem e não peça confirmação entre elas.
 - Identifique cada arquivo fora da imagem com seu número e nome de direção visual.
@@ -1900,7 +1937,8 @@ CONTEÚDO COMUM E OBRIGATÓRIO
 - Coleção anunciada: “${campaign.exactTarget}”.
 - Oferta exata: “${campaign.offer}”. A única exceção é a direção que se declarar uma peça sem texto: nela a oferta não aparece.
 - Idioma: use exatamente o idioma registrado no CONTEXTO CAPTURADO — V004.
-- Cada criativo comunica variedade mostrando simultaneamente vários produtos ou looks distintos e elegíveis do contexto factual. A quantidade muda de uma direção para outra e está declarada dentro de cada uma: respeite a de cada criativo em vez de padronizar.
+- Cada criativo comunica variedade mostrando simultaneamente vários produtos ou looks distintos da lista prioritária do contexto factual. A quantidade muda de uma direção para outra e está declarada dentro de cada uma: respeite a de cada criativo em vez de padronizar.
+- Quando uma direção pedir N itens, use os primeiros N IDs disponíveis em ordem: P01, P02, P03 e assim por diante. Não escolha itens livremente, não troque a ordem da vitrine e não use um produto fora desses primeiros IDs para variar a composição.
 - Os produtos ou looks devem permanecer visualmente separados e reconhecíveis; a peça não pode sugerir que formam um kit obrigatório.
 - Preserve formato, cores, materiais, componentes, estampas, rótulos, logos e detalhes de cada produto conforme as fontes factuais.
 - Não duplique, funda, redesenhe, recolora ou misture características entre produtos ou marcas.
@@ -1916,7 +1954,7 @@ ${compileDirections(campaign, selected, round)}
 CHECAGEM FINAL DO LOTE
 Antes de gerar, confirme internamente:
 1. A resposta terá cinco arquivos de imagem anexados, e cada arquivo tem uma peça só. Nenhum arquivo é colagem, grade ou montagem.
-2. Todos estarão em 4:5.
+2. Todos estarão em ${masterFormat}.
 3. Cada criativo mostrará a quantidade de produtos que a sua própria direção pede, e todos serão distintos e elegíveis.
 4. Loja/anunciante, coleção “${campaign.exactTarget}”, oferta “${campaign.offer}” e idioma estarão corretos.
 5. Produtos, logos e características não serão misturados entre os itens elegíveis.
@@ -1934,7 +1972,7 @@ export function compileMasterPrompt(campaign: CampaignInput, selected: Reference
     : compileSingleMasterPrompt(campaign, selected, round);
 }
 
-export function compileRecoveryPrompt(selected: Reference[], pendingIndexes: number[], round = 1) {
+export function compileRecoveryPrompt(campaign: CampaignInput, selected: Reference[], pendingIndexes: number[], round = 1) {
   const pending = pendingIndexes.map((index) => itemLabel(index, round));
   const approved = selected
     .map((_, index) => index)
@@ -1952,10 +1990,10 @@ Não responda com descrições em texto.
 Não misture receitas entre os IDs.
 Não peça confirmação entre as gerações.
 
-Entregue ${pending.length === 1 ? 'uma imagem separada' : `${pending.length} imagens separadas`} em 4:5, na ordem ${pending.join(', ')}.`;
+Entregue ${pending.length === 1 ? 'uma imagem separada' : `${pending.length} imagens separadas`} em ${masterFormatForCampaign(campaign)}, na ordem ${pending.join(', ')}.`;
 }
 
-export function compileSingleRecoveryPrompt(reference: Reference, index: number, round = 1) {
+export function compileSingleRecoveryPrompt(campaign: CampaignInput, reference: Reference, index: number, round = 1) {
   return `Agora gere somente o criativo pendente: ${itemLabel(index, round)}.
 Execute uma geração de imagem independente para este ID, seguindo integralmente a receita “${reference.name}” já definida nesta conversa.
 
@@ -1966,16 +2004,16 @@ Não responda com descrição em texto.
 Não misture receitas.
 Não peça confirmação.
 
-Entregue uma imagem separada em 4:5: CRIATIVO ${itemLabel(index, round)}.`;
+Entregue uma imagem separada em ${masterFormatForCampaign(campaign)}: CRIATIVO ${itemLabel(index, round)}.`;
 }
 
-export function compileIndividualPrompt(reference: Reference, index: number, issue: string, kind: 'content' | 'variation', round = 1) {
+export function compileIndividualPrompt(campaign: CampaignInput, reference: Reference, index: number, issue: string, kind: 'content' | 'variation', round = 1) {
   if (kind === 'variation') {
     return `Crie uma nova variação somente do CRIATIVO ${itemLabel(index, round)} — ${reference.name}.
 
 ${HOUSE_PRODUCT_RULE}
 
-Preserve integralmente o CONTEXTO CAPTURADO, o produto ou conjunto de produtos, a oferta, o idioma, a proporção 4:5 e a receita visual dessa direção. Mude apenas a solução estética dentro da mesma direção.
+Preserve integralmente o CONTEXTO CAPTURADO, o produto ou conjunto de produtos, a oferta, o idioma, a proporção ${masterFormatForCampaign(campaign)} e a receita visual dessa direção. Mude apenas a solução estética dentro da mesma direção.
 
 Não altere nem gere novamente os outros quatro criativos. Entregue exatamente um arquivo de imagem, com uma única peça, sem colagem, sem grade e sem miniaturas, e sem explicações.`;
   }
@@ -1985,7 +2023,7 @@ Não altere nem gere novamente os outros quatro criativos. Entregue exatamente u
 ERRO OBSERVADO
 ${issue.trim() || '[descreva aqui o erro de produto, marca, oferta, texto ou detalhe visual]'}
 
-Preserve tudo o que já está correto. Mantenha a mesma direção visual, composição, CONTEXTO CAPTURADO e proporção 4:5. Corrija apenas o erro informado, sem inventar fatos.
+Preserve tudo o que já está correto. Mantenha a mesma direção visual, composição, CONTEXTO CAPTURADO e proporção ${masterFormatForCampaign(campaign)}. Corrija apenas o erro informado, sem inventar fatos.
 
 Não altere nem gere novamente os outros quatro criativos. Entregue somente a imagem corrigida, sem explicações.`;
 }

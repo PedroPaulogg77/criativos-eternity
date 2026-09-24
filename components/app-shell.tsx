@@ -2,9 +2,10 @@
 
 /* oxlint-disable next/no-img-element -- o logo é um PNG estático servido da pasta public */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Boxes,
+  Ellipsis,
   Film,
   Layers3,
   LayoutDashboard,
@@ -15,10 +16,12 @@ import {
   PanelLeftOpen,
   Pencil,
   Plus,
+  Store,
   SlidersHorizontal,
   Sparkles,
   Square,
   Ticket,
+  Trash2,
   Volume2,
   X,
 } from 'lucide-react';
@@ -34,21 +37,38 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const SIDEBAR_STORAGE_KEY = 'eternity:sidebar-collapsed';
 
 const phaseIcons = [ListChecks, Layers3, Sparkles, Square, Megaphone, Volume2, Film, Ticket] as const;
 
 export type ShellNav = {
+  audience: 'student' | 'admin';
+  primaryPhases: Phase[];
+  optionalPhases: Phase[];
   active: Phase | 'workspace';
   onSelect: (phase: Phase) => void;
   isDisabled: (phase: Phase) => boolean;
   onWorkspace: () => void;
   onNewCampaign: () => void;
+  stores: Array<{ id: string; label: string }>;
+  activeStoreId: string | null;
+  onSwitchStore: (id: string) => void;
+  onRenameStore: (id: string, name: string) => void;
+  onDeleteStore: (id: string) => void;
   campaigns: Array<{ id: string; label: string; detail: string }>;
   activeCampaignId: string | null;
   onSwitchCampaign: (id: string) => void;
   onRenameCampaign: (id: string, name: string) => void;
+  onDeleteCampaign: (id: string) => void;
 };
 
 function NavItem({
@@ -150,8 +170,9 @@ function Sidebar({
         <p className={`mt-4 mb-1 px-4 text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase ${collapsed ? 'text-center' : ''}`}>
           {collapsed ? '···' : 'Etapas'}
         </p>
-        {phaseNames.map((name, index) => {
-          const phase = (index + 1) as Phase;
+        {nav.primaryPhases.map((phase) => {
+          const index = phase - 1;
+          const name = phaseNames[index];
           const Icon = phaseIcons[index];
           return (
             <NavItem
@@ -166,6 +187,17 @@ function Sidebar({
             />
           );
         })}
+        {nav.optionalPhases.length ? (
+          <>
+            <p className={`mt-5 mb-1 px-4 text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase ${collapsed ? 'text-center' : ''}`}>{collapsed ? '···' : 'Extras'}</p>
+            {nav.optionalPhases.map((phase) => {
+              const index = phase - 1;
+              const name = phaseNames[index];
+              const Icon = phaseIcons[index];
+              return <NavItem key={name} collapsed={collapsed} active={nav.active === phase} disabled={nav.isDisabled(phase)} label={name} icon={<Icon className="size-4" />} onClick={() => nav.onSelect(phase)} />;
+            })}
+          </>
+        ) : null}
       </nav>
       )}
 
@@ -218,7 +250,9 @@ export function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [renamingCampaignId, setRenamingCampaignId] = useState<string | null>(null);
   const [campaignNameDraft, setCampaignNameDraft] = useState('');
-  const campaignTabsRef = useRef<HTMLDivElement>(null);
+  const [renamingStoreId, setRenamingStoreId] = useState<string | null>(null);
+  const [storeNameDraft, setStoreNameDraft] = useState('');
+  const [deleteRequest, setDeleteRequest] = useState<{ kind: 'store' | 'campaign'; id: string; label: string } | null>(null);
   /* Um painel de ferramentas não cabe em faixa de ícones: nessa tela o menu fica sempre aberto. */
   const collapsed = panel ? false : storedCollapsed;
 
@@ -232,15 +266,6 @@ export function AppShell({
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    const list = campaignTabsRef.current;
-    const active = list?.querySelector<HTMLElement>('[aria-current="page"]');
-    if (!list || !active) return;
-    const listBounds = list.getBoundingClientRect();
-    const activeBounds = active.getBoundingClientRect();
-    list.scrollTo({ left: list.scrollLeft + activeBounds.left - listBounds.left - (listBounds.width - activeBounds.width) / 2 });
-  }, [nav.activeCampaignId]);
 
   function toggleCollapsed() {
     setCollapsed((current) => {
@@ -265,6 +290,17 @@ export function AppShell({
     setRenamingCampaignId(null);
   }
 
+  function beginStoreRename(id: string, currentName: string) {
+    setRenamingStoreId(id);
+    setStoreNameDraft(currentName);
+  }
+
+  function finishStoreRename() {
+    if (!renamingStoreId || !storeNameDraft.trim()) return;
+    nav.onRenameStore(renamingStoreId, storeNameDraft.trim());
+    setRenamingStoreId(null);
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {mobileOpen ? (
@@ -287,63 +323,51 @@ export function AppShell({
 
       <div className={`flex min-h-screen flex-col transition-[padding] duration-200 ${collapsed ? 'lg:pl-[4.75rem]' : 'lg:pl-64'}`}>
         <header className="sticky top-0 z-30 border-b border-border bg-background/92 backdrop-blur-xl">
-          <div className="flex min-w-0 items-stretch border-b border-border bg-card/65">
-            <div className="flex shrink-0 items-center gap-2 border-r border-border px-3 sm:px-4">
-              <Boxes className="size-4 text-accent-foreground" />
-              <div className="hidden md:block">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground">Meus produtos</p>
-                <p className="text-[11px] text-muted-foreground">Clique para trocar</p>
+          <div className="flex min-w-0 items-center gap-2 border-b border-border bg-card/65 px-3 py-2 sm:px-6">
+            <Boxes className="hidden size-4 shrink-0 text-accent-foreground sm:block" />
+            <div className="min-w-0">
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:block">Loja</p>
+              <div className="flex items-center gap-1">
+                <Select value={nav.activeStoreId ?? undefined} onValueChange={(value) => { if (value) nav.onSwitchStore(value); }} disabled={!nav.stores.length}>
+                  <SelectTrigger size="sm" className="max-w-36 sm:max-w-48"><Store className="size-3.5 text-accent-foreground" /><SelectValue placeholder="Selecione a loja">{nav.stores.find((store) => store.id === nav.activeStoreId)?.label}</SelectValue></SelectTrigger>
+                  <SelectContent>{nav.stores.map((store) => <SelectItem key={store.id} value={store.id}>{store.label}</SelectItem>)}</SelectContent>
+                </Select>
+                {nav.activeStoreId ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<button type="button" aria-label="Opções da loja" className="grid size-7 place-items-center text-muted-foreground hover:bg-white/[0.07] hover:text-foreground" />}><Ellipsis className="size-4" /></DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-44">
+                      <DropdownMenuItem onClick={() => { const store = nav.stores.find((item) => item.id === nav.activeStoreId); if (store) beginStoreRename(store.id, store.label); }}><Pencil /> Renomear loja</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" onClick={() => { const store = nav.stores.find((item) => item.id === nav.activeStoreId); if (store) setDeleteRequest({ kind: 'store', id: store.id, label: store.label }); }}><Trash2 /> Apagar loja</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : null}
               </div>
-              <span className="text-xs font-semibold md:hidden">Produtos</span>
             </div>
 
-            <nav aria-label="Trocar produto" className="flex min-w-0 flex-1 items-stretch">
-              <div ref={campaignTabsRef} className="no-scrollbar flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto p-1.5">
-                {nav.campaigns.map((campaign) => {
-                  const active = campaign.id === nav.activeCampaignId;
-                  return (
-                    <div
-                      key={campaign.id}
-                      className={`flex max-w-64 shrink-0 items-stretch border transition-colors ${active
-                        ? 'border-primary/70 bg-primary/[0.13]'
-                        : 'border-border bg-background/45 hover:border-white/25 hover:bg-white/[0.04]'}`}
-                    >
-                      <button
-                        type="button"
-                        title={`${campaign.label}${campaign.detail ? ` · ${campaign.detail}` : ''}`}
-                        aria-current={active ? 'page' : undefined}
-                        onClick={() => nav.onSwitchCampaign(campaign.id)}
-                        className="min-w-0 px-2.5 py-1.5 text-left sm:px-3 sm:py-2"
-                      >
-                        <span className={`block truncate text-sm ${active ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground'}`}>{campaign.label}</span>
-                        <span className="hidden truncate text-[11px] text-muted-foreground xl:block">{campaign.detail}</span>
-                      </button>
-                      {active ? (
-                        <button
-                          type="button"
-                          onClick={() => beginRename(campaign.id, campaign.label)}
-                          className="grid w-11 shrink-0 place-items-center border-l border-primary/25 text-accent-foreground transition-colors hover:bg-primary/15 hover:text-foreground"
-                          aria-label={`Renomear ${campaign.label}`}
-                          title="Renomear esta aba"
-                        >
-                          <Pencil className="size-3.5" />
-                        </button>
-                      ) : null}
-                    </div>
-                  );
-                })}
-                {nav.campaigns.length === 0 ? <span className="px-3 py-2.5 text-sm text-muted-foreground">Nenhum produto ainda</span> : null}
+            <span className="h-7 w-px shrink-0 bg-border" />
+
+            <div className="min-w-0 flex-1">
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:block">Produto</p>
+              <div className="flex items-center gap-1">
+                <Select value={nav.activeCampaignId ?? undefined} onValueChange={(value) => { if (value) nav.onSwitchCampaign(value); }} disabled={!nav.campaigns.length}>
+                  <SelectTrigger size="sm" className="max-w-44 sm:max-w-64"><SelectValue placeholder="Novo produto">{nav.campaigns.find((campaign) => campaign.id === nav.activeCampaignId)?.label}</SelectValue></SelectTrigger>
+                  <SelectContent>{nav.campaigns.map((campaign) => <SelectItem key={campaign.id} value={campaign.id}>{campaign.label}</SelectItem>)}</SelectContent>
+                </Select>
+                {nav.activeCampaignId ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<button type="button" aria-label="Opções do produto" className="grid size-7 place-items-center text-muted-foreground hover:bg-white/[0.07] hover:text-foreground" />}><Ellipsis className="size-4" /></DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-48">
+                      <DropdownMenuItem onClick={() => { const campaign = nav.campaigns.find((item) => item.id === nav.activeCampaignId); if (campaign) beginRename(campaign.id, campaign.label); }}><Pencil /> Renomear produto</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" onClick={() => { const campaign = nav.campaigns.find((item) => item.id === nav.activeCampaignId); if (campaign) setDeleteRequest({ kind: 'campaign', id: campaign.id, label: campaign.label }); }}><Trash2 /> Apagar produto</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : null}
               </div>
-              <button
-                type="button"
-                onClick={nav.onNewCampaign}
-                className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-primary/[0.1] sm:px-5"
-                aria-label="Adicionar produto"
-                title="Adicionar produto"
-              >
-                <Plus className="size-4" /> <span className="hidden sm:inline">Novo produto</span>
-              </button>
-            </nav>
+            </div>
+
+            <button type="button" onClick={nav.onNewCampaign} className="grid size-8 shrink-0 place-items-center border border-primary/35 text-accent-foreground hover:bg-primary/[0.1]" aria-label="Adicionar produto" title="Adicionar produto"><Plus className="size-4" /></button>
           </div>
 
           <div className="flex h-12 items-center gap-3 px-3 sm:h-16 sm:px-6">
@@ -400,6 +424,25 @@ export function AppShell({
               <Button type="submit" disabled={!campaignNameDraft.trim()}>Salvar nome</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={renamingStoreId !== null} onOpenChange={(open) => !open && setRenamingStoreId(null)}>
+        <DialogContent className="border border-primary/20 bg-popover sm:max-w-md">
+          <form onSubmit={(event) => { event.preventDefault(); finishStoreRename(); }}>
+            <DialogHeader><DialogTitle>Renomear a loja</DialogTitle><DialogDescription>Esse nome organiza seus produtos neste navegador.</DialogDescription></DialogHeader>
+            <label htmlFor="store-name" className="mt-5 mb-2 block text-xs font-medium uppercase tracking-[0.1em] text-muted-foreground">Nome da loja</label>
+            <Input id="store-name" value={storeNameDraft} onChange={(event) => setStoreNameDraft(event.target.value)} maxLength={40} className="h-11" />
+            <DialogFooter className="mt-5"><Button type="button" variant="ghost" onClick={() => setRenamingStoreId(null)}>Cancelar</Button><Button type="submit" disabled={!storeNameDraft.trim()}>Salvar nome</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteRequest !== null} onOpenChange={(open) => !open && setDeleteRequest(null)}>
+        <DialogContent className="border border-destructive/25 bg-popover sm:max-w-md">
+          <DialogHeader><DialogTitle>Apagar {deleteRequest?.kind === 'store' ? 'esta loja' : 'este produto'}?</DialogTitle><DialogDescription>{deleteRequest?.label}</DialogDescription></DialogHeader>
+          <p className="text-sm leading-6 text-muted-foreground">{deleteRequest?.kind === 'store' ? 'Todos os produtos desta loja e seus dados salvos serão apagados deste navegador.' : 'O contexto, o lote e a conferência deste produto serão apagados deste navegador.'}</p>
+          <DialogFooter className="mt-5"><Button type="button" variant="ghost" onClick={() => setDeleteRequest(null)}>Manter</Button><Button type="button" variant="destructive" onClick={() => { if (!deleteRequest) return; if (deleteRequest.kind === 'store') nav.onDeleteStore(deleteRequest.id); else nav.onDeleteCampaign(deleteRequest.id); setDeleteRequest(null); }}>Apagar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

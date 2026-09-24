@@ -9,6 +9,8 @@ export type CampaignRecord = {
   id: string;
   createdAt: number;
   updatedAt: number;
+  /* A loja agrupa produtos e coleções sem obrigar o aluno a repetir a organização. */
+  storeId: string;
   /* Nome curto exibido na navegação. Não altera o alvo usado nos prompts. */
   tabName: string;
   mode: 'single' | 'collection';
@@ -16,6 +18,7 @@ export type CampaignRecord = {
   sourceUrl: string;
   linkAccess: 'public' | 'protected';
   offer: string;
+  channels: Array<'google' | 'meta'>;
   offerMechanic: OfferMechanic | null;
   salesDriver: SalesDriver | null;
   contextChecks: boolean[];
@@ -29,9 +32,19 @@ export type CampaignRecord = {
   lastPhase: Phase;
 };
 
+export type StoreRecord = {
+  id: string;
+  createdAt: number;
+  updatedAt: number;
+  name: string;
+  sourceUrl: string;
+};
+
 export type CampaignStore = {
-  version: 1;
+  version: 2;
   activeId: string | null;
+  activeStoreId: string | null;
+  stores: StoreRecord[];
   items: CampaignRecord[];
 };
 
@@ -39,7 +52,30 @@ const STORE_KEY = 'eternity:campaigns';
 const LEGACY_CAMPAIGN_KEY = 'eternity:last-campaign';
 const LEGACY_WORKSPACE_KEY = 'eternity:workspace-unlocked';
 
-export const emptyStore: CampaignStore = { version: 1, activeId: null, items: [] };
+export const emptyStore: CampaignStore = { version: 2, activeId: null, activeStoreId: null, stores: [], items: [] };
+
+function nameFromUrl(sourceUrl: string) {
+  try {
+    return new URL(sourceUrl).hostname.replace(/^www\./i, '') || 'Minha loja';
+  } catch {
+    return 'Minha loja';
+  }
+}
+
+function sameStoreSource(a: string, b: string) {
+  try {
+    return new URL(a).hostname.replace(/^www\./i, '') === new URL(b).hostname.replace(/^www\./i, '');
+  } catch {
+    return a.trim() === b.trim();
+  }
+}
+
+/* Um produto novo entra na loja do mesmo domínio; uma URL de outra loja abre outro grupo. */
+export function findStoreBySource(store: CampaignStore, sourceUrl: string) {
+  return sourceUrl.trim()
+    ? store.stores.find((item) => sameStoreSource(item.sourceUrl, sourceUrl))
+    : undefined;
+}
 
 function newId() {
   try {
@@ -55,12 +91,14 @@ export function createCampaign(partial: Partial<CampaignRecord> = {}): CampaignR
     id: newId(),
     createdAt: now,
     updatedAt: now,
+    storeId: '',
     tabName: '',
     mode: 'single',
     exactTarget: '',
     sourceUrl: '',
     linkAccess: 'public',
     offer: '',
+    channels: ['meta'],
     offerMechanic: null,
     salesDriver: null,
     contextChecks: [false, false, false, false, false],
@@ -72,6 +110,18 @@ export function createCampaign(partial: Partial<CampaignRecord> = {}): CampaignR
     discount: '',
     donePhases: [],
     lastPhase: 1,
+    ...partial,
+  };
+}
+
+export function createStore(partial: Partial<StoreRecord> = {}): StoreRecord {
+  const now = Date.now();
+  return {
+    id: newId(),
+    createdAt: now,
+    updatedAt: now,
+    name: partial.sourceUrl ? nameFromUrl(partial.sourceUrl) : 'Minha loja',
+    sourceUrl: '',
     ...partial,
   };
 }
@@ -93,12 +143,16 @@ function sanitize(raw: unknown): CampaignRecord | null {
     id: value.id,
     createdAt: typeof value.createdAt === 'number' ? value.createdAt : Date.now(),
     updatedAt: typeof value.updatedAt === 'number' ? value.updatedAt : Date.now(),
+    storeId: text(value.storeId),
     tabName: text(value.tabName),
     mode: value.mode,
     exactTarget: text(value.exactTarget),
     sourceUrl: text(value.sourceUrl),
     linkAccess: value.linkAccess,
     offer: text(value.offer),
+    channels: Array.isArray(value.channels)
+      ? value.channels.filter((item): item is 'google' | 'meta' => item === 'google' || item === 'meta')
+      : ['meta'],
     offerMechanic: value.offerMechanic === 'percentual' || value.offerMechanic === 'leve-mais' || value.offerMechanic === 'progressivo'
       ? value.offerMechanic
       : null,
@@ -123,6 +177,52 @@ function sanitize(raw: unknown): CampaignRecord | null {
   });
 }
 
+function sanitizeStore(raw: unknown): StoreRecord | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const value = raw as Record<string, unknown>;
+  if (typeof value.id !== 'string' || !value.id) return null;
+  const sourceUrl = typeof value.sourceUrl === 'string' ? value.sourceUrl : '';
+  return createStore({
+    id: value.id,
+    createdAt: typeof value.createdAt === 'number' ? value.createdAt : Date.now(),
+    updatedAt: typeof value.updatedAt === 'number' ? value.updatedAt : Date.now(),
+    name: typeof value.name === 'string' && value.name.trim() ? value.name.trim() : nameFromUrl(sourceUrl),
+    sourceUrl,
+  });
+}
+
+/* Registros antigos não tinham loja. Agrupamos pelo domínio sem perder nenhuma campanha. */
+function normalizeStore(items: CampaignRecord[], rawStores: unknown, activeId: string | null, activeStoreId: string | null): CampaignStore {
+  const stores = Array.isArray(rawStores)
+    ? rawStores.map(sanitizeStore).filter((store): store is StoreRecord => store !== null)
+    : [];
+
+  const normalizedItems = items.map((record) => {
+    const current = stores.find((store) => store.id === record.storeId);
+    if (current) return record;
+
+    const matching = stores.find((store) => sameStoreSource(store.sourceUrl, record.sourceUrl));
+    if (matching) return { ...record, storeId: matching.id };
+
+    const store = createStore({ sourceUrl: record.sourceUrl, name: nameFromUrl(record.sourceUrl) });
+    stores.push(store);
+    return { ...record, storeId: store.id };
+  });
+
+  const active = normalizedItems.find((record) => record.id === activeId) ?? normalizedItems[0];
+  const currentStore = stores.find((store) => store.id === activeStoreId)
+    ?? stores.find((store) => store.id === active?.storeId)
+    ?? stores[0];
+
+  return {
+    version: 2,
+    activeId: active?.id ?? null,
+    activeStoreId: currentStore?.id ?? null,
+    stores,
+    items: normalizedItems,
+  };
+}
+
 /* A campanha única que o app guardava antes vira o primeiro item da lista, sem perder nada. */
 function migrateLegacy(): CampaignStore | null {
   const saved = window.localStorage.getItem(LEGACY_CAMPAIGN_KEY);
@@ -133,14 +233,17 @@ function migrateLegacy(): CampaignStore | null {
     if (!record) return null;
     const completed = window.localStorage.getItem(LEGACY_WORKSPACE_KEY) === 'true';
     const migrated: CampaignStore = {
-      version: 1,
+      version: 2,
       activeId: record.id,
+      activeStoreId: null,
+      stores: [],
       items: [completed ? { ...record, donePhases: [1, 2, 3, 4, 5, 6, 7, 8] } : record],
     };
     window.localStorage.removeItem(LEGACY_CAMPAIGN_KEY);
     window.localStorage.removeItem(LEGACY_WORKSPACE_KEY);
-    saveStore(migrated);
-    return migrated;
+    const normalized = normalizeStore(migrated.items, migrated.stores, migrated.activeId, migrated.activeStoreId);
+    saveStore(normalized);
+    return normalized;
   } catch {
     return null;
   }
@@ -155,7 +258,7 @@ export function loadStore(): CampaignStore {
       ? value.items.map(sanitize).filter((item): item is CampaignRecord => item !== null)
       : [];
     const activeId = typeof value.activeId === 'string' && items.some((item) => item.id === value.activeId) ? value.activeId : items[0]?.id ?? null;
-    return { version: 1, activeId, items };
+    return normalizeStore(items, value.stores, activeId, typeof value.activeStoreId === 'string' ? value.activeStoreId : null);
   } catch {
     return emptyStore;
   }
@@ -173,15 +276,48 @@ export function upsertCampaign(store: CampaignStore, record: CampaignRecord): Ca
   const stamped = { ...record, updatedAt: Date.now() };
   const exists = store.items.some((item) => item.id === stamped.id);
   return {
-    version: 1,
+    version: 2,
     activeId: stamped.id,
+    activeStoreId: stamped.storeId || store.activeStoreId,
+    stores: store.stores,
     items: exists ? store.items.map((item) => (item.id === stamped.id ? stamped : item)) : [stamped, ...store.items],
   };
 }
 
 export function removeCampaign(store: CampaignStore, id: string): CampaignStore {
   const items = store.items.filter((item) => item.id !== id);
-  return { version: 1, activeId: store.activeId === id ? items[0]?.id ?? null : store.activeId, items };
+  const active = store.activeId === id ? items[0] : items.find((item) => item.id === store.activeId) ?? items[0];
+  return {
+    version: 2,
+    activeId: active?.id ?? null,
+    activeStoreId: active?.storeId ?? store.activeStoreId,
+    stores: store.stores,
+    items,
+  };
+}
+
+export function upsertStore(store: CampaignStore, record: StoreRecord): CampaignStore {
+  const stamped = { ...record, updatedAt: Date.now() };
+  const exists = store.stores.some((item) => item.id === stamped.id);
+  return {
+    ...store,
+    version: 2,
+    activeStoreId: stamped.id,
+    stores: exists ? store.stores.map((item) => item.id === stamped.id ? stamped : item) : [stamped, ...store.stores],
+  };
+}
+
+export function removeStore(store: CampaignStore, id: string): CampaignStore {
+  const items = store.items.filter((item) => item.storeId !== id);
+  const stores = store.stores.filter((item) => item.id !== id);
+  const active = items.find((item) => item.id === store.activeId) ?? items[0];
+  return {
+    version: 2,
+    activeId: active?.id ?? null,
+    activeStoreId: active?.storeId ?? stores[0]?.id ?? null,
+    stores,
+    items,
+  };
 }
 
 /* Uma campanha sem alvo e sem etapa concluída é rascunho: pode ser reaproveitada em vez de virar lixo na lista. */
@@ -191,4 +327,8 @@ export function isBlank(record: CampaignRecord) {
 
 export function campaignLabel(record: CampaignRecord) {
   return record.tabName.trim() || record.exactTarget.trim() || 'Novo produto';
+}
+
+export function storeLabel(record: StoreRecord) {
+  return record.name.trim() || nameFromUrl(record.sourceUrl);
 }

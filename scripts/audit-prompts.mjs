@@ -36,6 +36,7 @@ async function importTypescriptModule(path) {
 const compiler = await importTypescriptModule('../lib/prompt-compiler.ts');
 const flow = await importTypescriptModule('../lib/flow-prompts.ts');
 const data = await importTypescriptModule('../lib/mvp-data.ts');
+const campaignStore = await importTypescriptModule('../lib/campaign-store.ts');
 
 const references = [
   ['REF-0001', 'Split premium escuro'],
@@ -59,6 +60,20 @@ const collection = {
   linkAccess: 'protected',
   offer: 'Kaufen Sie 2 und erhalten Sie 1 gratis',
 };
+const googleOnly = { ...single, channels: ['google'] };
+
+const savedStores = {
+  version: 2,
+  activeId: null,
+  activeStoreId: 'store-a',
+  stores: [
+    { id: 'store-a', name: 'Loja A', sourceUrl: 'https://www.loja-a.test/produto-a' },
+    { id: 'store-b', name: 'Loja B', sourceUrl: 'https://loja-b.test/produto-b' },
+  ],
+  items: [],
+};
+assert.equal(campaignStore.findStoreBySource(savedStores, 'https://loja-a.test/colecao'), savedStores.stores[0], 'um novo produto da mesma loja não foi agrupado');
+assert.equal(campaignStore.findStoreBySource(savedStores, 'https://outra-loja.test/produto'), undefined, 'um produto de outra loja entrou no grupo errado');
 
 const singleContext = compiler.compileContextPrompt(single);
 const collectionContext = compiler.compileContextPrompt(collection);
@@ -66,7 +81,10 @@ const singleBatch = compiler.compileMasterPrompt(single, references);
 const collectionBatch = compiler.compileMasterPrompt(collection, references);
 const singleReference = compiler.compileReferencePrompt(single, references[0]);
 const collectionReference = compiler.compileReferencePrompt(collection, references[0]);
-const recovery = compiler.compileRecoveryPrompt(references, [1, 2, 3, 4]);
+const recovery = compiler.compileRecoveryPrompt(single, references, [1, 2, 3, 4]);
+const googleBatch = compiler.compileMasterPrompt(googleOnly, references);
+const googleReference = compiler.compileReferencePrompt(googleOnly, references[0]);
+const googleRecovery = compiler.compileRecoveryPrompt(googleOnly, references, [1, 2, 3, 4]);
 const pilotReference = data.references.find(({ id }) => id === 'REF-0017');
 const pilotPrompt = compiler.compileReferencePrompt(single, pilotReference);
 const testimonialReference = data.references.find(({ id }) => id === 'REF-0020');
@@ -102,12 +120,19 @@ assert.ok(
 );
 assert.ok(collectionContext.includes('CONTEXTO CAPTURADO — V004'));
 assert.ok(collectionContext.includes('Não peça senha.'));
-assert.ok(collectionContext.includes('na quantidade que cada peça pedir'));
+assert.ok(collectionContext.includes('P01'));
+assert.ok(collectionContext.includes('P08'));
+assert.ok(collectionContext.includes('ordem em que os produtos aparecem na página'));
+assert.ok(!collectionContext.includes('seleção e a ordem dos produtos são LIVRES'));
 
 assert.equal((singleBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
 assert.equal((collectionBatch.match(/CRIATIVO 0[1-5] —/g) ?? []).length, 5);
 assert.ok(singleBatch.includes('CENÁRIO TÁTIL E QUENTE'));
 assert.ok(collectionBatch.includes('A quantidade muda de uma direção para outra'));
+assert.equal(compiler.masterFormatForCampaign(googleOnly), '1:1');
+assert.ok(googleBatch.includes('todas em proporção 1:1'), 'Google sozinho ainda nasce em 4:5');
+assert.ok(googleReference.includes('uma única imagem final e independente em 1:1'), 'a direção avulsa de Google não usa 1:1');
+assert.ok(googleRecovery.includes('imagens separadas em 1:1'), 'a recuperação de Google não mantém 1:1');
 /*
  * Trava de colagem. O cliente do ChatGPT decide o formato de entrega, então o prompt
  * precisa declarar a contagem de arquivos e recusar todo formato agregado.
@@ -121,8 +146,8 @@ for (const [nome, prompt] of [['lote produto único', singleBatch], ['lote cole�
 }
 for (const [nome, prompt] of [
   ['recuperação em lote', recovery],
-  ['recuperação unitária', compiler.compileSingleRecoveryPrompt(references[1], 1)],
-  ['variação individual', compiler.compileIndividualPrompt(references[0], 0, '', 'variation')],
+  ['recuperação unitária', compiler.compileSingleRecoveryPrompt(single, references[1], 1)],
+  ['variação individual', compiler.compileIndividualPrompt(single, references[0], 0, '', 'variation')],
 ]) {
   assert.ok(/colagem/.test(prompt), `${nome} sem a trava de colagem`);
 }
@@ -130,7 +155,7 @@ assert.ok(singleReference.includes('SOMENTE UM criativo publicitário mestre'));
 assert.ok(singleReference.includes('uma única imagem final e independente em 4:5'));
 assert.ok(singleReference.includes('Anuncie somente o produto “Suporte Pocket preto”'));
 assert.ok(collectionReference.includes('Anuncie somente a coleção “Automarken-Kollektion”'));
-assert.ok(collectionReference.includes('SOMENTE itens que constem na lista de elegíveis'));
+assert.ok(collectionReference.includes('lista prioritária'));
 
 assert.ok(recovery.startsWith('Você gerou corretamente o CRIATIVO 01. Não o gere novamente.'));
 assert.ok(recovery.includes('Agora gere somente os criativos pendentes: 02, 03, 04, 05.'));
@@ -165,8 +190,9 @@ assert.ok(collectionPilotBatch.includes('VITRINE TÁTIL DE COLEÇÃO'));
 assert.ok(collectionPilotBatch.includes('FLAT LAY RADIAL DE COLEÇÃO'));
 assert.ok(collectionPilotBatch.includes('Limite operacional:'));
 
-const carousel = flow.compileCarouselPrompt();
-assert.ok(carousel.includes('até CINCO produtos ou looks distintos'));
+const carousel = flow.compileCarouselPrompt(collection);
+assert.ok(carousel.includes('primeiros até CINCO produtos ou looks prioritários'));
+assert.ok(carousel.includes('P01, P02, P03, P04 e P05'));
 assert.ok(carousel.includes('QUANDO HOUVER UMA PESSOA NA IMAGEM'));
 assert.ok(carousel.includes('QUANDO O PRODUTO ESTIVER SEM PESSOA'));
 assert.ok(carousel.includes('SEPARADAS e INDEPENDENTES, todas em 4:5'));
@@ -178,23 +204,23 @@ const squareCreatives = flow.compileCreativeFormatPrompt('1:1', [humanizada, cor
 
 /*
  * A adaptação recompõe a cena inteira. Sem a regra de presença humana ela cortava a cabeça
- * do modelo — era o erro mais frequente no 9:16. Cada adaptação carrega o regime do mestre.
+ * do modelo — era o erro mais frequente no 9:16. O comando único também preserva essa regra.
  */
 for (const [nome, prompt] of [
   ['lote 1:1', squareCreatives],
   ['lote 9:16', flow.compileCreativeFormatPrompt('9:16', [humanizada, corpoSuporte])],
-  ['peça humanizada em 9:16', flow.compileCreativeFormatSinglePrompt('9:16', 0, humanizada)],
-  ['peça corpo-suporte em 9:16', flow.compileCreativeFormatSinglePrompt('9:16', 1, corpoSuporte)],
-  ['peça sem direção conhecida', flow.compileCreativeFormatSinglePrompt('9:16', 2)],
+  ['uma peça em 9:16', flow.compileCreativeFormatSinglePrompt('9:16')],
 ]) {
   assert.ok(prompt.includes('PESSOA NO NOVO FORMATO'), `${nome} sem a regra de enquadramento da pessoa`);
   assert.ok(/Nunca corte cabeça, topo da cabeça ou parte do rosto pela borda/.test(prompt), `${nome} deixa cortar a cabeça pela borda`);
   assert.ok(/nenhuma cabeça, rosto ou topo de cabeça cortado pela borda/.test(prompt), `${nome} sem a conferência do corte`);
 }
-assert.ok(flow.compileCreativeFormatSinglePrompt('9:16', 0, humanizada).includes('PESSOA COMO PERSONAGEM'), 'a adaptação de uma direção humanizada não repete o regime dela');
-assert.ok(flow.compileCreativeFormatSinglePrompt('9:16', 1, corpoSuporte).includes('CORPO SEM IDENTIDADE'), 'a adaptação de uma direção desumanizada não repete o regime dela');
+const creativeSingle = flow.compileCreativeFormatSinglePrompt('9:16');
+assert.ok(creativeSingle.includes('CRIATIVO [NÚMERO]'), 'o prompt único não indica qual criativo adaptar');
+assert.ok(!creativeSingle.includes('CRIATIVO 01 —'), 'o prompt único voltou a depender de uma escolha por criativo');
 const verticalCarousel = flow.compileCarouselFormatPrompt('9:16');
 assert.ok(squareCreatives.includes('cinco criativos mestres 4:5 aprovados'));
+assert.ok(flow.compileCreativeFormatPrompt('9:16', [humanizada], '1:1').includes('criativos mestres 1:1 aprovados'), 'a adaptação de Google não parte do mestre 1:1');
 assert.ok(squareCreatives.includes('1:1, preferencialmente 1080 × 1080 px'));
 assert.ok(verticalCarousel.includes('cinco cards 4:5 do carrossel já aprovados'));
 assert.ok(verticalCarousel.includes('9:16, preferencialmente 1080 × 1920 px'));
@@ -205,7 +231,7 @@ assert.ok(verticalCarousel.includes('9:16, preferencialmente 1080 × 1920 px'));
  */
 for (const [nome, prompt] of [
   ['carrossel em lote 9:16', verticalCarousel],
-  ['card 03 em 9:16', flow.compileCarouselFormatSinglePrompt('9:16', 2)],
+  ['um card em 9:16', flow.compileCarouselFormatSinglePrompt('9:16')],
 ]) {
   assert.ok(prompt.includes('SEM CABEÇA NO QUADRO ALTO'), nome + ' sem a regra do corte na borda superior');
   assert.ok(/fica exatamente na BORDA SUPERIOR/.test(prompt), nome + ' não fixa o corte na borda de cima');
@@ -214,13 +240,13 @@ for (const [nome, prompt] of [
 }
 
 /*
- * O ChatGPT falha ao devolver cinco imagens num pedido só. Por isso todo prompt de lote
- * tem um caminho de uma peça por mensagem, e cada um desses precisa pedir UMA imagem,
- * recusar colagem e proibir que as outras peças venham junto.
+ * A tela de formato mostra somente dois comandos: um para o lote e outro reutilizável
+ * para uma peça. No segundo, o aluno indica o número no próprio prompt, sem clicar em
+ * uma escolha adicional dentro do app.
  */
 const carouselCards = [0, 1, 2, 3, 4].map((index) => flow.compileCarouselCardPrompt(index));
 assert.ok(carouselCards[0].includes('define o padrão visual'), 'card 01 não define o padrão do carrossel');
-assert.ok(carouselCards[4].includes('ainda NÃO tenha sido usado'), 'card 05 não impede repetir produto');
+assert.ok(carouselCards[4].includes('produto prioritário P05'), 'card 05 não preserva a ordem prioritária da vitrine');
 const prompsUnitarios = [];
 for (const [index, prompt] of carouselCards.entries()) {
   const card = String(index + 1).padStart(2, '0');
@@ -230,19 +256,18 @@ for (const [index, prompt] of carouselCards.entries()) {
   prompsUnitarios.push([`card ${card} do carrossel`, prompt]);
 }
 for (const formato of ['1:1', '9:16']) {
-  for (let index = 0; index < 5; index += 1) {
-    const item = String(index + 1).padStart(2, '0');
-    const criativo = flow.compileCreativeFormatSinglePrompt(formato, index);
-    const card = flow.compileCarouselFormatSinglePrompt(formato, index);
-    assert.ok(criativo.includes(`SOMENTE a adaptação ${item}`), `adaptação ${item} em ${formato} não pede uma peça só`);
-    assert.ok(criativo.includes('sem gerar os outros criativos'), `adaptação ${item} em ${formato} deixa os outros virem junto`);
-    assert.ok(card.includes(`SOMENTE esse card`), `card ${item} em ${formato} não pede uma peça só`);
-    assert.ok(card.includes('Não gere os outros cards'), `card ${item} em ${formato} deixa os outros virem junto`);
-    prompsUnitarios.push([`criativo ${item} em ${formato}`, criativo], [`card ${item} em ${formato}`, card]);
-  }
+  const criativo = flow.compileCreativeFormatSinglePrompt(formato);
+  const card = flow.compileCarouselFormatSinglePrompt(formato);
+  assert.ok(criativo.includes('CRIATIVO [NÚMERO]'), `adaptação única em ${formato} não pede o número do criativo`);
+  assert.ok(criativo.includes('sem gerar os outros criativos'), `adaptação única em ${formato} deixa os outros virem junto`);
+  assert.ok(card.includes('CARD [NÚMERO]'), `card único em ${formato} não pede o número do card`);
+  assert.ok(card.includes('Não gere os outros cards'), `card único em ${formato} deixa os outros virem junto`);
+  prompsUnitarios.push([`criativo único em ${formato}`, criativo], [`card único em ${formato}`, card]);
 }
 /*
- * Redes sociais pedia 9, 9, 6 e 3 imagens por mensagem. Cada peça agora tem a sua.
+ * O feed mantém as nove imagens no mesmo pedido, porque não carrega texto nem dados
+ * operacionais. Todo story sai em trio: esse é o teto em que a imagem e a tipografia
+ * continuam estáveis no ChatGPT.
  *
  * E a regra da casa NÃO entra aqui. Ela foi escrita para criativo de anúncio: produto maior,
  * mais nítido e mais iluminado que tudo. Aplicada ao playbook de redes, transformava post de
@@ -250,14 +275,18 @@ for (const formato of ['1:1', '9:16']) {
  * sem ela; o teste agora impede que ela volte.
  */
 const pecasEsperadas = { feed: 9, highlights: 9, weekly: 6, reviews: 3 };
+const blocosEsperados = { feed: 1, highlights: 3, weekly: 2, reviews: 1 };
 for (const social of flow.socialPrompts) {
   assert.equal(social.pieces.length, pecasEsperadas[social.id], `${social.id} não tem uma peça por mensagem`);
+  assert.equal(social.batches.length, blocosEsperados[social.id], `${social.id} não foi dividido nos blocos corretos`);
   const rotulos = social.pieces.map(({ label }) => label);
   assert.equal(new Set(rotulos).size, rotulos.length, `${social.id} repete rótulo de peça`);
-  assert.ok(
-    !social.prompt.includes('REGRA DA CASA'),
-    `o prompt de ${social.id} voltou a levar a regra da casa; ela é de criativo de anúncio e descaracteriza o playbook de redes`,
-  );
+  for (const batch of social.batches) {
+    assert.ok(
+      !batch.prompt.includes('REGRA DA CASA'),
+      `o prompt ${batch.id} voltou a levar a regra da casa; ela é de criativo de anúncio e descaracteriza o playbook de redes`,
+    );
+  }
   for (const { label, prompt } of social.pieces) {
     assert.ok(/SOMENTE/.test(prompt), `${social.id} ${label} não pede uma peça só`);
     assert.ok(prompt.includes('Entregue exatamente UMA imagem'), `${social.id} ${label} sem a contagem de arquivos`);
@@ -270,25 +299,22 @@ for (const social of flow.socialPrompts) {
   }
 }
 /*
- * Os prompts de story voltavam uma prancha 3x3 em vez de nove arquivos. Três causas:
- * pediam imagem e copy na mesma resposta, descreviam três grupos de três e falavam em
- * "stories" onde o feed fala em "imagens". Agora levam o mesmo contrato de entrega dos criativos.
+ * Stories antes voltavam como prancha e ficavam poluídos. Cada bloco agora pede somente
+ * três arquivos, sem copy extra depois das imagens e com um contrato visual minimalista.
  */
-for (const [nome, prompt, quantidade] of [
-  ['destaques', flow.socialPrompts[1].prompt, 'NOVE'],
-  ['rotina semanal', flow.socialPrompts[2].prompt, 'SEIS'],
-]) {
-  assert.ok(
-    prompt.includes(`EXATAMENTE ${quantidade} arquivos de imagem anexados`),
-    `${nome} não declara a contagem de arquivos e volta como prancha`,
-  );
-  assert.ok(/conte os arquivos anexados/.test(prompt), `${nome} sem a conferência de contagem`);
-  assert.ok(/prancha de apresentação/.test(prompt) && /mockup de celular/.test(prompt), `${nome} não recusa prancha nem mockup`);
-  assert.ok(/vem em texto DEPOIS das/.test(prompt), `${nome} pede imagem e copy na mesma resposta`);
-  assert.ok(/Story 1 a Story/.test(prompt), `${nome} não numera os stories de forma corrida`);
+for (const social of [flow.socialPrompts[1], flow.socialPrompts[2]]) {
+  for (const batch of social.batches) {
+    assert.ok(batch.prompt.includes('EXATAMENTE TRÊS arquivos de imagem anexados'), `${batch.id} não declara a contagem de três arquivos`);
+    assert.ok(/conte os arquivos anexados/.test(batch.prompt), `${batch.id} sem a conferência de contagem`);
+    assert.ok(/prancha de apresentação/.test(batch.prompt) && /mockup de celular/.test(batch.prompt), `${batch.id} não recusa prancha nem mockup`);
+    assert.ok(/Não escreva copy, explicação, tradução ou lista depois das imagens/.test(batch.prompt), `${batch.id} ainda pede copy extra depois das imagens`);
+    assert.ok(batch.prompt.includes('STORY DE LOJA REAL, LIMPO E MINIMALISTA'), `${batch.id} perdeu a direção visual limpa`);
+    assert.ok(batch.prompt.includes('UMA única ideia'), `${batch.id} deixa o story acumular informação`);
+    assert.ok(/Não use lista, parágrafo longo, tabela/.test(batch.prompt), `${batch.id} deixa o story voltar poluído`);
+  }
 }
-assert.ok(flow.socialPrompts[1].prompt.includes('Story 9 —'), 'os destaques voltaram a ser descritos como três grupos de três');
-assert.ok(flow.socialPrompts[2].prompt.includes('Story 6 —'), 'a rotina voltou a ser descrita como dois grupos de três');
+assert.ok(flow.socialPrompts[1].batches[2].prompt.includes('Story 9 —'), 'o terceiro trio de destaques perdeu o story 9');
+assert.ok(flow.socialPrompts[2].batches[1].prompt.includes('Story 6 —'), 'o segundo trio semanal perdeu o story 6');
 
 /*
  * Redes sociais é perfil, não campanha. Se toda peça mostrar produto, o feed vira catálogo —
@@ -298,16 +324,16 @@ const cenasDoFeed = flow.socialPrompts.find(({ id }) => id === 'feed').pieces.ma
 const cenasSemProduto = cenasDoFeed.filter((cena) => /SEM (nenhum )?produto/.test(cena)).length;
 assert.ok(cenasSemProduto >= 3, `o feed só tem ${cenasSemProduto} cena(s) sem produto; assim ele vira catálogo`);
 for (const [nome, prompt] of [
-  ['feed em bloco', flow.socialPrompts[0].prompt],
-  ['destaques em bloco', flow.socialPrompts[1].prompt],
-  ['rotina em bloco', flow.socialPrompts[2].prompt],
+  ['feed em bloco', flow.socialPrompts[0].batches[0].prompt],
+  ...flow.socialPrompts[1].batches.map((batch) => [`destaques · ${batch.title}`, batch.prompt]),
+  ...flow.socialPrompts[2].batches.map((batch) => [`rotina · ${batch.title}`, batch.prompt]),
   ...flow.socialPrompts[0].pieces.map(({ label, prompt }) => [`feed · ${label}`, prompt]),
 ]) {
   assert.ok(/Nem toda peça mostra produto/.test(prompt), `${nome} exige produto em todas as peças`);
   assert.ok(/produto ou uma variante diferente/.test(prompt), `${nome} não manda rodar o produto entre as peças`);
 }
 assert.ok(
-  /variante diferente em cada uma das três peças/.test(flow.socialPrompts[3].prompt),
+  /variante diferente em cada uma das três peças/.test(flow.socialPrompts[3].batches[0].prompt),
   'os três reviews podem sair com o mesmo produto',
 );
 
@@ -322,19 +348,19 @@ assert.deepEqual(
   flow.socialPrompts.map(({ id }) => id),
   ['feed', 'highlights', 'weekly', 'reviews'],
 );
-assert.ok(flow.socialPrompts[0].prompt.includes('crie 9 posts de feed'));
+assert.ok(flow.socialPrompts[0].batches[0].prompt.includes('crie 9 posts de feed'));
 /* O feed herda o contexto capturado em vez de mandar reanalisar a loja do zero. */
-assert.ok(flow.socialPrompts[0].prompt.startsWith('Usando exclusivamente o CONTEXTO CAPTURADO'), 'o feed voltou a pedir uma nova análise da loja');
-assert.ok(flow.socialPrompts[0].prompt.includes('Antes de entregar, confirme internamente'), 'o feed perdeu a autoconferência');
-assert.ok(flow.socialPrompts[1].prompt.includes('crie 9 stories para os destaques'));
-assert.ok(flow.socialPrompts[2].prompt.includes('crie 6 stories de Instagram'));
+assert.ok(flow.socialPrompts[0].batches[0].prompt.startsWith('Usando exclusivamente o CONTEXTO CAPTURADO'), 'o feed voltou a pedir uma nova análise da loja');
+assert.ok(flow.socialPrompts[0].batches[0].prompt.includes('Antes de entregar, confirme internamente'), 'o feed perdeu a autoconferência');
+assert.ok(flow.socialPrompts[1].batches.every((batch) => batch.prompt.includes('crie TRÊS stories para o destaque')));
+assert.ok(flow.socialPrompts[2].batches.every((batch) => batch.prompt.includes('crie TRÊS stories de Instagram')));
 
 /*
  * Cada destaque tem um regime de fato diferente, e é isso que faz o bloco funcionar:
  * o depoimento é composição da peça, o dado operacional nunca é.
  */
 for (const [nome, prompt] of [
-  ['destaques em bloco', flow.socialPrompts[1].prompt],
+  ...flow.socialPrompts[1].batches.map((batch) => [`destaques · ${batch.title}`, batch.prompt]),
   ...flow.socialPrompts[1].pieces.map(({ label, prompt }) => [`destaque · ${label}`, prompt]),
 ]) {
   if (!/REVIEWS/.test(prompt)) continue;
@@ -345,15 +371,15 @@ for (const [nome, prompt] of [
   assert.ok(/não escreva nota|Não escreva nota/.test(prompt), `${nome} deixa passar nota, número de vendas ou nome de cliente`);
 }
 for (const [nome, prompt] of [
-  ['destaques em bloco', flow.socialPrompts[1].prompt],
+  ...flow.socialPrompts[1].batches.filter((batch) => batch.title.startsWith('Informações')).map((batch) => [`destaques · ${batch.title}`, batch.prompt]),
   ...flow.socialPrompts[1].pieces.filter(({ label }) => label.startsWith('INFORMAÇÕES')).map(({ label, prompt }) => [`destaque · ${label}`, prompt]),
 ]) {
   assert.ok(/aqui não existe composição/.test(prompt), `${nome} permite aproximar prazo, pagamento ou garantia`);
 }
-assert.ok(flow.socialPrompts[2].prompt.includes('WELCOME10'), 'a rotina semanal perdeu o cupom padrão');
-assert.ok(/Não invente percentual/.test(flow.socialPrompts[2].prompt), 'a rotina semanal deixa inventar condição de oferta');
-assert.ok(flow.socialPrompts[3].prompt.includes('me entregue 3 reviews de cliente'));
-assert.ok(/foto tirada pelo próprio cliente|Foto tirada pelo próprio cliente/.test(flow.socialPrompts[3].prompt), 'o review perdeu a aparência de foto de cliente');
+assert.ok(flow.socialPrompts[2].batches[1].prompt.includes('WELCOME10'), 'a rotina semanal perdeu o cupom padrão');
+assert.ok(/Não invente percentual/.test(flow.socialPrompts[2].batches[1].prompt), 'a rotina semanal deixa inventar condição de oferta');
+assert.ok(flow.socialPrompts[3].batches[0].prompt.includes('me entregue 3 reviews de cliente'));
+assert.ok(/foto tirada pelo próprio cliente|Foto tirada pelo próprio cliente/.test(flow.socialPrompts[3].batches[0].prompt), 'o review perdeu a aparência de foto de cliente');
 
 const audio = flow.compileAudioPrompt(collection);
 assert.ok(audio.includes('Duração máxima de 30 segundos'));
@@ -385,7 +411,7 @@ const promptsQueGeramImagem = [
   ['direção única produto único', singleReference],
   ['direção única coleção', collectionReference],
   ['direção piloto', pilotPrompt],
-  ['variação individual', compiler.compileIndividualPrompt(references[0], 0, '', 'variation')],
+  ['variação individual', compiler.compileIndividualPrompt(single, references[0], 0, '', 'variation')],
   ['carrossel', carousel],
   ['formato 1:1', squareCreatives],
   ['formato 9:16 do carrossel', verticalCarousel],
@@ -854,7 +880,7 @@ console.log('Nenhum par de referências descreve a mesma peça, no teto de', Mat
 console.log('Argumento de venda declarado nas', data.references.length, 'referências, e a ordenação respeita os dois em produto único e em coleção.');
 
 console.log(
-  'Prompts aprovados: contexto, lote 4:5, recuperação, carrossel, formatos, redes sociais, áudio, Kling e panfleto.',
+  'Prompts aprovados: contexto, lote mestre 4:5/1:1, recuperação, carrossel, formatos, redes sociais, áudio, Kling e panfleto.',
 );
 console.log('Regra da casa presente nos', promptsQueGeramImagem.length, 'prompts que geram imagem, contando os caminhos de uma peça por vez.');
 

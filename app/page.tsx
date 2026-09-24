@@ -2,7 +2,7 @@
 
 /* oxlint-disable next/no-img-element -- imagens da biblioteca preservam a proporção original sem corte */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   AlertTriangle,
@@ -24,6 +24,7 @@ import {
   Megaphone,
   MessageSquareText,
   Package,
+  Plus,
   RefreshCcw,
   RotateCcw,
   Search,
@@ -52,9 +53,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import {
   compileAudioPrompt,
-  compileCarouselCardPrompt,
-  compileCarouselFormatPrompt,
-  compileCarouselFormatSinglePrompt,
   compileCarouselPrompt,
   compileCreativeFormatPrompt,
   compileCreativeFormatSinglePrompt,
@@ -66,14 +64,20 @@ import type { SalesDriver } from '@/lib/mvp-data';
 import {
   campaignLabel,
   createCampaign,
+  createStore,
   emptyStore,
+  findStoreBySource,
   isBlank,
   loadStore,
   removeCampaign,
+  removeStore,
   saveStore,
+  storeLabel,
+  upsertStore,
   upsertCampaign,
   type CampaignRecord,
   type CampaignStore,
+  type StoreRecord,
 } from '@/lib/campaign-store';
 import { phaseDescriptions, phaseNames, type Phase } from '@/lib/phases';
 import {
@@ -92,15 +96,18 @@ import {
 } from '@/lib/mvp-data';
 import {
   compileContextPrompt,
+  compileContextRecoveryPrompt,
   compileIndividualPrompt,
   compileMasterPrompt,
   compileReferencePrompt,
   compileRecoveryPrompt,
   compileSingleRecoveryPrompt,
+  masterFormatForCampaign,
   type CampaignInput,
 } from '@/lib/prompt-compiler';
 
-type AppSurface = 'welcome' | 'flow' | 'workspace' | 'stage';
+type AppSurface = 'welcome' | 'flow' | 'workspace' | 'stage' | 'preparing';
+type Audience = 'student' | 'admin';
 type CreativeView = 'library' | 'prompt' | 'review';
 type RequirementActionKind = 'select' | 'copy';
 type RequirementAction = { reference: Reference; kind: RequirementActionKind } | null;
@@ -210,9 +217,9 @@ function PhaseShell({
       panel={panel}
       menuLabel={menuLabel}
       menuBadge={menuBadge}
-      eyebrow={`Etapa ${phase} de 8`}
+      eyebrow={nav.audience === 'admin' ? `Etapa ${phase} de 8` : undefined}
       title={title ?? phaseNames[phase - 1]}
-      step={phase}
+      step={nav.audience === 'admin' ? phase : undefined}
       detail={detail}
       bleed={wide}
       actions={actions ?? <SameChatPill />}
@@ -421,7 +428,7 @@ function ChoiceCard({
   );
 }
 
-export default function Home() {
+export function EternityApp({ audience = 'student' }: { audience?: Audience }) {
   const [surface, setSurface] = useState<AppSurface>('welcome');
   const [journeyMode, setJourneyMode] = useState<'flow' | 'stage'>('flow');
   const [workspaceMessage, setWorkspaceMessage] = useState('');
@@ -433,9 +440,11 @@ export default function Home() {
   const [linkAccess, setLinkAccess] = useState<CampaignInput['linkAccess']>('public');
   const [salesDriver, setSalesDriver] = useState<SalesDriver | null>(null);
   const [offer, setOffer] = useState('');
+  const [channels, setChannels] = useState<Array<'google' | 'meta'>>(['meta']);
   /* A mecânica da oferta é lida do texto que ele escreveu, não perguntada. Só ordena a galeria. */
   const offerMechanic = useMemo(() => guessOfferMechanic(offer), [offer]);
   const [formError, setFormError] = useState('');
+  const [showContextRecovery, setShowContextRecovery] = useState(false);
   const [contextChecks, setContextChecks] = useState<boolean[]>(() => contextCheckItems.map(() => false));
 
   const [creativeView, setCreativeView] = useState<CreativeView>('library');
@@ -454,6 +463,7 @@ export default function Home() {
   const [individualIssues, setIndividualIssues] = useState<Record<string, string>>({});
 
   const [socialIndex, setSocialIndex] = useState(-1);
+  const [formatTarget, setFormatTarget] = useState<'1:1' | '9:16'>('1:1');
   const [videoStep, setVideoStep] = useState(0);
   const [hasGoodVideos, setHasGoodVideos] = useState<boolean | null>(null);
   const [flyerStep, setFlyerStep] = useState(0);
@@ -464,8 +474,10 @@ export default function Home() {
   const [copiedKey, setCopiedKey] = useState('');
 
   const storeRef = useRef<CampaignStore>(emptyStore);
+  const [stores, setStores] = useState<StoreRecord[]>([]);
   const [campaigns, setCampaigns] = useState<CampaignRecord[]>([]);
   const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [donePhases, setDonePhases] = useState<Phase[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState<CampaignRecord | null>(null);
@@ -477,14 +489,16 @@ export default function Home() {
     linkAccess,
     offer,
     offerMechanic,
-  }), [campaignMode, exactTarget, sourceUrl, linkAccess, offer, offerMechanic]);
+    channels,
+  }), [campaignMode, exactTarget, sourceUrl, linkAccess, offer, offerMechanic, channels]);
 
   const selectedReferences = useMemo(
     () => selectedIds.map((id) => references.find((item) => item.id === id)).filter((item): item is Reference => Boolean(item)),
     [selectedIds],
   );
   const contextPrompt = useMemo(() => compileContextPrompt(campaign), [campaign]);
-  const carouselPrompt = useMemo(() => compileCarouselPrompt(), []);
+  const contextRecoveryPrompt = useMemo(() => compileContextRecoveryPrompt(campaign), [campaign]);
+  const carouselPrompt = useMemo(() => compileCarouselPrompt(campaign), [campaign]);
   const masterPrompt = useMemo(() => compileMasterPrompt(campaign, selectedReferences), [campaign, selectedReferences]);
   const audioPrompt = useMemo(() => compileAudioPrompt(campaign), [campaign]);
   const videoPrompt = useMemo(() => compileVideoPrompt(), []);
@@ -529,22 +543,27 @@ export default function Home() {
     .map((item, index) => (reviewState[item.id] ?? 'correct') !== 'correct' ? index : -1)
     .filter((index) => index >= 0);
   const correctCount = selectedReferences.length - problemIndexes.length;
-  const recoveryPrompt = compileRecoveryPrompt(selectedReferences, pendingIndexes);
+  const recoveryPrompt = compileRecoveryPrompt(campaign, selectedReferences, pendingIndexes);
+  const activeCampaign = campaigns.find((item) => item.id === campaignId) ?? null;
 
-  function commitStore(next: CampaignStore) {
+  const commitStore = useCallback((next: CampaignStore) => {
     storeRef.current = next;
     saveStore(next);
+    setStores(next.stores);
     setCampaigns(next.items);
-  }
+    setActiveStoreId(next.activeStoreId);
+  }, []);
 
   /* Devolve a campanha guardada para dentro da tela, campo por campo. */
-  function applyCampaign(record: CampaignRecord) {
+  const applyCampaign = useCallback((record: CampaignRecord) => {
     setCampaignId(record.id);
+    setActiveStoreId(record.storeId);
     setCampaignMode(record.mode);
     setExactTarget(record.exactTarget);
     setSourceUrl(record.sourceUrl);
     setLinkAccess(record.linkAccess);
     setOffer(record.offer);
+    setChannels(record.channels.length ? record.channels : ['meta']);
     setSalesDriver(record.salesDriver);
     setContextChecks(record.contextChecks);
     setSelectedIds(record.selectedIds);
@@ -567,29 +586,37 @@ export default function Home() {
     setFixTextFor(null);
     setIndividualIssues({});
     setFormError('');
+    setShowContextRecovery(false);
     setSocialIndex(-1);
+    setFormatTarget(record.channels.length === 1 && record.channels[0] === 'google' ? '9:16' : '1:1');
     setVideoStep(0);
     setHasGoodVideos(null);
     setFlyerStep(0);
     setCopiedKey('');
     setCompleted(record.donePhases.length === 8);
-  }
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const loaded = loadStore();
       storeRef.current = loaded;
+      setStores(loaded.stores);
       setCampaigns(loaded.items);
+      setActiveStoreId(loaded.activeStoreId);
       const active = loaded.items.find((item) => item.id === loaded.activeId) ?? loaded.items[0];
       /* Quem já tem campanha salva volta para o painel, não para a tela de boas-vindas. */
       if (active) {
         applyCampaign(active);
         setSurface('workspace');
+      } else if (audience === 'student') {
+        setSurface('flow');
+        setPhase(1);
+        setContextStep(0);
       }
       setHydrated(true);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [audience, applyCampaign]);
 
   /* Cada mudança de conteúdo regrava a campanha ativa. Só depois de hidratar, para não apagar o que foi lido. */
   useEffect(() => {
@@ -602,6 +629,7 @@ export default function Home() {
       sourceUrl,
       linkAccess,
       offer,
+      channels,
       offerMechanic,
       salesDriver,
       contextChecks,
@@ -617,16 +645,25 @@ export default function Home() {
     storeRef.current = next;
     saveStore(next);
     setCampaigns(next.items);
-  }, [hydrated, campaignId, campaignMode, exactTarget, sourceUrl, linkAccess, offer, offerMechanic, salesDriver, contextChecks, selectedIds, confirmedRequirements, reviewState, prize, coupon, discount, donePhases, phase]);
+  }, [hydrated, campaignId, campaignMode, exactTarget, sourceUrl, linkAccess, offer, channels, offerMechanic, salesDriver, contextChecks, selectedIds, confirmedRequirements, reviewState, prize, coupon, discount, donePhases, phase]);
 
   function markPhaseDone(target: Phase) {
     setDonePhases((current) => current.includes(target) ? current : [...current, target]);
   }
 
-  function startCampaign(record: CampaignRecord) {
-    commitStore(upsertCampaign(storeRef.current, record));
-    applyCampaign(record);
-  }
+  const startCampaign = useCallback((record: CampaignRecord) => {
+    let store = storeRef.current.stores.find((item) => item.id === record.storeId)
+      ?? findStoreBySource(storeRef.current, record.sourceUrl)
+      ?? (!record.sourceUrl.trim() ? storeRef.current.stores.find((item) => item.id === activeStoreId) : undefined);
+    let nextStore = storeRef.current;
+    if (!store) {
+      store = createStore({ sourceUrl: record.sourceUrl });
+      nextStore = upsertStore(nextStore, store);
+    }
+    const withStore = { ...record, storeId: store.id };
+    commitStore(upsertCampaign(nextStore, withStore));
+    applyCampaign(withStore);
+  }, [activeStoreId, applyCampaign, commitStore]);
 
   useEffect(() => {
     const modelContext = (document as Document & { modelContext?: WebMcpContext }).modelContext;
@@ -675,7 +712,7 @@ export default function Home() {
       // A experiência segue funcionando em navegadores sem WebMCP.
     }
     return () => lifecycle.abort();
-  }, []);
+  }, [startCampaign]);
 
   function goPhase(nextPhase: Phase) {
     setPhase(nextPhase);
@@ -705,7 +742,7 @@ export default function Home() {
     if (id === campaignId) return;
     const record = storeRef.current.items.find((item) => item.id === id);
     if (!record) return;
-    commitStore({ ...storeRef.current, activeId: id });
+    commitStore({ ...storeRef.current, activeId: id, activeStoreId: record.storeId });
     applyCampaign(record);
     setJourneyMode('stage');
     setWorkspaceMessage('');
@@ -723,6 +760,29 @@ export default function Home() {
     commitStore(next);
   }
 
+  function renameStore(id: string, name: string) {
+    const store = storeRef.current.stores.find((item) => item.id === id);
+    if (!store) return;
+    commitStore(upsertStore(storeRef.current, { ...store, name: name.trim() }));
+  }
+
+  function switchStore(id: string) {
+    const nextCampaign = storeRef.current.items.find((item) => item.storeId === id);
+    commitStore({ ...storeRef.current, activeStoreId: id, activeId: nextCampaign?.id ?? null });
+    if (nextCampaign) {
+      applyCampaign(nextCampaign);
+      setJourneyMode('stage');
+    } else {
+      setCampaignId(null);
+      setDonePhases([]);
+      setPhase(1);
+      setContextStep(0);
+    }
+    setWorkspaceMessage('');
+    setSurface('workspace');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function deleteCampaign(record: CampaignRecord) {
     const next = removeCampaign(storeRef.current, record.id);
     commitStore(next);
@@ -735,7 +795,29 @@ export default function Home() {
       return;
     }
     setCampaignId(null);
-    setSurface('welcome');
+    setSurface(audience === 'student' ? 'flow' : 'welcome');
+  }
+
+  function deleteCampaignById(id: string) {
+    const record = storeRef.current.items.find((item) => item.id === id);
+    if (record) deleteCampaign(record);
+  }
+
+  function deleteStoreById(id: string) {
+    const next = removeStore(storeRef.current, id);
+    commitStore(next);
+    const fallback = next.items.find((item) => item.id === next.activeId) ?? next.items[0];
+    if (fallback) {
+      applyCampaign(fallback);
+      setSurface('workspace');
+      return;
+    }
+    setCampaignId(null);
+    setActiveStoreId(next.activeStoreId);
+    setDonePhases([]);
+    setPhase(1);
+    setContextStep(0);
+    setSurface(audience === 'student' ? 'flow' : 'welcome');
   }
 
   function stageIsDisabled(targetPhase: Phase) {
@@ -812,6 +894,58 @@ export default function Home() {
     setContextStep((current) => Math.max(0, current === 6 || (current === 7 && campaignMode === 'collection') ? 4 : current - 1));
   }
 
+  function toggleChannel(channel: 'google' | 'meta') {
+    setChannels((current) => current.includes(channel)
+      ? current.length === 1 ? current : current.filter((item) => item !== channel)
+      : [...current, channel]);
+  }
+
+  function displayStoreName(url: string) {
+    try {
+      return new URL(url).hostname.replace(/^www\./i, '') || 'Minha loja';
+    } catch {
+      return 'Minha loja';
+    }
+  }
+
+  function connectActiveStoreToSource() {
+    const store = storeRef.current.stores.find((item) => item.id === activeStoreId);
+    if (!store) return;
+    const nextName = !store.sourceUrl || store.name === 'Minha loja' ? displayStoreName(sourceUrl) : store.name;
+    commitStore(upsertStore(storeRef.current, { ...store, name: nextName, sourceUrl }));
+  }
+
+  function prepareStudentContext() {
+    if (exactTarget.trim().length < 3 || !URL_PATTERN.test(sourceUrl.trim()) || offer.trim().length < 2 || !channels.length) {
+      setFormError(!URL_PATTERN.test(sourceUrl.trim()) ? 'Cole um link completo, começando com http:// ou https://.' : 'Preencha os campos para preparar a campanha.');
+      return;
+    }
+    setFormError('');
+    setLinkAccess('public');
+    setSalesDriver(campaignMode === 'collection' ? 'estetica' : null);
+    if (!campaignId) {
+      startCampaign(createCampaign({
+        mode: campaignMode,
+        exactTarget: exactTarget.trim(),
+        sourceUrl: sourceUrl.trim(),
+        linkAccess: 'public',
+        offer: offer.trim(),
+        channels,
+        salesDriver: campaignMode === 'collection' ? 'estetica' : null,
+      }));
+    } else {
+      connectActiveStoreToSource();
+    }
+    setSurface('preparing');
+    window.setTimeout(() => {
+      setJourneyMode('flow');
+      setPhase(1);
+      setContextStep(7);
+      setSurface('flow');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1200);
+  }
+
   function finishContext() {
     if (!contextChecks.every(Boolean)) return;
     markPhaseDone(1);
@@ -819,7 +953,7 @@ export default function Home() {
       finishStandalone('Contexto concluído. Continue usando este mesmo chat nas próximas etapas.');
       return;
     }
-    goPhase(campaignMode === 'collection' ? 2 : 3);
+    goPhase(audience === 'admin' && campaignMode === 'collection' ? 2 : 3);
   }
 
   function toggleReference(id: string) {
@@ -893,12 +1027,26 @@ export default function Home() {
   }
 
   const nav: ShellNav = {
+    audience,
+    primaryPhases: audience === 'student' ? [1, 3, 4] : [1, 2, 3, 4, 5, 6, 7, 8],
+    optionalPhases: audience === 'student' ? [
+      ...(campaignMode === 'collection' ? [2] as Phase[] : []),
+      5,
+      6,
+      7,
+      8,
+    ] : [],
     active: surface === 'workspace' ? 'workspace' : phase,
     onSelect: goToPhase,
     isDisabled: stageIsDisabled,
     onWorkspace: () => openWorkspace(),
     onNewCampaign: resetCampaign,
-    campaigns: campaigns.filter((record) => !isBlank(record) || record.id === campaignId).map((record) => ({
+    stores: stores.map((store) => ({ id: store.id, label: storeLabel(store) })),
+    activeStoreId,
+    onSwitchStore: switchStore,
+    onRenameStore: renameStore,
+    onDeleteStore: deleteStoreById,
+    campaigns: campaigns.filter((record) => record.storeId === activeStoreId && (!isBlank(record) || record.id === campaignId)).map((record) => ({
       id: record.id,
       label: campaignLabel(record),
       detail: `${record.tabName.trim() && record.exactTarget.trim() ? `${record.exactTarget.trim()} · ` : ''}${record.mode === 'collection' ? 'Coleção' : 'Produto único'}${record.offer.trim() ? ` · ${record.offer.trim()}` : ''}`,
@@ -906,12 +1054,25 @@ export default function Home() {
     activeCampaignId: campaignId,
     onSwitchCampaign: switchCampaign,
     onRenameCampaign: renameCampaign,
+    onDeleteCampaign: deleteCampaignById,
   };
 
   const shellProps = {
     nav,
-    attachmentRequired: linkAccess === 'protected' && (phase > 1 || contextStep >= 3),
+    attachmentRequired: audience === 'admin' && linkAccess === 'protected' && (phase > 1 || contextStep >= 3),
   };
+
+  if (surface === 'preparing') {
+    return (
+      <main className="grid min-h-screen place-items-center bg-background px-5 text-foreground">
+        <section className="w-full max-w-md border border-primary/30 bg-card/60 p-7 text-center">
+          <span className="mx-auto grid size-11 place-items-center bg-primary/15 text-accent-foreground"><Sparkles className="size-5 animate-pulse" /></span>
+          <h1 className="mt-5 text-2xl font-semibold tracking-[-0.04em]">Preparando sua campanha</h1>
+          <div className="mt-6 h-1 overflow-hidden bg-white/[0.08]"><div className="h-full w-2/3 animate-pulse bg-primary" /></div>
+        </section>
+      </main>
+    );
+  }
 
   if (surface === 'welcome') {
     return (
@@ -948,6 +1109,42 @@ export default function Home() {
   }
 
   if (surface === 'workspace') {
+    if (audience === 'student') {
+      const hasContext = !stageIsDisabled(3);
+      const primary = [
+        { phase: 1 as Phase, label: 'Contexto', icon: ListChecks },
+        { phase: 3 as Phase, label: 'Criativos', icon: Sparkles },
+        { phase: 4 as Phase, label: 'Formatos', icon: Square },
+      ];
+      const extras = [
+        ...(campaignMode === 'collection' ? [{ phase: 2 as Phase, label: 'Carrossel', icon: Layers3 }] : []),
+        { phase: 5 as Phase, label: 'Instagram', icon: Megaphone },
+        { phase: 6 as Phase, label: 'Narração', icon: Volume2 },
+        { phase: 7 as Phase, label: 'Vídeo', icon: Film },
+        { phase: 8 as Phase, label: 'Panfleto', icon: Ticket },
+      ];
+
+      return (
+        <AppShell nav={nav} eyebrow="Campanha" title={activeCampaign ? campaignLabel(activeCampaign) : 'Nova campanha'} actions={<SameChatPill />}>
+          {workspaceMessage ? <output className="mb-5 block border border-primary/30 bg-primary/[0.08] px-4 py-3 text-sm text-foreground">{workspaceMessage}</output> : null}
+          {!campaignId ? (
+            <section className="border border-border bg-card/55 p-6"><h2 className="text-xl font-semibold tracking-[-0.03em]">Adicione um produto</h2><Button type="button" className="mt-5 h-11" onClick={resetCampaign}><Plus data-icon="inline-start" /> Novo produto</Button></section>
+          ) : (
+            <>
+              <section className="grid gap-2 sm:grid-cols-3">
+                {primary.map(({ phase: targetPhase, label, icon: Icon }) => {
+                  const disabled = stageIsDisabled(targetPhase);
+                  const done = donePhases.includes(targetPhase);
+                  return <button key={label} type="button" disabled={disabled} onClick={() => openStage(targetPhase)} className={`flex min-h-28 items-center gap-3 border p-4 text-left ${disabled ? 'cursor-not-allowed border-border bg-card/25 opacity-45' : done ? 'border-emerald-400/30 bg-emerald-400/[0.05]' : 'border-border bg-card/55 hover:border-primary/45 hover:bg-card/80'}`}><span className="grid size-9 place-items-center bg-primary/12 text-accent-foreground">{done ? <Check className="size-4" /> : <Icon className="size-4" />}</span><span className="font-medium">{label}</span></button>;
+                })}
+              </section>
+              {hasContext ? <section className="mt-7"><p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Extras</p><div className="flex flex-wrap gap-2">{extras.map(({ phase: targetPhase, label, icon: Icon }) => <Button key={label} type="button" variant="outline" size="sm" className="h-9" onClick={() => openStage(targetPhase)}><Icon data-icon="inline-start" /> {label}</Button>)}</div></section> : null}
+            </>
+          )}
+        </AppShell>
+      );
+    }
+
     const stageIcons = [ListChecks, Layers3, Sparkles, Square, Megaphone, Volume2, Film, Ticket];
     const hasContext = !stageIsDisabled(3);
     /* Em produto único o carrossel não existe: ele não pode contar como etapa pendente. */
@@ -1073,6 +1270,55 @@ export default function Home() {
   }
 
   if (phase === 1) {
+    if (audience === 'student') {
+      if (contextStep === 7) {
+        return (
+          <PhaseShell {...shellProps} phase={1} title="Contexto" detail="Mesmo chat">
+            <PageHeading title="Copie o contexto" description="" />
+            <PromptStep title="Preparar campanha" delivers="Use no mesmo chat do ChatGPT." batchPrompt={contextPrompt} batchKey="context" copiedKey={copiedKey} onCopy={copyText} />
+            <BottomActions back={() => setContextStep(0)} next={() => { markPhaseDone(1); goPhase(3); }} nextLabel="Já enviei" />
+          </PhaseShell>
+        );
+      }
+
+      return (
+        <PhaseShell {...shellProps} phase={1} title="Nova campanha">
+          <QuestionScreen title="O que você quer anunciar?" next={prepareStudentContext} nextLabel="Preparar campanha" nextDisabled={!exactTarget.trim() || !sourceUrl.trim() || !offer.trim()} error={formError}>
+            <div className="space-y-5">
+              <div>
+                <label htmlFor="student-target" className="mb-2 block text-sm font-medium">Produto ou coleção</label>
+                <Input id="student-target" value={exactTarget} onChange={(event) => setExactTarget(event.target.value)} className="h-12 bg-card px-4" placeholder="Ex.: coleção de camisas masculinas" />
+              </div>
+              <div>
+                <label htmlFor="student-url" className="mb-2 block text-sm font-medium">Link da página</label>
+                <Input id="student-url" type="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} className="h-12 bg-card px-4" placeholder="https://sualoja.com/colecao" />
+              </div>
+              <div>
+                <label htmlFor="student-offer" className="mb-2 block text-sm font-medium">Qual promoção ou condição comercial este anúncio deve destacar?</label>
+                <Input id="student-offer" value={offer} onChange={(event) => setOffer(event.target.value)} className="h-12 bg-card px-4" placeholder="Ex.: desconto progressivo: 2 peças, 3 peças ou mais" />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <RadioGroup value={campaignMode} onValueChange={(value) => { const mode = value as CampaignInput['mode']; setCampaignMode(mode); setSelectedIds([]); }} className="contents">
+                  <ChoiceCard value="single" active={campaignMode === 'single'} icon={<Package className="size-5" />} title="Produto" description="Um item ou suas variações." />
+                  <ChoiceCard value="collection" active={campaignMode === 'collection'} icon={<Layers3 className="size-5" />} title="Coleção" description="Os primeiros produtos da vitrine." />
+                </RadioGroup>
+              </div>
+              <div>
+                <p className="mb-2 text-sm font-medium">Onde vai veicular?</p>
+                <div className="flex flex-wrap gap-2">
+                  {([{ value: 'meta', label: 'Meta' }, { value: 'google', label: 'Google' }] as const).map((channel) => (
+                    <button key={channel.value} type="button" onClick={() => toggleChannel(channel.value)} className={`h-10 border px-4 text-sm font-medium transition-colors ${channels.includes(channel.value) ? 'border-primary/60 bg-primary/[0.12] text-foreground' : 'border-border bg-card/45 text-muted-foreground hover:border-white/30'}`}>
+                      {channel.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </QuestionScreen>
+        </PhaseShell>
+      );
+    }
+
     if (contextStep === 0) {
       return (
         <PhaseShell {...shellProps} phase={1} detail={rotuloDaPergunta(1)}>
@@ -1181,25 +1427,20 @@ export default function Home() {
 
   if (phase === 2) {
     return (
-      <PhaseShell {...shellProps} phase={2} detail="Somente coleções">
-        <PageHeading eyebrow="Carrossel obrigatório" title="Padronize cinco produtos da coleção" description="Cinco cards 4:5 com o mesmo fundo, a mesma luz e a mesma escala." />
+      <PhaseShell {...shellProps} phase={2} detail="Coleções">
+        <PageHeading eyebrow={audience === 'student' ? 'Opcional' : 'Carrossel obrigatório'} title="Carrossel da coleção" description={audience === 'student' ? '' : `Cinco cards ${masterFormatForCampaign(campaign)} com o mesmo fundo, a mesma luz e a mesma escala.`} />
         <PromptStep
-          title="Carrossel de cinco cards"
-          delivers="Uma mensagem gera os cinco cards padronizados em 4:5."
+          title={`Carrossel de cinco cards · ${masterFormatForCampaign(campaign)}`}
+          delivers="Uma mensagem gera os cinco cards padronizados."
           batchPrompt={carouselPrompt}
           batchKey="carousel"
-          pieces={[0, 1, 2, 3, 4].map((index) => ({
-            label: `Card ${String(index + 1).padStart(2, '0')} de cinco`,
-            prompt: compileCarouselCardPrompt(index),
-            copyKey: `carousel-card-${index}`,
-          }))}
           copiedKey={copiedKey}
           onCopy={copyText}
         />
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
           {['5 arquivos separados', 'Fundo igual', 'Produto intacto', 'Sem rosto quando houver pessoa'].map((item) => <div key={item} className="flex items-center gap-2 border border-border bg-card/55 p-3 text-sm text-muted-foreground"><CheckCircle2 className="size-4 shrink-0 text-emerald-400" />{item}</div>)}
         </div>
-        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(1), setContextStep(6))} next={() => { markPhaseDone(2); if (journeyMode === 'stage') finishStandalone('Etapa de carrossel concluída.'); else goPhase(3); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Já gerei os cinco cards'} />
+        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(1), setContextStep(6))} next={() => { markPhaseDone(2); if (journeyMode === 'stage' || audience === 'student') finishStandalone('Carrossel pronto para usar.'); else goPhase(3); }} nextLabel={journeyMode === 'stage' || audience === 'student' ? 'Voltar ao painel' : 'Já gerei os cinco cards'} />
       </PhaseShell>
     );
   }
@@ -1287,6 +1528,14 @@ export default function Home() {
         menuBadge={galleryFilterCount || undefined}
         toolbar={libraryToolbar}
       >
+        {audience === 'student' ? (
+          <div className="mb-4">
+            <button type="button" onClick={() => setShowContextRecovery((value) => !value)} className="text-xs text-muted-foreground hover:text-foreground">
+              {showContextRecovery ? 'Fechar correção de contexto' : 'Deu erro no contexto?'}
+            </button>
+            {showContextRecovery ? <div className="mt-3"><PromptStep title="Corrigir contexto" delivers="Copie no mesmo chat e siga depois." batchPrompt={contextRecoveryPrompt} batchKey="context-recovery" copiedKey={copiedKey} onCopy={copyText} /></div> : null}
+          </div>
+        ) : null}
         {orderedReferences.length ? <div className="reference-masonry pb-20 lg:pb-0" aria-label="Biblioteca de referências">{orderedReferences.map((item) => {
           const selectedIndex = selectedIds.indexOf(item.id);
           const selected = selectedIndex >= 0;
@@ -1398,12 +1647,12 @@ export default function Home() {
 
   if (phase === 3 && creativeView === 'prompt') {
     return (
-      <PhaseShell {...shellProps} phase={3} detail="Lote mestre 4:5">
-        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos mestres" description="Uma mensagem leva as cinco receitas. Se alguma peça vier errada, você gera só aquela." />
+      <PhaseShell {...shellProps} phase={3} detail={`Lote mestre ${masterFormatForCampaign(campaign)}`}>
+        <PageHeading eyebrow="Cinco direções selecionadas" title="Gere os cinco criativos" description="" />
         {lotSameness(selectedReferences).length >= 3 ? <p className="mb-4 flex items-start gap-2 border border-amber-400/30 bg-amber-400/[0.07] p-3 text-sm leading-6 text-amber-100/85"><AlertTriangle className="mt-1 size-4 shrink-0 text-amber-300" />As cinco repetem {lotSameness(selectedReferences).map((eixo) => eixo.label).join(', ')}. O lote tende a voltar parecido: troque duas antes de gerar.</p> : null}
-        <div className="mb-5 flex items-center justify-between gap-4 border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center bg-primary text-[8px] text-primary-foreground">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens separadas · 4:5</div></div>
+        <div className="mb-5 flex items-center justify-between gap-4 border border-border bg-card/60 p-4"><div className="flex -space-x-2">{selectedReferences.map((item, index) => <div key={item.id} className="relative size-11 overflow-hidden border-2 border-background bg-muted shadow"><img src={item.image} alt="" className="h-full w-full object-cover" /><span className="absolute right-0 bottom-0 grid size-4 place-items-center bg-primary text-[8px] text-primary-foreground">{index + 1}</span></div>)}</div><div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-400" /> 5 imagens · {masterFormatForCampaign(campaign)}</div></div>
         <PromptStep
-          title="Lote mestre 4:5"
+          title={`Lote mestre ${masterFormatForCampaign(campaign)}`}
           delivers="Uma mensagem gera os cinco criativos, na ordem do lote."
           batchPrompt={masterPrompt}
           batchKey="master"
@@ -1429,9 +1678,9 @@ export default function Home() {
     ];
 
     function fixPrompt(item: Reference, index: number, status: ReviewStatus) {
-      if (status === 'content') return compileIndividualPrompt(item, index, individualIssues[item.id] ?? '', 'content');
-      if (status === 'variation') return compileIndividualPrompt(item, index, '', 'variation');
-      return compileSingleRecoveryPrompt(item, index);
+      if (status === 'content') return compileIndividualPrompt(campaign, item, index, individualIssues[item.id] ?? '', 'content');
+      if (status === 'variation') return compileIndividualPrompt(campaign, item, index, '', 'variation');
+      return compileSingleRecoveryPrompt(campaign, item, index);
     }
 
     return (
@@ -1543,73 +1792,38 @@ export default function Home() {
   }
 
   if (phase === 4) {
+    const masterFormat = masterFormatForCampaign(campaign);
+    const formatOptions: Array<'1:1' | '9:16'> = masterFormat === '1:1' ? ['9:16'] : ['1:1', '9:16'];
+    const selectedFormat = formatOptions.includes(formatTarget) ? formatTarget : formatOptions[0];
     return (
-      <PhaseShell {...shellProps} phase={4} detail="1:1 e 9:16 · opcionais">
-        <PageHeading title="Copie somente o formato de que precisa" description="Depois de aprovar os mestres 4:5. Copie só o formato que for usar: nenhum é obrigatório." />
-        <details className="mb-6 border border-primary/25 bg-primary/[0.05] px-4 py-3 text-sm text-muted-foreground">
-          <summary className="cursor-pointer font-medium text-accent-foreground">Como a adaptação funciona</summary>
-          <p className="mt-3 leading-6">O sistema recompõe a arte para o novo formato em vez de apenas cortar ou esticar. Cada botão copia um comando independente.</p>
-        </details>
-        <div className="grid gap-4 xl:grid-cols-2">
-          {campaignMode === 'collection' ? (
-            <PromptStep
-              title="Carrossel em 1:1"
-              delivers="Uma mensagem adapta os cinco cards do carrossel."
-              batchPrompt={compileCarouselFormatPrompt('1:1')}
-              batchKey="carousel-1:1"
-              pieces={[0, 1, 2, 3, 4].map((index) => ({
-                label: `Card ${String(index + 1).padStart(2, '0')} em 1:1`,
-                prompt: compileCarouselFormatSinglePrompt('1:1', index),
-                copyKey: `carousel-1:1-${index}`,
-              }))}
-              copiedKey={copiedKey}
-              onCopy={copyText}
-            />
-          ) : null}
-            <PromptStep
-              title="Cinco criativos em 1:1"
-              delivers="Uma mensagem adapta os cinco mestres aprovados."
-              batchPrompt={compileCreativeFormatPrompt('1:1', selectedReferences)}
-              batchKey="creative-1:1"
-              pieces={[0, 1, 2, 3, 4].map((index) => ({
-                label: `Criativo ${String(index + 1).padStart(2, '0')} em 1:1`,
-                prompt: compileCreativeFormatSinglePrompt('1:1', index, selectedReferences[index]),
-                copyKey: `creative-1:1-${index}`,
-              }))}
-              copiedKey={copiedKey}
-              onCopy={copyText}
-            />
-
-          {campaignMode === 'collection' ? (
-            <PromptStep
-              title="Carrossel em 9:16"
-              delivers="Uma mensagem adapta os cinco cards para story."
-              batchPrompt={compileCarouselFormatPrompt('9:16')}
-              batchKey="carousel-9:16"
-              pieces={[0, 1, 2, 3, 4].map((index) => ({
-                label: `Card ${String(index + 1).padStart(2, '0')} em 9:16`,
-                prompt: compileCarouselFormatSinglePrompt('9:16', index),
-                copyKey: `carousel-9:16-${index}`,
-              }))}
-              copiedKey={copiedKey}
-              onCopy={copyText}
-            />
-          ) : null}
-            <PromptStep
-              title="Cinco criativos em 9:16"
-              delivers="Uma mensagem adapta os cinco mestres para story e reel."
-              batchPrompt={compileCreativeFormatPrompt('9:16', selectedReferences)}
-              batchKey="creative-9:16"
-              pieces={[0, 1, 2, 3, 4].map((index) => ({
-                label: `Criativo ${String(index + 1).padStart(2, '0')} em 9:16`,
-                prompt: compileCreativeFormatSinglePrompt('9:16', index, selectedReferences[index]),
-                copyKey: `creative-9:16-${index}`,
-              }))}
-              copiedKey={copiedKey}
-              onCopy={copyText}
-            />
+      <PhaseShell {...shellProps} phase={4} detail={`${masterFormat} → outro formato`}>
+        <PageHeading title="Formatos" description="" />
+        <div className="mb-6 flex flex-wrap gap-2" aria-label="Escolher formato">
+          {formatOptions.map((format) => <button key={format} type="button" onClick={() => setFormatTarget(format)} className={`h-10 border px-4 text-sm font-medium ${selectedFormat === format ? 'border-primary/60 bg-primary/[0.12]' : 'border-border bg-card/45 text-muted-foreground'}`}>{format}</button>)}
         </div>
-        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(3), setCreativeView('review'))} next={() => { markPhaseDone(4); if (journeyMode === 'stage') finishStandalone('Etapa de formatos concluída.'); else { setSocialIndex(-1); goPhase(5); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Entender as redes sociais'} />
+        <div className="grid gap-4 xl:grid-cols-2">
+          <PromptStep title={`Adaptar as cinco para ${selectedFormat}`} delivers="Uma mensagem adapta o lote inteiro." batchPrompt={compileCreativeFormatPrompt(selectedFormat, selectedReferences, masterFormat)} batchKey={`creative-${selectedFormat}-batch`} copiedKey={copiedKey} onCopy={copyText} />
+          <PromptStep title={`Adaptar uma para ${selectedFormat}`} delivers="Troque [NÚMERO] pelo criativo que precisa." batchPrompt={compileCreativeFormatSinglePrompt(selectedFormat, masterFormat)} batchKey={`creative-${selectedFormat}-single`} copiedKey={copiedKey} onCopy={copyText} />
+        </div>
+        <BottomActions back={() => journeyMode === 'stage' ? openWorkspace() : (goPhase(3), setCreativeView('review'))} next={() => { markPhaseDone(4); if (journeyMode === 'stage') finishStandalone('Etapa de formatos concluída.'); else if (audience === 'student') openWorkspace('Criativos prontos.'); else { setSocialIndex(-1); goPhase(5); } }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : audience === 'student' ? 'Voltar ao painel' : 'Entender as redes sociais'} />
+      </PhaseShell>
+    );
+  }
+
+  if (phase === 5 && audience === 'student') {
+    const setup = socialPrompts.filter(({ id }) => id === 'feed' || id === 'highlights');
+    const routine = socialPrompts.filter(({ id }) => id === 'weekly' || id === 'reviews');
+    const renderSocialPrompt = (social: typeof socialPrompts[number]) => (
+      <div key={social.id} className="contents">
+        {social.batches.map((batch) => <PromptStep key={batch.id} title={batch.title} delivers={batch.output} batchPrompt={batch.prompt} batchKey={`social-${batch.id}`} copiedKey={copiedKey} onCopy={copyText} />)}
+      </div>
+    );
+    return (
+      <PhaseShell {...shellProps} phase={5} title="Instagram">
+        <PageHeading title="Instagram" description="" />
+        <section><p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Setup inicial</p><div className="grid gap-4 xl:grid-cols-2">{setup.map(renderSocialPrompt)}</div></section>
+        <section className="mt-7"><p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Quando precisar publicar</p><div className="grid gap-4 xl:grid-cols-2">{routine.map(renderSocialPrompt)}</div></section>
+        <BottomActions next={() => finishStandalone('Instagram pronto para usar.')} nextLabel="Voltar ao painel" />
       </PhaseShell>
     );
   }
@@ -1649,19 +1863,24 @@ export default function Home() {
           <p><strong className="text-foreground">Antes de copiar:</strong> <span className="text-muted-foreground">{social.before}</span></p>
           <p className="mt-1 text-muted-foreground">{social.guardrail}</p>
         </div>
-        <PromptStep
-          title="Gerar este bloco"
-          delivers={social.output}
-          batchPrompt={social.prompt}
-          batchKey={`social-${social.id}`}
-          pieces={social.pieces.map((piece, index) => ({
-            label: piece.label,
-            prompt: piece.prompt,
-            copyKey: `social-${social.id}-${index}`,
-          }))}
-          copiedKey={copiedKey}
-          onCopy={copyText}
-        />
+        <div className="grid gap-4 xl:grid-cols-2">
+          {social.batches.map((batch) => (
+            <PromptStep
+              key={batch.id}
+              title={batch.title}
+              delivers={batch.output}
+              batchPrompt={batch.prompt}
+              batchKey={`social-${batch.id}`}
+              pieces={batch.pieces.map((piece, index) => ({
+                label: piece.label,
+                prompt: piece.prompt,
+                copyKey: `social-${batch.id}-${index}`,
+              }))}
+              copiedKey={copiedKey}
+              onCopy={copyText}
+            />
+          ))}
+        </div>
         <details className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
           <summary className="cursor-pointer font-medium text-accent-foreground">Por que este bloco existe e como usar</summary>
           <p className="mt-3 leading-6">{social.importance}</p>
@@ -1675,6 +1894,15 @@ export default function Home() {
   }
 
   if (phase === 6) {
+    if (audience === 'student') {
+      return (
+        <PhaseShell {...shellProps} phase={6} title="Narração">
+          <PageHeading title="Narração" description="" />
+          <PromptStep title="Narração de até 30 segundos" delivers="Use os fatos da campanha." batchPrompt={audioPrompt} batchKey="audio" copiedKey={copiedKey} onCopy={copyText} />
+          <BottomActions next={() => finishStandalone('Narração pronta para usar.')} nextLabel="Voltar ao painel" />
+        </PhaseShell>
+      );
+    }
     return (
       <PhaseShell {...shellProps} phase={6} detail="ElevenLabs · até 30 segundos">
         <PageHeading eyebrow="Áudio do vídeo" title="Crie o texto que dará voz ao anúncio" description="Copie o prompt, aprove uma narração de até 30 segundos e transforme o texto em voz no ElevenLabs." />
@@ -1693,6 +1921,15 @@ export default function Home() {
   }
 
   if (phase === 7 && videoStep === 0) {
+    if (audience === 'student') {
+      return (
+        <PhaseShell {...shellProps} phase={7} title="Vídeo">
+          <PageHeading title="Vídeo" description="" />
+          <PromptStep title="Três roteiros para Kling" delivers="Três prompts de vídeo." batchPrompt={videoPrompt} batchKey="video" copiedKey={copiedKey} onCopy={copyText} />
+          <BottomActions next={() => finishStandalone('Roteiros de vídeo prontos.')} nextLabel="Voltar ao painel" />
+        </PhaseShell>
+      );
+    }
     return (
       <PhaseShell {...shellProps} phase={7} detail="Etapa condicional">
         <QuestionScreen title="Você encontrou bons vídeos reais do produto?" description="O Kling só entra quando não existem vídeos utilizáveis. As imagens originais do produto continuam sendo a fonte." back={() => journeyMode === 'stage' ? openWorkspace() : goPhase(6)} next={() => { if (hasGoodVideos) { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Vídeos reais confirmados. Não foi necessário usar o Kling.'); else goPhase(8); } else setVideoStep(1); }} nextLabel={hasGoodVideos ? (journeyMode === 'stage' ? 'Concluir esta etapa' : 'Pular Kling') : 'Preparar prompts Kling'} nextDisabled={hasGoodVideos === null}>
@@ -1708,6 +1945,20 @@ export default function Home() {
         <PageHeading title="Crie três roteiros visuais para o Kling" description="Os prompts usam as fotos originais, preservam somente cores confirmadas e reutilizam a narração já aprovada." />
         <PromptStep title="Três roteiros para o Kling" delivers="Texto, não imagem: volta um prompt completo para cada um dos três vídeos." batchPrompt={videoPrompt} batchKey="video" copiedKey={copiedKey} onCopy={copyText} />
         <BottomActions back={() => setVideoStep(0)} next={() => { markPhaseDone(7); if (journeyMode === 'stage') finishStandalone('Etapa de vídeos com IA concluída.'); else goPhase(8); }} nextLabel={journeyMode === 'stage' ? 'Concluir esta etapa' : 'Preparar panfleto'} />
+      </PhaseShell>
+    );
+  }
+
+  if (phase === 8 && audience === 'student' && !completed && flyerStep < 3) {
+    return (
+      <PhaseShell {...shellProps} phase={8} title="Panfleto">
+        <QuestionScreen title="Dados do panfleto" next={() => setFlyerStep(3)} nextLabel="Preparar panfleto" nextDisabled={prize.trim().length < 2 || coupon.trim().length < 2 || discount.trim().length < 1}>
+          <div className="space-y-4">
+            <div><label htmlFor="student-prize" className="mb-2 block text-sm font-medium">Prêmio</label><Input id="student-prize" value={prize} onChange={(event) => setPrize(event.target.value)} className="h-12 bg-card px-4" /></div>
+            <div><label htmlFor="student-coupon" className="mb-2 block text-sm font-medium">Cupom</label><Input id="student-coupon" value={coupon} onChange={(event) => setCoupon(event.target.value)} className="h-12 bg-card px-4 uppercase" /></div>
+            <div><label htmlFor="student-discount" className="mb-2 block text-sm font-medium">Desconto</label><Input id="student-discount" value={discount} onChange={(event) => setDiscount(event.target.value)} className="h-12 bg-card px-4" /></div>
+          </div>
+        </QuestionScreen>
       </PhaseShell>
     );
   }
@@ -1764,4 +2015,8 @@ export default function Home() {
       </div>
     </PhaseShell>
   );
+}
+
+export default function Home() {
+  return <EternityApp audience="student" />;
 }

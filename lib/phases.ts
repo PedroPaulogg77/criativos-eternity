@@ -14,8 +14,8 @@ export const phaseNames = [
 export const phaseDescriptions = [
   'Capture os fatos que guiam toda a campanha.',
   'Padronize cinco produtos de uma coleção.',
-  'Escolha referências e gere os mestres 4:5.',
-  'Copie adaptações para 1:1 ou 9:16.',
+  'Escolha referências e gere os criativos mestres.',
+  'Adapte os criativos para o formato de veiculação.',
   'Monte a presença inicial e a rotina social.',
   'Crie a narração de até 30 segundos.',
   'Prepare takes no Kling quando necessário.',
