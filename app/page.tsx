@@ -342,7 +342,7 @@ function PromptStep({
 
       {hasPieces ? (
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3 text-xs text-muted-foreground">
-          <p>Se o trio falhar ou você preferir mais segurança, gere uma por vez.</p>
+          <p>Se o lote falhar ou você preferir mais segurança, gere uma por vez.</p>
           <button type="button" className="font-medium text-accent-foreground hover:text-foreground" onClick={() => setShowPieces((value) => !value)}>
             {showPieces ? 'Fechar peças' : 'Gerar uma por vez →'}
           </button>
