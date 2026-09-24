@@ -311,6 +311,8 @@ for (const social of [flow.socialPrompts[1], flow.socialPrompts[2]]) {
     assert.ok(batch.prompt.includes('STORY DE LOJA REAL, LIMPO E MINIMALISTA'), `${batch.id} perdeu a direção visual limpa`);
     assert.ok(batch.prompt.includes('UMA única ideia'), `${batch.id} deixa o story acumular informação`);
     assert.ok(/Não use lista, parágrafo longo, tabela/.test(batch.prompt), `${batch.id} deixa o story voltar poluído`);
+    assert.ok(batch.prompt.includes('IDIOMA OBRIGATÓRIO'), `${batch.id} não trava o idioma da loja`);
+    assert.ok(batch.prompt.includes('Português só pode aparecer'), `${batch.id} permite português fora do idioma da loja`);
   }
 }
 assert.ok(flow.socialPrompts[1].batches[2].prompt.includes('Story 9 —'), 'o terceiro trio de destaques perdeu o story 9');
@@ -380,6 +382,12 @@ assert.ok(flow.socialPrompts[2].batches[1].prompt.includes('WELCOME10'), 'a roti
 assert.ok(/Não invente percentual/.test(flow.socialPrompts[2].batches[1].prompt), 'a rotina semanal deixa inventar condição de oferta');
 assert.ok(flow.socialPrompts[3].batches[0].prompt.includes('me entregue 3 reviews de cliente'));
 assert.ok(/foto tirada pelo próprio cliente|Foto tirada pelo próprio cliente/.test(flow.socialPrompts[3].batches[0].prompt), 'o review perdeu a aparência de foto de cliente');
+for (const social of flow.socialPrompts.slice(1)) {
+  for (const prompt of [...social.batches.map((batch) => batch.prompt), ...social.pieces.map((piece) => piece.prompt)]) {
+    assert.ok(prompt.includes('IDIOMA OBRIGATÓRIO'), `${social.id} deixou uma alternativa sem a trava de idioma`);
+    assert.ok(prompt.includes('Português só pode aparecer'), `${social.id} deixou uma alternativa aceitar português indevido`);
+  }
+}
 
 const audio = flow.compileAudioPrompt(collection);
 assert.ok(audio.includes('Duração máxima de 30 segundos'));

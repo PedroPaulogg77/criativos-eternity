@@ -384,8 +384,12 @@ const HIGHLIGHT_FACTS = `O QUE PODE SER ESCRITO EM CADA DESTAQUE
 
 const HIGHLIGHT_FORMAT = `FORMATO
 - 1080 × 1920 px, qualidade máxima, textos legíveis em tela de celular.
-- Escreva no idioma e para o mercado registrados no CONTEXTO CAPTURADO.
 - Preserve produto, cor, textura, estampa, componentes e logo exatamente como nas fontes factuais.`;
+
+const STORY_LANGUAGE_LOCK = `IDIOMA OBRIGATÓRIO
+- Todo texto DENTRO da imagem — manchete, apoio, CTA, informação operacional e marcação — deve ser escrito exclusivamente no idioma registrado no CONTEXTO CAPTURADO.
+- Use a ortografia, os acentos e a redação natural desse idioma e mercado. Não traduza, não explique e não misture idiomas.
+- Português só pode aparecer se o idioma registrado no CONTEXTO CAPTURADO for português. Se a loja estiver em outro idioma, nenhuma palavra em português entra na imagem.`;
 
 /* Story é tela de celular, não uma página de apresentação. Uma ideia por vez evita a
  * prancha poluída que o modelo costuma produzir ao tentar explicar tudo de uma vez. */
@@ -434,6 +438,8 @@ Este trio responde uma dúvida específica de quem visita o perfil antes de comp
 
 ${HIGHLIGHT_FORMAT}
 
+${STORY_LANGUAGE_LOCK}
+
 ${STORY_MINIMAL_DESIGN}
 
 ${SOCIAL_PRODUCT}
@@ -480,6 +486,8 @@ ${regime}
 
 ${HIGHLIGHT_FORMAT}
 
+${STORY_LANGUAGE_LOCK}
+
 ${STORY_MINIMAL_DESIGN}
 
 ${SOCIAL_PRODUCT}
@@ -525,7 +533,7 @@ const WEEKLY_FACTS = `O QUE PODE SER ESCRITO
 
 const WEEKLY_GUIDELINES = `DIRETRIZES
 - Formato: 1080x1920px, 9:16
-- Texto aplicado diretamente na imagem, no idioma e para o mercado registrados no contexto
+- Texto aplicado diretamente na imagem
 - Não utilizar imagens de referência externas; basear toda a criação na identidade da loja já apresentada`;
 
 const WEEKLY_GROUPS = [
@@ -547,6 +555,8 @@ OBJETIVO DO TEMA
 - Tom: ${tone}.
 
 ${WEEKLY_GUIDELINES}
+
+${STORY_LANGUAGE_LOCK}
 
 ${STORY_MINIMAL_DESIGN}
 
@@ -589,6 +599,8 @@ PAPEL DESTE STORY
 - Tom: ${tom}.
 
 ${WEEKLY_GUIDELINES}
+
+${STORY_LANGUAGE_LOCK}
 
 ${STORY_MINIMAL_DESIGN}
 
@@ -635,6 +647,8 @@ ${REVIEW_LOOK}
 
 ${REVIEW_FACTS}
 
+${STORY_LANGUAGE_LOCK}
+
 VARIEDADE
 - Três pessoas diferentes, coerentes com o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto.
 - Um produto ou variante diferente em cada uma das três peças, além de ambientes e enquadramentos diferentes. Se as fontes factuais trouxerem menos itens do que peças, repita o mesmo produto e varie a pessoa, o ambiente e o enquadramento — nunca invente cor, versão ou produto para dar variedade.
@@ -660,6 +674,8 @@ function compileReviewPrompt(index: number) {
 ${REVIEW_LOOK}
 
 ${REVIEW_FACTS}
+
+${STORY_LANGUAGE_LOCK}
 
 VARIEDADE
 - A pessoa é coerente com o público-alvo registrado no contexto: mesmo gênero, faixa etária compatível e biotipo coerente com o uso do produto.

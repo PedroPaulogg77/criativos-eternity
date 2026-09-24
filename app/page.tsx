@@ -342,7 +342,7 @@ function PromptStep({
 
       {hasPieces ? (
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3 text-xs text-muted-foreground">
-          <p>Se vier colagem ou faltar uma peça, gere separadamente.</p>
+          <p>Se o trio falhar ou você preferir mais segurança, gere uma por vez.</p>
           <button type="button" className="font-medium text-accent-foreground hover:text-foreground" onClick={() => setShowPieces((value) => !value)}>
             {showPieces ? 'Fechar peças' : 'Gerar uma por vez →'}
           </button>
@@ -1815,7 +1815,7 @@ export function EternityApp({ audience = 'student' }: { audience?: Audience }) {
     const routine = socialPrompts.filter(({ id }) => id === 'weekly' || id === 'reviews');
     const renderSocialPrompt = (social: typeof socialPrompts[number]) => (
       <div key={social.id} className="contents">
-        {social.batches.map((batch) => <PromptStep key={batch.id} title={batch.title} delivers={batch.output} batchPrompt={batch.prompt} batchKey={`social-${batch.id}`} copiedKey={copiedKey} onCopy={copyText} />)}
+        {social.batches.map((batch) => <PromptStep key={batch.id} title={batch.title} delivers={batch.output} batchPrompt={batch.prompt} batchKey={`social-${batch.id}`} pieces={batch.pieces.map((piece, index) => ({ label: piece.label, prompt: piece.prompt, copyKey: `social-${batch.id}-${index}` }))} copiedKey={copiedKey} onCopy={copyText} />)}
       </div>
     );
     return (
