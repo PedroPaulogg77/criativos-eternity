@@ -181,5 +181,5 @@ ${sections}
 </html>
 `;
 
-fs.writeFileSync(new URL('../public/caminhos.html', import.meta.url), html, 'utf8');
+fs.writeFileSync(new URL('../public/caminhos.html', import.meta.url), html.replace(/[ \t]+$/gm, ''), 'utf8');
 console.log(`public/caminhos.html gerado — ${rows.length} caminhos, ${furos} sem cinco direções para montar um lote.`);

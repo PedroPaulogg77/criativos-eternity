@@ -148,22 +148,6 @@ const primeiraLeva = [
     ],
   },
   {
-    id: 'VAR-01', nome: 'Pilha de unidades vista de cima em bancada escura', arquivo: '02_VAR-01.png',
-    family: 'Produto herói', category: 'Vestuário', mode: 'single', mech: 'leve-mais', argumento: 'estetica',
-    people: 'sem-pessoa', slots: 1, repeatsSameProduct: true,
-    tags: ['pilha de unidades', 'selo circular', 'bancada escura', 'vista de cima'],
-    limits: 'Repete apenas o mesmo produto real; cores diferentes só entram quando confirmadas.',
-    receita: [
-      'O que define esta direção: a mesma unidade repetida e empilhada é o que anuncia a oferta — dá para contar as peças — e um selo circular de cor sólida carrega o número, solto sobre a foto.',
-      'Bancada de pedra escura e fosca, ocupando o quadro inteiro, com luz lateral fria e sombra curta sob a pilha. Sem cenário, sem objeto de decoração e sem horizonte.',
-      'A pilha é fotografada de cima, em diagonal, de perto: cada camada dobrada aparece inteira e em cor distinta, empilhada com alinhamento solto, uma peça levemente deslocada da outra.',
-      'No alto, sobre a bancada, a marca pequena e clara, e abaixo dela uma headline de duas linhas em caixa alta pesada e clara.',
-      'Num canto livre, um selo circular de cor sólida quente traz a oferta em duas linhas, sem moldura e sem sombra. É o único elemento colorido da parte gráfica.',
-      'Esta peça não tem pessoa, embalagem, etiqueta, preço riscado, CTA nem moldura.',
-      'Com menos unidades confirmadas, a pilha fica mais baixa e a bancada mais livre. Nenhuma peça é inventada para engordar a pilha.',
-    ],
-  },
-  {
     id: 'VAR-02', nome: 'Trio pendurado na arara com faixa de oferta', arquivo: '03_VAR-02.png',
     family: 'Oferta tipográfica', category: 'Vestuário', mode: 'single', mech: 'leve-mais', argumento: 'estetica',
     people: 'sem-pessoa', slots: 3, fillsWithVariants: true,

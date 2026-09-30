@@ -498,6 +498,42 @@ for (const [id, valor, marca] of presencaEsperada) {
   );
 }
 
+// A receita precisa ser autossuficiente: a referência visual nunca é anexada ao gerador.
+// Linguagem de edição pressupõe uma imagem anterior e costuma autorizar deriva de produto,
+// pose e enquadramento em vez de descrever o resultado final.
+const linguagemDeEdicao = /reposicion(?:e|a|ada|ado)|pose original|ângulo da referência|retirar os rostos|mantenha a mesma pessoa/i;
+for (const reference of data.references) {
+  assert.doesNotMatch(reference.recipe, linguagemDeEdicao, `${reference.id} usa linguagem de edição na receita curta`);
+  for (const mode of reference.modes) {
+    const campanha = mode === 'single' ? single : collection;
+    const prompt = compiler.compileReferencePrompt(campanha, reference);
+    assert.doesNotMatch(prompt, linguagemDeEdicao, `${reference.id} usa linguagem de edição em vez de descrever o resultado visual`);
+  }
+}
+
+// Contratos visuais das referências cujo rosto precisa ficar fora do quadro.
+// Eles impedem que uma futura correção de rosto troque produto, pose ou gramática da peça.
+const contratosSemRosto = {
+  'REF-0026': ['arquitetura mediterrânea clara', 'em pé e de três quartos', 'do peitoral aos joelhos', 'A oferta é o maior elemento'],
+  'REF-0038': ['Três blocos na coluna esquerda', 'pessoa real usando um produto ou look distinto', 'Cada corpo entra por uma borda externa', 'cartão de cantos arredondados'],
+  'REF-0040': ['Estúdio cinza claro e FRIO', 'EM PÉ, de perfil', 'da gola aos pés', 'círculo cheio'],
+  'REF-0043': ['parede lisa', 'mãos nos bolsos', 'cor metálica', 'golas e os ombros'],
+  'REF-0045': ['par de placas coladas', 'produto vestido', 'gola alta ou a linha dos ombros', 'Fundo de estúdio liso e claro'],
+  'REF-0052': ['pessoa sentada ou agachada', 'apoiada numa das mãos', 'uma perna dobrada', 'conjunto vestido e o calçado'],
+  'REF-0142': ['MESMO PRODUTO aparece em duas escalas', 'pessoa sentada ou apoiada', 'em três quartos', 'No primeiro plano'],
+  'REF-0143': ['fotografia alta de uso', 'pessoa sentada ou apoiada', 'produto corretamente em uso', 'macro fechado'],
+  'REF-0144': ['dois lados contínuos', 'pessoa aparece em pé ou quase inteira', 'na altura dos ombros', 'packshot grande'],
+};
+
+for (const [id, trechos] of Object.entries(contratosSemRosto)) {
+  const direction = compiler.testedDirections[id];
+  assert.ok(direction, `${id} perdeu sua receita detalhada`);
+  const texto = [direction.single, direction.collection].filter(Boolean).join('\n');
+  for (const trecho of trechos) {
+    assert.ok(texto.includes(trecho), `${id} perdeu o invariante visual: ${trecho}`);
+  }
+}
+
 // Sem o campo declarado, o bloco não entra e o modelo volta a decidir sozinho.
 assert.ok(!singleReference.includes('PRESENÇA HUMANA'));
 
@@ -583,14 +619,20 @@ for (const reference of camisaLeveMaisReferences.filter(({ silent }) => silent))
   assert.ok(prompt.includes('PEÇA SEM TEXTO COMERCIAL'), `${reference.id} entrou na galeria sem a regra de peça sem texto`);
   assert.ok(!prompt.includes(`Preserve exatamente a oferta recebida`), `${reference.id} recebeu a oferta mesmo sendo peça sem texto`);
 }
-for (const id of ['REF-0067', 'REF-0145', 'REF-0147']) {
+for (const id of ['REF-0145', 'REF-0147']) {
   assert.ok(camisaLeveMaisReferences.some((reference) => reference.id === id), `${id} deveria aparecer para compre-x-leve-y de produto estético`);
 }
 
 const camisaComVariacoes = { ...camisaLeveMais };
 const referenciasComVariacoes = data.references.filter((reference) => data.isReferenceApplicable(reference, camisaComVariacoes));
-for (const id of ['REF-0029', 'REF-0011', 'REF-0063']) {
+for (const id of ['REF-0029']) {
   assert.ok(referenciasComVariacoes.some((reference) => reference.id === id), `${id} não abriu para o mesmo produto com variações confirmadas`);
+}
+
+const produtoFuncionalComVariacoes = { mode: 'collection', salesDriver: 'funcao', offerMechanic: 'leve-mais' };
+const referenciasFuncionaisComVariacoes = data.references.filter((reference) => data.isReferenceApplicable(reference, produtoFuncionalComVariacoes));
+for (const id of ['REF-0011', 'REF-0063']) {
+  assert.ok(referenciasFuncionaisComVariacoes.some((reference) => reference.id === id), `${id} não abriu para o mesmo produto funcional com variações confirmadas`);
 }
 
 const colecaoProgressiva = { mode: 'collection', salesDriver: 'estetica', offerMechanic: 'progressivo' };
@@ -650,12 +692,6 @@ const promptComVariacoes = compiler.compileReferencePrompt({
   offerMechanic: 'leve-mais',
 }, data.references.find(({ id }) => id === 'REF-0029'));
 assert.ok(promptComVariacoes.includes('variações visuais confirmadas do MESMO produto'), 'direção de coleção não explica o uso de variações do mesmo produto');
-const promptComPilha = compiler.compileReferencePrompt({
-  ...single,
-  offerMechanic: 'leve-mais',
-}, data.references.find(({ id }) => id === 'REF-0067'));
-assert.ok(promptComPilha.includes('repetir unidades reais do mesmo produto'), 'oferta leve-mais não libera a pilha da mesma unidade');
-
 /*
  * Buraco de catálogo: cada caminho que a trilha abre precisa ter pelo menos uma
  * referência. Coleção só existe em estética — um conjunto de produtos se vende pela

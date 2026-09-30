@@ -53,7 +53,7 @@ function roundReset(round: number) {
  * Texto canônico reconstruído dos EXP-008 e EXP-009.
  * A interface pode mudar; estas receitas validadas não devem ser resumidas.
  */
-const testedDirections: Record<string, TestedDirection> = {
+export const testedDirections: Record<string, TestedDirection> = {
   'REF-0001': {
     title: 'SPLIT PREMIUM ESCURO',
     single: `- O que define esta direção: UM produto gigante, em pé e iluminado, contra um estúdio escuro, com a oferta sozinha do outro lado. A peça tem só dois assuntos: o produto e o preço.
@@ -391,7 +391,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'MODELO EDITORIAL COM OFERTA GIGANTE',
     single: `- O que define esta direção: uma foto de moda ao ar livre com SOL FORTE e arquitetura mediterrânea clara, onde a parede iluminada da própria cena vira o espaço do texto. Não existe painel de cor, não existe divisória e não existem dois retângulos colados.
 - O cenário é de pedra e reboco claro: parede lisa, degraus largos, e um vaso de pedra com uma planta de folha estreita num dos cantos. Luz de sol direta, sombras nítidas e desenhadas na parede.
-- A pessoa aparece de corpo inteiro no lado oposto ao texto, em pé, de três quartos, olhando para fora do quadro. Uma das mãos no bolso, postura relaxada, sem sorriso posado.
+- A foto do look ocupa o lado oposto ao texto, em pé e de três quartos, do peitoral aos joelhos. A gola e as costuras dos ombros encostam no limite superior da foto, sem pele acima da roupa; uma das mãos pode ficar no bolso, com postura relaxada.
 - O conjunto vendido aparece inteiro, do peito aos joelhos, nítido, com os logos e o caimento legíveis. Nada de dobra que esconda corte ou acabamento.
 - Todo o texto fica na parede clara, alinhado à esquerda e empilhado nesta ordem: o wordmark da loja em tipografia SERIFADA de caixa mista; um filete curto na cor metálica; uma palavra em caixa alta espaçada; o título em caixa alta SANS CONDENSADA muito pesada; um segundo filete, mais longo que o primeiro; uma expressão curta em caixa alta espaçada; e a oferta.
 - A oferta é o maior elemento da peça inteira, em sans pesada e cor metálica, num único tamanho e num único peso. Abaixo dela, uma palavra em caixa alta com espaçamento de letra bem aberto fecha o bloco.
@@ -434,7 +434,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'ESCADA DE DESCONTO COM MODELO',
     single: `- O que define esta direção: uma ESCADA DE DESCONTO onde cada degrau é um cartão, e a QUANTIDADE DE ÍCONES DENTRO DELE CRESCE junto com a oferta — um ícone no primeiro degrau, dois no segundo, três no terceiro. A quantidade é mostrada, não só escrita.
 - A foto ocupa o quadro inteiro e o fundo claro e quente dela continua para o lado do texto, sem divisória e sem painel de cor. Uma sombra diagonal suave atravessa a parede.
-- A pessoa usando o produto ocupa o lado oposto ao texto, de frente, em pose relaxada e braços ao longo do corpo, enquadrada do pescoço até abaixo do joelho. A cabeça fica fora do quadro.
+- O corpo usando o produto ocupa o lado oposto ao texto, de frente, em pose relaxada e braços ao longo do corpo, enquadrado imediatamente abaixo do pescoço até abaixo do joelho. A cabeça fica inteiramente fora do quadro.
 - A peça vendida aparece inteira e nítida, com o acabamento e os detalhes legíveis, ocupando a maior parte da altura do corpo.
 - Do lado do texto, alinhado à esquerda e empilhado: o wordmark da loja no topo; a headline em duas partes que diferem em TRÊS coisas ao mesmo tempo — peso, cor e estilo: a primeira em peso forte e tom escuro, a segunda em itálico, peso leve e tom médio; um filete horizontal fino; e até dois parágrafos curtos de condição em corpo pequeno.
 - Abaixo deles, os cartões da escada, empilhados e do mesmo tamanho, com cantos arredondados. Cada cartão traz, da esquerda para a direita: os ícones de contorno fino, uma divisória vertical, e três níveis de texto — a quantidade em corpo pequeno, o valor da vantagem em corpo grande, e a palavra final em corpo médio.
@@ -448,9 +448,8 @@ const testedDirections: Record<string, TestedDirection> = {
     collection: `- O que define esta direção: as fotos ficam ENCOSTADAS NAS BORDAS e o CENTRO DO QUADRO FICA VAZIO. Não é uma grade que preenche tudo: é uma coluna de fotos colada na borda esquerda, outra colada na borda direita, e uma faixa de fotos na base, deixando o meio livre.
 - Esse centro livre é fundo liso, na mesma cor quente e clara do estúdio das fotos. É nele que vivem o wordmark da loja, no alto, e o cartão da oferta, logo abaixo.
 - Três blocos na coluna esquerda, três na direita e dois na faixa inferior quando houver oito itens elegíveis. Com menos itens, use menos blocos e deixe cada um maior, mantendo o centro livre. Os blocos de uma coluna não se alinham com os da outra: as alturas são diferentes e as emendas ficam em posições diferentes dos dois lados.
-- Cada bloco traz uma pessoa usando um produto ou look distinto, fotografada sobre o mesmo fundo bege de estúdio, com sombra suave. Um dos blocos da base pode ser still, sem pessoa, para dar pausa — mas ele mostra um dos itens elegíveis, nunca um acessório inventado.
-- O enquadramento muda de bloco para bloco e é isso que dá vida à peça: uma pessoa aparece de corpo inteiro, outra cortada na cintura, outra só do pescoço à coxa, outra mostrando apenas as pernas. Não padronize o enquadramento.
-- O rosto aparece em alguns blocos e é cortado em outros, de propósito. Quando cortar, corte abaixo do nariz ou do queixo, nunca no meio dos olhos.
+- Cada bloco traz uma pessoa real usando um produto ou look distinto sobre o mesmo fundo bege de estúdio, com sombra suave. Um dos blocos da base pode ser still, sem pessoa, mas mostra um item elegível da coleção.
+- As fotografias variam entre corpo em pé, três quartos, cintura e pernas, sempre com a roupa e o gesto legíveis. Cada corpo entra por uma borda externa do próprio módulo e continua além dela; nenhum rosto aparece e nenhum torso termina solto dentro da célula. Não use manequins, flat lays ou closes que mudem o produto.
 - Os blocos sangram até a borda externa do quadro, sem moldura e sem margem branca contornando a peça.
 - No centro, o wordmark da loja em serifada alta e espaçada, com um filete fino logo abaixo dele, direto sobre o fundo — nunca dentro de uma caixa.
 - Abaixo do wordmark, um cartão de cantos arredondados e borda fina dourada, em tom creme mais claro que o fundo: um pequeno ornamento vegetal no topo, a headline da mecânica em duas linhas centralizadas, e uma linha por degrau, separadas por filetes curtos e centralizados.
@@ -548,9 +547,9 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0040': {
     title: 'MODELO INTEIRO COM ESCADA DE DESCONTO',
-    collection: `- O que define esta direção: a escada da oferta é uma COLUNA empilhada, e cada degrau traz o ícone dentro de um círculo cheio, a quantidade acima e o percentual grande logo abaixo. A pessoa fica em pé de perfil do outro lado. Uma linha de condição fecha a coluna no pé.
+    collection: `- O que define esta direção: a escada da oferta é uma COLUNA empilhada, e cada degrau traz o ícone dentro de um círculo cheio, a quantidade acima e o percentual grande logo abaixo. Um corpo em pé de perfil ocupa o outro lado. Uma linha de condição fecha a coluna no pé.
 - Estúdio cinza claro e FRIO, contínuo, com piso e parede unidos por transição suave. Luz ampla e difusa de um lado, sem sol duro e sem sombra recortada na parede.
-- A pessoa aparece da cabeça aos pés, EM PÉ e de perfil ou em leve três quartos, com o corpo voltado para fora do quadro e o rosto completo. Casting, idade, gênero e corpo seguem o público capturado.
+- O look aparece EM PÉ, de perfil ou em leve três quartos, da gola aos pés, com a postura voltada para fora do quadro. A gola ou o capuz encosta na borda superior da foto, sem pele acima da roupa. Gênero, faixa etária e biotipo seguem o público capturado.
 - O look é claro e se destaca contra o cinza do estúdio. Aparece inteiro e nítido, sem casaco, bolsa ou acessório que cubra as peças. Um único look representa a coleção; não invente outros itens ao redor.
 - No lado vazio, o wordmark fica no alto, seguido de um filete horizontal longo que atravessa a largura da coluna.
 - Cada degrau é um bloco empilhado, não uma linha: à esquerda, um círculo cheio de cinza com o ícone de sacola dentro; à direita, a quantidade em corpo pequeno e o percentual em corpo grande logo abaixo dela. Filetes horizontais curtos separam um degrau do seguinte.
@@ -622,9 +621,9 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0052': {
     title: 'MODELO SENTADO COM ESCADA LATERAL',
-    collection: `- O que define esta direção: sol duro entrando de lado desenha uma sombra recortada na parede, e a pessoa aparece AGACHADA no chão, apoiada numa das mãos. A tabela de vantagens fica do outro lado, em linhas horizontais soltas, sem nenhum círculo em volta dos símbolos.
+    collection: `- O que define esta direção: sol duro entrando de lado desenha uma sombra recortada na parede, e uma pessoa sentada ou agachada ocupa o lado oposto à tabela, apoiada numa das mãos. A tabela de vantagens fica em linhas horizontais soltas, sem nenhum círculo em volta dos símbolos.
 - Ambiente quente: parede e chão em bege claro contínuo, banhados por luz solar direta que projeta sombras nítidas e inclinadas atrás da pessoa. Nada de estúdio difuso nem cinza frio.
-- A pessoa está agachada perto do chão, tronco erguido e voltado para a câmera, uma perna esticada em diagonal e o olhar para fora do quadro. O corpo aparece inteiro, com rosto completo.
+- O corpo fica em três quartos, com o tronco continuando além da borda superior, uma perna dobrada sobre o degrau e a outra atravessando a diagonal. O conjunto vestido e o calçado aparecem completos e nítidos; o rosto não entra no quadro, e nenhuma parte do corpo termina solta dentro da cena.
 - As peças vestidas são escuras e recortam contra a parede clara — é esse contraste que sustenta a leitura do produto. Meia e calçado claros podem aparecer quando pertencerem ao conjunto vendido.
 - Um único conjunto representa a coleção. Não espalhe produtos, não crie miniaturas e não invente outras peças para preencher o quadro.
 - Do lado livre, a assinatura da loja em letra serifada e larga, com uma linha curta de tagline logo abaixo, em corpo bem menor e letras muito espaçadas. Não existe headline.
@@ -643,18 +642,6 @@ const testedDirections: Record<string, TestedDirection> = {
 - A tipografia do topo forma um bloco compacto e centralizado, sem caixa, filete ou logotipo adicional. O título não toca nos produtos.
 - Na base, a oferta completa aparece em uma única linha ou em duas linhas muito compactas, em caixa alta pesada e vermelho vivo. Ela é o único elemento colorido fora dos produtos.
 - Esta peça não tem benefício em lista, selo, CTA, avaliação, embalagem, faixa de fundo ou objetos decorativos.`,
-  },
-  'REF-0067': {
-    title: 'PILHA DE UNIDADES COM SELO CIRCULAR',
-    single: `- O que define esta direção: várias unidades do mesmo produto formam uma pilha alta sobre uma mesa real, enquanto uma headline funcional ocupa o alto esquerdo e a oferta fica dentro de um círculo grande na base oposta.
-- A cena acontece em ambiente doméstico acolhedor, com sofá, almofadas e um vaso desfocados. A pilha fica sobre mesa de pedra clara no primeiro plano.
-- Cada unidade dobrada ou empilhada preserva uma parte imediatamente reconhecível do produto — cós, gola, rótulo, formato, embalagem ou outro sinal real. A pilha não pode parecer tecido genérico.
-- Repita somente o produto anunciado. Cores diferentes entram apenas quando forem variantes confirmadas; caso contrário, todas as unidades mantêm a mesma variante.
-- Produtos que não dobram são empilhados ou escalonados de forma fisicamente plausível, sem deformar o formato e sem inventar caixa ou embalagem.
-- A headline ocupa o alto esquerdo em sans-serif branca, caixa alta, muito pesada e com linhas apertadas. Uma sombra deslocada em laranja cria o efeito gráfico da referência sem virar contorno grosso.
-- A frase deve comunicar um benefício funcional confirmado ou o nome material do produto. Não copie promessas de fibra, conforto ou clima quando elas não vierem do contexto.
-- O selo circular laranja fica na base esquerda, parcialmente sobre a mesa, com a oferta centralizada em branco. A condição principal usa peso maior; apoio e limite só entram quando confirmados.
-- A pilha continua maior do que o selo e do que o conjunto de texto. Não há pessoa, lista de benefícios, CTA, avaliação, faixa ou produto solto adicional.`,
   },
   'REF-0068': {
     title: 'PRODUTO ESCURO COM FAIXA INCLINADA',
@@ -814,8 +801,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'LIFESTYLE COM PACKSHOT EM PRIMEIRO PLANO',
     single: `- O que define esta direção: o MESMO PRODUTO aparece em duas escalas e com duas funções — sendo usado por uma pessoa no fundo e como packshot grande no primeiro plano. O primeiro plano vende o produto; a pessoa prova o contexto de uso.
 - A cena é externa, clara e sofisticada, construída com pedra ou arquitetura em tons neutros, luz natural de dia e profundidade real. O ambiente pode mudar para continuar coerente com a categoria, mas mantém superfícies claras e uma área vertical limpa para a comunicação.
-- A pessoa ocupa uma lateral e aparece em pose natural, sentada ou apoiada no ambiente, com rosto inteiro, expressão tranquila e contexto de vida reconhecível. Ela corresponde exatamente ao público registrado.
-- O produto em uso permanece visível e identificável na pessoa. Nenhuma roupa, acessório ou objeto secundário recebe mais contraste do que ele.
+- Uma lateral mostra pessoa sentada ou apoiada na arquitetura, em três quartos, com mãos e pernas visíveis e o produto corretamente em uso. O corpo entra pela borda superior na altura dos ombros e continua além dela; o rosto não aparece. Nenhum elemento secundário recebe mais contraste do que o produto.
 - No primeiro plano, o mesmo produto e a mesma variante reaparecem muito maiores, apoiados sobre uma superfície real do ambiente e voltados em três quartos para a câmera. Esse packshot é a primeira coisa que o olho reconhece como produto anunciado.
 - A unidade comercial manda na quantidade: par natural aparece completo; item avulso aparece uma vez. A repetição entre uso e packshot não cria kit nem sugere duas unidades na oferta.
 - A comunicação ocupa a área clara da própria arquitetura, sem cartão sobreposto: wordmark no alto; nome curto do produto em corpo médio; um filete horizontal fino; e a oferta abaixo.
@@ -827,7 +813,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'MOSAICO DE USO E DETALHES',
     single: `- O que define esta direção: uma fotografia alta de uso ocupa uma lateral inteira, enquanto a outra lateral funciona como uma sequência editorial de oferta, packshot, duas vistas menores e um macro de acabamento. Cada bloco cumpre uma função diferente; não são cinco anúncios repetidos.
 - Os dois lados têm larguras próximas. A foto de uso sangra no topo, na lateral e na base. Do outro lado, os módulos se separam por respiros brancos finos e regulares.
-- Na fotografia alta, uma pessoa aparece em contexto real, sentada ou apoiada, com rosto inteiro e o produto corretamente em uso. O corpo cabe inteiro o suficiente para que o uso seja entendido, e o produto recebe mais nitidez e contraste do que o restante do figurino.
+- Na fotografia alta, uma pessoa sentada ou apoiada na arquitetura aparece em três quartos, com mãos, pernas e o produto corretamente em uso. O corpo entra pela borda superior do módulo na altura dos ombros e continua além dela; o rosto não aparece, e o produto recebe mais nitidez do que o restante do figurino.
 - O módulo superior da outra lateral é fundo claro da própria locação. Traz o wordmark centralizado, um filete fino e a oferta em sans-serif pesada e caixa alta. A vantagem é a maior linha; as palavras de apoio ficam menores acima e abaixo.
 - Logo abaixo, um módulo largo mostra o packshot principal apoiado no mesmo ambiente, inteiro e em vista de três quartos.
 - A faixa seguinte tem dois módulos menores lado a lado. Eles mostram o mesmo produto e a mesma variante em dois ângulos factual e visualmente possíveis. Não introduza outras cores, modelos ou categorias para diferenciar os quadros.
@@ -842,7 +828,7 @@ const testedDirections: Record<string, TestedDirection> = {
 - Na lateral da comunicação, tudo se alinha à esquerda: wordmark da loja no alto, nome curto do produto abaixo, filete horizontal fino e oferta em sans-serif muito pesada.
 - A oferta usa três níveis: introdução forte, vantagem como a maior linha da peça e condição final logo abaixo. Quando não houver percentual, a vantagem real recebida assume o maior peso sem ser abreviada nem substituída.
 - Na base dessa lateral, o produto aparece como packshot grande, apoiado sobre um bloco da própria arquitetura e visto em três quartos. Mostre a unidade comercial real: par completo quando for naturalmente um par; uma unidade quando for item avulso.
-- Na outra lateral, a pessoa aparece de corpo inteiro ou quase inteiro, em pé e apoiada na arquitetura, com rosto completo e expressão natural. Ela corresponde ao público-alvo confirmado.
+- Na outra lateral, uma pessoa aparece em pé ou quase inteira, apoiada na arquitetura, em pose relaxada e usando o produto. O corpo entra pela borda superior na altura dos ombros e continua até os pés; o rosto não aparece. O restante do figurino é neutro e não compete com o produto.
 - O mesmo produto e a mesma variante aparecem corretamente em uso na pessoa. O restante do figurino fica neutro e não compete com ele.
 - Packshot e produto em uso não sugerem kit nem quantidade promocional; são duas apresentações do mesmo item anunciado.
 - Não há cartão sobreposto, lista de benefícios, selo, ícone, CTA, preço isolado ou cor promocional. A paleta vem da pedra, da luz e do próprio produto.`,
@@ -873,21 +859,21 @@ const testedDirections: Record<string, TestedDirection> = {
   },
   'REF-0147': {
     title: 'PAINEL EDITORIAL COM PRODUTO NO CORPO',
-    single: `- O que define esta direção: um painel branco estreito organiza toda a comunicação numa lateral, enquanto um close limpo da pessoa usando o produto ocupa a lateral maior. A peça vendida aparece inteira no corpo e é maior do que todo o conjunto de textos.
+    single: `- O que define esta direção: um painel claro com dois cartões de oferta organiza a lateral de comunicação, enquanto um close limpo do corpo usando o produto ocupa a lateral maior. A peça vendida aparece inteira no corpo e é maior do que todo o conjunto de textos.
 - Fundo branco ou off-white contínuo, com leve sombra natural atrás do corpo. A divisão entre painel e fotografia nasce da composição, sem linha vertical, moldura ou mudança brusca de cor.
-- A pessoa fica de frente, enquadrada abaixo do pescoço até depois de toda a peça vendida. O rosto não aparece. Braços e mãos permanecem fora da frente do produto.
-- A peça vendida é nítida, preserva recortes, textura, acabamento e transparências reais. A outra roupa usada pela pessoa é neutra e não compete com ela.
-- No alto do painel, o wordmark da loja; abaixo, um filete curto; uma linha pequena em sans-serif espaçada com o nome do produto; e a headline principal em serifada, caixa mista e poucas linhas.
-- Abaixo da headline, os degraus da oferta aparecem em cartões retangulares empilhados, do mesmo tamanho, com cantos arredondados. Cada cartão usa uma única cor suave da identidade e texto branco centralizado em sans-serif pesada.
+- O corpo fica de frente, enquadrado imediatamente abaixo do pescoço até depois de toda a peça vendida. A cabeça fica inteiramente fora do quadro. Braços e mãos permanecem fora da frente do produto.
+- A peça vendida é nítida, preserva recortes, textura, acabamento e transparências reais. A outra roupa usada pelo corpo é neutra e não compete com ela.
+- No alto do painel, o wordmark da loja e um filete curto e fino em tom suave da identidade. Não há título genérico nem nome inventado do produto.
+- Abaixo, os degraus da oferta aparecem em cartões retangulares empilhados, com cantos arredondados, preenchidos em tom suave da identidade e texto branco centralizado em sans-serif pesada. Com um degrau, use um cartão só; nunca invente outro para ocupar o painel.
 - Uma linha curta de condição pode aparecer abaixo dos cartões, em sans-serif leve, somente se vier do contexto.
-- Na base do painel, miniaturas pequenas podem mostrar outras vistas reais da MESMA VARIANTE. Se as fontes não trouxerem vistas adicionais, omita as miniaturas e mantenha o espaço em branco. Nunca transforme essa faixa em catálogo de cores.
+- Na base do painel, miniaturas pequenas mostram somente cores ou versões factuais do MESMO produto. Sem variantes confirmadas, omita todas as miniaturas e preserve o vazio; nunca crie cores, produtos ou uma grade de catálogo.
 - Esta direção não tem benefício em lista, ícone, selo, CTA, preço, cenário, acessório ou texto sobre o corpo.`,
   },
   'REF-0043': {
     title: 'DUPLA DE MODELOS COM A PAREDE VAZIA AO LADO',
-    single: `- O que define esta direção: uma pessoa vestindo o produto ocupa um lado de uma cena externa clara, e a parede lisa do outro lado permanece vazia para receber toda a comunicação. O vazio da parede é tão importante quanto a figura.
-- O enquadramento acompanha o tamanho do produto, não o tamanho da pessoa. Ele começa acima da cabeça e termina um palmo depois de onde a peça vendida acaba: peça de cima fecha na altura da coxa; conjunto ou peça longa vai até os pés. Mostrar perna e calçado que não estão à venda tira o produto do centro da atenção.
-- A figura fica de frente, parada, com as mãos nos bolsos e o peso distribuído. Nada de passada, salto ou ação. Nenhuma extremidade fica cortada pela borda dentro do enquadramento escolhido.
+    single: `- O que define esta direção: um corpo vestindo o produto ocupa um lado de uma cena externa clara, e a parede lisa do outro lado permanece vazia para receber toda a comunicação. O vazio da parede é tão importante quanto a figura.
+- O enquadramento acompanha o tamanho do produto, não o tamanho do corpo. A gola e os ombros da peça encostam na borda superior da foto, sem pele acima da roupa; peça de cima fecha na altura da coxa, conjunto ou peça longa vai até os pés. Mostrar perna e calçado que não estão à venda tira o produto do centro da atenção.
+- O corpo fica de frente, parado, com as mãos nos bolsos e o peso distribuído. Nada de passada, salto ou ação. Nenhum membro fica cortado pela borda dentro do enquadramento escolhido.
 - Arquitetura externa simples e clara, degraus baixos e uma planta discreta ao fundo. Luz natural alta e difusa, sombras curtas embaixo dos pés.
 - A parede clara da cena continua atrás do texto. Não existe painel, retângulo de cor, coluna gráfica nem divisória entre foto e comunicação: é o mesmo fundo do começo ao fim.
 - Sobre a parede, alinhado à esquerda e empilhado de cima para baixo: wordmark da loja pequeno, o nome do produto em caixa alta pesada distribuído em poucas linhas, um filete curto em cor metálica, e a oferta.
@@ -895,9 +881,9 @@ const testedDirections: Record<string, TestedDirection> = {
 - O metálico do filete e do número é o único ponto de cor do quadro. Fora dele existem só o tom da parede, o preto do texto e as cores reais do produto.
 - A parte baixa da parede, abaixo da oferta, fica deliberadamente vazia. Se a oferta tiver mais degraus, eles descem por esse vazio em linhas pequenas e alinhadas, e o número grande continua sendo um só.
 - Esta direção não tem selo, cartão, faixa, moldura, lista de benefícios, ícone, CTA, preço riscado nem packshot solto do produto.`,
-    collection: `- O que define esta direção: duas pessoas de corpo inteiro, encostadas ombro com ombro, vestindo a mesma composição em versões diferentes, enquanto a parede lisa ao lado delas permanece vazia e recebe toda a comunicação. A peça compara duas versões lado a lado, no corpo.
-- O enquadramento acompanha o tamanho do produto, não o das pessoas: começa acima das cabeças e termina um palmo depois de onde a peça vendida acaba. Com peça de cima, fecha na altura da coxa; com conjunto ou peça longa, vai até os pés.
-- As duas figuras ficam de frente, paradas, com as mãos nos bolsos. Elas se tocam pelo ombro e não deixam vão entre si, e nenhuma extremidade fica cortada pela borda dentro do enquadramento escolhido.
+    collection: `- O que define esta direção: dois corpos, encostados ombro com ombro, vestem a mesma composição em versões diferentes, enquanto a parede lisa ao lado deles permanece vazia e recebe toda a comunicação. A peça compara duas versões lado a lado, no corpo.
+- O enquadramento acompanha o tamanho do produto, não o dos corpos: as golas e os ombros das peças encostam na borda superior da foto, sem pele acima da roupa. Com peça de cima, fecha na altura da coxa; com conjunto ou peça longa, vai até os pés.
+- Os dois corpos ficam de frente, parados, com as mãos nos bolsos. Eles se tocam pelo ombro e não deixam vão entre si, e nenhum membro fica cortado pela borda dentro do enquadramento escolhido.
 - As duas versões vestidas são o mesmo modelo e o mesmo corte; o que muda entre elas é a cor ou a estampa, e ela precisa estar confirmada no CONTEXTO CAPTURADO. As duas escolhas contrastam entre si e nenhuma repete o tom da parede.
 - Arquitetura externa simples e clara, degraus baixos e uma planta discreta ao fundo. Luz natural alta e difusa, sombras curtas embaixo dos pés.
 - A parede clara da cena continua atrás do texto. Não existe painel, retângulo de cor, coluna gráfica nem divisória entre foto e comunicação.
@@ -925,7 +911,7 @@ const testedDirections: Record<string, TestedDirection> = {
     title: 'ESCADA EM PLACAS EMPILHADAS COM O ACENTO DO PRODUTO',
     single: `- O que define esta direção: cada degrau da oferta é um par de placas coladas uma na outra — a quantidade numa placa clara e, imediatamente abaixo, a vantagem numa placa escura de texto invertido. Os pares se empilham na vertical ao lado da pessoa, como uma coluna de etiquetas.
 - Os pares ficam alinhados pela esquerda e têm larguras diferentes, cada um acompanhando o comprimento do próprio texto. Entre um par e o outro há respiro; dentro do par não há nenhum.
-- A pessoa aparece do topo da cabeça até pouco abaixo do quadril, de frente, apoiada, olhando para a câmera, com o produto vestido ocupando o centro do corpo.
+- O produto vestido ocupa o centro em uma foto fechada de peitoral à altura onde a peça vendida termina. A gola alta ou a linha dos ombros encosta na borda superior, sem pele acima da roupa.
 - Fundo de estúdio liso e claro, levemente esfumado, com sombra suave atrás do corpo. O mesmo fundo segue atrás das placas: não há painel nem divisória.
 - A headline fica acima da coluna de placas, em caixa mista, sans pesada, três a quatro linhas curtas. Parte das linhas usa a cor dominante do próprio produto e o restante fica em preto.
 - Essa cor tirada do produto é o único acento do quadro. Se o produto for neutro, a headline fica inteira em preto e a peça não ganha cor nenhuma: não invente um vermelho de liquidação.
@@ -934,7 +920,7 @@ const testedDirections: Record<string, TestedDirection> = {
 - Esta direção não tem selo, ícone de sacola, círculo, moldura, CTA, benefício, preço nem segundo produto no quadro.`,
     collection: `- O que define esta direção: cada degrau da oferta é um par de placas coladas uma na outra — a quantidade numa placa clara e, imediatamente abaixo, a vantagem numa placa escura de texto invertido. Os pares se empilham na vertical ao lado de uma pessoa que veste um look completo da coleção.
 - Os pares ficam alinhados pela esquerda e têm larguras diferentes, cada um acompanhando o comprimento do próprio texto. Entre um par e o outro há respiro; dentro do par não há nenhum.
-- Aparece uma pessoa só, do topo da cabeça até pouco abaixo do quadril, vestindo um único look da coleção, inteiro e sem sobreposição. Os outros produtos elegíveis não entram no quadro nem em miniatura.
+- Aparece um único look da coleção, inteiro e sem sobreposição, da gola até pouco depois de onde a peça vestida termina. A gola alta ou a linha dos ombros encosta na borda superior, sem pele acima da roupa. Os outros produtos elegíveis não entram no quadro nem em miniatura.
 - Fundo de estúdio liso e claro, levemente esfumado, com sombra suave atrás do corpo. O mesmo fundo segue atrás das placas.
 - A headline fica acima da coluna de placas, em caixa mista, sans pesada, em linhas curtas. Parte das linhas usa a cor dominante da peça vestida e o restante fica em preto.
 - Essa cor tirada da peça é o único acento do quadro. Com look neutro, a headline fica inteira em preto: não invente cor de liquidação.

@@ -82,8 +82,9 @@ export function peopleRule(reference: Reference) {
   }
   if (reference.people === 'corpo-suporte') {
     return `PRESENÇA HUMANA — CORPO SEM IDENTIDADE
-- Esta direção é desumanizada: o corpo entra apenas como suporte do produto, nunca como personagem.
-- Não mostre rosto nem parte dele no plano principal. Corte abaixo do pescoço ou enquadre de costas. Sem olhar, sem expressão, sem sorriso, sem contato visual.
+- Esta direção é desumanizada visualmente: uma fotografia de produto. A pessoa real só entra quando torna o uso, o caimento ou a escala do produto mais claros; nunca vira personagem.
+- A pose, o ângulo do corpo, a escala, o produto vestido e o recorte definidos pela receita são parte da estrutura visual e ficam preservados. O rosto permanece fora do quadro pelo enquadramento descrito na própria receita; não substitua a pessoa, não troque a pose e não transforme a cena em detalhe, flat lay, manequim ou vista traseira.
+- A pessoa precisa continuar naturalmente além da borda da fotografia. Não descreva uma cabeça ausente, não peça para cortar ou apagar anatomia e não deixe torso ou pescoço terminando dentro da cena. Sem rosto ou qualquer parte dele no plano principal.
 - Retratos só podem aparecer dentro de elementos gráficos que a direção visual pedir, como cartões de avaliação, e apenas quando forem fotos reais fornecidas.
 - O enquadramento fecha no produto sobre o corpo. Nada de cena de vida, história, companhia, ambiente doméstico ou situação social ao redor.
 - Não inclua tatuagem, joia, acessório, maquiagem marcada ou qualquer detalhe que identifique a pessoa, a menos que o próprio produto seja isso.

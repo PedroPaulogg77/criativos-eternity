@@ -211,28 +211,6 @@ const novas = [
  */
 const variacoes = [
   {
-    id: 'VAR-01',
-    base: 'REF-0067',
-    mantem: 'a pilha de unidades idênticas, o selo circular carregando a oferta e a headline por cima da foto',
-    muda: 'a câmera desce do nível da mesa para uma vista de cima em diagonal, a sala quente vira bancada escura de cozinha, o selo troca de lado e a headline encolhe para duas linhas',
-    publico: 'Homem de 25 a 45 anos que compra cueca em pacote e repõe a gaveta inteira de uma vez.',
-    caminho: 'produto único · compre X leve Y · estética · sem pessoa · uma unidade repetida',
-    nome: 'Pilha de unidades vista de cima em bancada escura',
-    people: 'sem-pessoa',
-    produto:
-      'seis cuecas boxer do mesmo modelo, dobradas e empilhadas uma sobre a outra, em azul-marinho, vinho, verde-militar, cinza, preto e off-white',
-    oferta: 'COMPRE 5, LEVE 7',
-    composicao: [
-      'O que define esta direção: a mesma unidade repetida e empilhada é o que anuncia a oferta — dá para contar as peças — e um selo circular de cor sólida carrega o número, solto sobre a foto.',
-      'Bancada de pedra escura e fosca, ocupando o quadro inteiro, com luz lateral fria e sombra curta sob a pilha. Sem cenário, sem objeto de decoração e sem horizonte.',
-      'A pilha é fotografada de cima, em diagonal, de perto: cada camada dobrada aparece inteira e em cor distinta, empilhada com alinhamento solto, uma peça levemente deslocada da outra.',
-      'No alto, sobre a bancada, a marca pequena e clara, e abaixo dela uma headline de duas linhas em caixa alta pesada e clara.',
-      'Num canto livre, um selo circular de cor sólida quente traz a oferta em duas linhas, sem moldura e sem sombra. É o único elemento colorido da parte gráfica.',
-      'Esta peça não tem pessoa, embalagem, etiqueta, preço riscado, CTA nem moldura.',
-      'Com menos unidades confirmadas, a pilha fica mais baixa e a bancada mais livre. Nenhuma peça é inventada para engordar a pilha.',
-    ],
-  },
-  {
     id: 'VAR-02',
     base: 'REF-0063',
     mantem: 'as três unidades lado a lado do mesmo modelo, o bloco tipográfico no topo e a faixa de oferta fechando embaixo',
@@ -417,7 +395,7 @@ console.log(`prompts-novos.md gerado — ${novas.length} direções novas e ${va
 /* Já geradas e aprovadas: ficam no arquivo de registro, fora do lote. */
 const JA_APROVADAS = new Set([
   'NOVA-01', 'NOVA-02', 'NOVA-03', 'NOVA-04', 'NOVA-05', 'NOVA-06', 'NOVA-08',
-  'VAR-01', 'VAR-02', 'NOVA-09', 'NOVA-11', 'NOVA-07', 'VAR-03', 'NOVA-10',
+  'VAR-02', 'NOVA-09', 'NOVA-11', 'NOVA-07', 'VAR-03', 'NOVA-10',
 ]);
 const todas = [...novas, ...variacoes, ...serie2].filter((item) => !JA_APROVADAS.has(item.id));
 

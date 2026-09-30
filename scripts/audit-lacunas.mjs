@@ -32,14 +32,13 @@ const primeiraLeva = [
   { id: 'NOVA-06', mode: 'single', mech: 'percentual', argumento: 'estetica', people: 'sem-pessoa', slots: 3, categoria: 'bolsas e mochilas' },
   { id: 'NOVA-07', mode: 'collection', mech: 'percentual', argumento: 'estetica', people: 'corpo-suporte', slots: 5, categoria: 'vestuário' },
   { id: 'NOVA-08', mode: 'collection', mech: 'percentual', argumento: 'estetica', people: 'corpo-suporte', slots: 4, categoria: 'vestuário' },
-  { id: 'VAR-01', mode: 'single', mech: 'leve-mais', argumento: 'estetica', people: 'sem-pessoa', slots: 1, categoria: 'vestuário' },
   { id: 'VAR-02', mode: 'single', mech: 'leve-mais', argumento: 'estetica', people: 'sem-pessoa', slots: 3, categoria: 'vestuário' },
   { id: 'VAR-03', mode: 'single', mech: 'percentual', argumento: 'estetica', people: 'corpo-suporte', slots: 2, categoria: 'vestuário' },
 ];
 
 const APROVADAS = new Set([
   'NOVA-01', 'NOVA-02', 'NOVA-03', 'NOVA-04', 'NOVA-05', 'NOVA-06', 'NOVA-07', 'NOVA-08',
-  'VAR-01', 'VAR-02', 'VAR-03',
+  'VAR-02', 'VAR-03',
   'NOVA-09', 'NOVA-10', 'NOVA-11',
   'NOVA-13', 'NOVA-16', 'NOVA-17', 'NOVA-19', 'NOVA-20', 'NOVA-22', 'NOVA-24',
   'NOVA-25', 'NOVA-26', 'NOVA-27', 'NOVA-28', 'NOVA-31', 'NOVA-34', 'NOVA-35',
